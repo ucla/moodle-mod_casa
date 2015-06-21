@@ -29,6 +29,8 @@ require_once($CFG->dirroot . '/mod/lti/lib.php');
 require_once($CFG->dirroot . '/mod/lti/locallib.php');
 require_once($CFG->dirroot . '/mod/lti/OAuth.php');
 require_once($CFG->dirroot . '/mod/lti/TrivialStore.php');
+require_once($CFG->dirroot . '/mod/url/lib.php');
+require_once($CFG->dirroot . '/mod/url/locallib.php');
 
 use moodle\mod\lti as lti;
 
@@ -46,6 +48,7 @@ $msg = optional_param('lti_msg', '', PARAM_TEXT);
 
 $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 $module = $DB->get_record('modules', array('name' => 'lti'), '*', MUST_EXIST);
+$urlmodule = $DB->get_record('modules', array('name' => 'url'), '*', MUST_EXIST);
 $tool = lti_get_type($id);
 $typeconfig = lti_get_type_config($id);
 
@@ -87,6 +90,29 @@ $continueurl = course_get_url($course, $sectionid, array('sr' => $sectionreturn)
 if (count($items->{'@graph'}) > 0) {
     foreach ($items->{'@graph'} as $item) {
         $moduleinfo = new stdClass();
+        
+        // adds support for text/html media type & bypasses regular add routine
+        if (isset($item->mediaType) && $item->mediaType == 'text/html') {
+            $moduleinfo->modulename = 'url';
+            $moduleinfo->name = '';
+            if (isset($item->title)) {
+                $moduleinfo->name = $item->title;
+            }
+            if (empty($moduleinfo->name)) {
+                $moduleinfo->name = $tool->name;
+            }
+            $moduleinfo->module = $urlmodule->id;
+            $moduleinfo->section = $sectionid;
+            $moduleinfo->visible = 1;
+            if (isset($item->url)) {
+                $moduleinfo->externalurl = $item->url;
+            } else {
+                continue; // can't do anything with this
+            }
+            $moduleinfo = add_moduleinfo($moduleinfo, $course, null);
+            continue;
+        }
+        
         $moduleinfo->modulename = 'lti';
         $moduleinfo->name = '';
         if (isset($item->title)) {
