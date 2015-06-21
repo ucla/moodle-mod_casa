@@ -68,33 +68,7 @@ class mod_lti_mod_form extends moodleform_mod {
         $mform =& $this->_form;
         // Adding the "general" fieldset, where all the common settings are shown.
         $mform->addElement('header', 'general', get_string('general', 'form'));
-        // Adding the standard "name" field.
-        $mform->addElement('text', 'name', get_string('basicltiname', 'lti'), array('size' => '64'));
-        $mform->setType('name', PARAM_TEXT);
-        $mform->addRule('name', null, 'required', null, 'client');
-        $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-        // Adding the optional "intro" and "introformat" pair of fields.
-        $this->add_intro_editor(false, get_string('basicltiintro', 'lti'));
-        $mform->setAdvanced('introeditor');
-
-        // Display the label to the right of the checkbox so it looks better & matches rest of the form.
-        $coursedesc = $mform->getElement('showdescription');
-        if (!empty($coursedesc)) {
-            $coursedesc->setText(' ' . $coursedesc->getLabel());
-            $coursedesc->setLabel('&nbsp');
-        }
-
-        $mform->setAdvanced('showdescription');
-
-        $mform->addElement('checkbox', 'showtitlelaunch', '&nbsp;', ' ' . get_string('display_name', 'lti'));
-        $mform->setAdvanced('showtitlelaunch');
-        $mform->setDefault('showtitlelaunch', true);
-        $mform->addHelpButton('showtitlelaunch', 'display_name', 'lti');
-
-        $mform->addElement('checkbox', 'showdescriptionlaunch', '&nbsp;', ' ' . get_string('display_description', 'lti'));
-        $mform->setAdvanced('showdescriptionlaunch');
-        $mform->addHelpButton('showdescriptionlaunch', 'display_description', 'lti');
-
+        
         // Tool settings.
         $attributes = array();
         if ($update = optional_param('update', false, PARAM_INT)) {
@@ -140,6 +114,33 @@ class mod_lti_mod_form extends moodleform_mod {
             }
             $tooltypes->addOption($type->name, $id, $attributes);
         }
+        
+        // Adding the standard "name" field.
+        $mform->addElement('text', 'name', get_string('basicltiname', 'lti'), array('size' => '64'));
+        $mform->setType('name', PARAM_TEXT);
+        $mform->addRule('name', null, 'required', null, 'client');
+        $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        // Adding the optional "intro" and "introformat" pair of fields.
+        $this->add_intro_editor(false, get_string('basicltiintro', 'lti'));
+        $mform->setAdvanced('introeditor');
+
+        // Display the label to the right of the checkbox so it looks better & matches rest of the form.
+        $coursedesc = $mform->getElement('showdescription');
+        if (!empty($coursedesc)) {
+            $coursedesc->setText(' ' . $coursedesc->getLabel());
+            $coursedesc->setLabel('&nbsp');
+        }
+
+        $mform->setAdvanced('showdescription');
+
+        $mform->addElement('checkbox', 'showtitlelaunch', '&nbsp;', ' ' . get_string('display_name', 'lti'));
+        $mform->setAdvanced('showtitlelaunch');
+        $mform->setDefault('showtitlelaunch', true);
+        $mform->addHelpButton('showtitlelaunch', 'display_name', 'lti');
+
+        $mform->addElement('checkbox', 'showdescriptionlaunch', '&nbsp;', ' ' . get_string('display_description', 'lti'));
+        $mform->setAdvanced('showdescriptionlaunch');
+        $mform->addHelpButton('showdescriptionlaunch', 'display_description', 'lti');
 
         $mform->addElement('text', 'toolurl', get_string('launch_url', 'lti'), array('size' => '64'));
         $mform->setType('toolurl', PARAM_TEXT);
