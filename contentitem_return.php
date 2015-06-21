@@ -114,6 +114,9 @@ if (count($items->{'@graph'}) > 0) {
                 $moduleinfo->launchcontainer = LTI_LAUNCH_CONTAINER_EMBED;
             }
         }
+        if (isset($item->icon) && isset($item->icon->{'@id'})) {
+            $moduleinfo->icon = $item->icon->{'@id'};
+        }
         if (isset($item->custom)) {
             $moduleinfo->instructorcustomparameters = '';
             $first = true;
