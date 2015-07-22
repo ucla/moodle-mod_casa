@@ -15,22 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_lti unknown service api called event.
+ * The mod_casa unknown service api called event.
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @copyright  2013 Adrian Greeve <adrian@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_lti\event;
+namespace mod_casa\event;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_lti unknown service api called event class.
+ * The mod_casa unknown service api called event class.
  *
- * Event for when something happens with an unknown lti service API call.
+ * Event for when something happens with an unknown casa service API call.
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @since      Moodle 2.6
  * @copyright  2013 Adrian Greeve <adrian@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -85,7 +85,7 @@ class unknown_service_api_called extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('ltiunknownserviceapicall', 'mod_lti');
+        return get_string('casaunknownserviceapicall', 'mod_casa');
     }
 
     /**
@@ -94,7 +94,7 @@ class unknown_service_api_called extends \core\event\base {
      * @return null|string legacy event name
      */
     public static function get_legacy_eventname() {
-        return 'lti_unknown_service_api_call';
+        return 'casa_unknown_service_api_call';
     }
 
     /**

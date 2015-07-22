@@ -17,29 +17,29 @@
 /**
  * Unknown service API called event tests
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-use mod_lti\event\unknown_service_api_called;
+use mod_casa\event\unknown_service_api_called;
 
 /**
  * Unknown service API called event tests
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_lti_event_unknown_service_api_called_test extends advanced_testcase {
+class mod_casa_event_unknown_service_api_called_test extends advanced_testcase {
     /*
      * Ensure create event works.
      */
     public function test_create_event() {
         $event = unknown_service_api_called::create();
-        $this->assertInstanceOf('\mod_lti\event\unknown_service_api_called', $event);
+        $this->assertInstanceOf('\mod_casa\event\unknown_service_api_called', $event);
     }
 
     /*

@@ -17,19 +17,19 @@
 /**
  * This page allows instructors to configure course level tool providers.
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  Copyright (c) 2011 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     Chris Scribner
  */
 
 require_once('../../config.php');
-require_once($CFG->dirroot.'/mod/lti/edit_form.php');
+require_once($CFG->dirroot.'/mod/casa/edit_form.php');
 
 $courseid = required_param('course', PARAM_INT);
 
 require_login($courseid, false);
-$url = new moodle_url('/mod/lti/instructor_edit_tool_type.php');
+$url = new moodle_url('/mod/casa/instructor_edit_tool_type.php');
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('popup');
 
@@ -38,34 +38,34 @@ $typeid = optional_param('typeid', null, PARAM_INT);
 
 require_sesskey();
 
-require_capability('mod/lti:addcoursetool', context_course::instance($courseid));
+require_capability('mod/casa:addcoursetool', context_course::instance($courseid));
 
 if (!empty($typeid)) {
-    $type = lti_get_type($typeid);
+    $type = casa_get_type($typeid);
     if ($type->course != $courseid) {
         throw new Exception('You do not have permissions to edit this tool type.');
         die;
     }
 }
 
-$form = new mod_lti_edit_types_form();
+$form = new mod_casa_edit_types_form();
 if ($data = $form->get_data()) {
     $type = new stdClass();
 
     if (!empty($typeid)) {
         $type->id = $typeid;
-        $name = json_encode($data->lti_typename);
+        $name = json_encode($data->casa_typename);
 
-        lti_update_type($type, $data);
+        casa_update_type($type, $data);
 
-        $fromdb = lti_get_type($typeid);
+        $fromdb = casa_get_type($typeid);
         $json = json_encode($fromdb);
 
         // Output script to update the calling window.
         $script = "
             <html>
                 <script type=\"text/javascript\">
-                    window.opener.M.mod_lti.editor.updateToolType({$json});
+                    window.opener.M.mod_casa.editor.updateToolType({$json});
                     window.close();
                 </script>
             </html>
@@ -74,19 +74,19 @@ if ($data = $form->get_data()) {
         echo $script;
         die;
     } else {
-        $type->state = LTI_TOOL_STATE_CONFIGURED;
+        $type->state = CASA_TOOL_STATE_CONFIGURED;
         $type->course = $COURSE->id;
 
-        $id = lti_add_type($type, $data);
+        $id = casa_add_type($type, $data);
 
-        $fromdb = lti_get_type($id);
+        $fromdb = casa_get_type($id);
         $json = json_encode($fromdb);
 
         // Output script to update the calling window.
         $script = "
             <html>
                 <script type=\"text/javascript\">
-                    window.opener.M.mod_lti.editor.addToolType({$json});
+                    window.opener.M.mod_casa.editor.addToolType({$json});
                     window.close();
                 </script>
             </html>
@@ -111,18 +111,18 @@ if ($data = $form->get_data()) {
 
 // Delete action is called via ajax.
 if ($action == 'delete') {
-    lti_delete_type($typeid);
+    casa_delete_type($typeid);
     die;
 }
 
 echo $OUTPUT->header();
 
-echo $OUTPUT->heading(get_string('toolsetup', 'lti'));
+echo $OUTPUT->heading(get_string('toolsetup', 'casa'));
 
 if ($action == 'add') {
     $form->display();
 } else if ($action == 'edit') {
-    $type = lti_get_type_type_config($typeid);
+    $type = casa_get_type_type_config($typeid);
     $form->set_data($type);
     $form->display();
 }

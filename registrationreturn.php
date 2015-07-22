@@ -17,18 +17,18 @@
 /**
  * Handle the return from the Tool Provider after registering a tool proxy.
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once('../../config.php');
-require_once($CFG->dirroot.'/mod/lti/locallib.php');
+require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
 $top = optional_param('top', 0, PARAM_INT);
-$msg = optional_param('lti_msg', '', PARAM_TEXT);
-$err = optional_param('lti_errormsg', '', PARAM_TEXT);
+$msg = optional_param('casa_msg', '', PARAM_TEXT);
+$err = optional_param('casa_errormsg', '', PARAM_TEXT);
 $id = optional_param('id', 0, PARAM_INT);
 
 // No guest autologin.
@@ -44,18 +44,18 @@ if (empty($top)) {
     $params['sesskey'] = sesskey();
     $params['top'] = '1';
     if (!empty($msg)) {
-        $params['lti_msg'] = $msg;
+        $params['casa_msg'] = $msg;
     }
     if (!empty($err)) {
-        $params['lti_errormsg'] = $err;
+        $params['casa_errormsg'] = $err;
     }
     if (!empty($id)) {
         $params['id'] = $id;
     }
-    $redirect = new moodle_url('/mod/lti/registrationreturn.php', $params);
+    $redirect = new moodle_url('/mod/casa/registrationreturn.php', $params);
     $redirect = $redirect->out(false);
 
-    $clickhere = get_string('click_to_continue', 'lti', (object)array('link' => $redirect));
+    $clickhere = get_string('click_to_continue', 'casa', (object)array('link' => $redirect));
     $html = <<< EOD
 <html>
 <head>
@@ -84,31 +84,31 @@ EOD;
     $params['sesskey'] = sesskey();
     $params['top'] = '1';
     if (!empty($err)) {
-        $params['lti_errormsg'] = $err;
+        $params['casa_errormsg'] = $err;
     }
     if (!empty($id)) {
         $params['id'] = $id;
     }
-    $redirect = new moodle_url('/mod/lti/registrationreturn.php', $params);
+    $redirect = new moodle_url('/mod/casa/registrationreturn.php', $params);
     $redirect = $redirect->out(false);
     redirect($redirect, $err);
 
 } else {
 
-    $redirect = new moodle_url('/mod/lti/toolproxies.php');
+    $redirect = new moodle_url('/mod/casa/toolproxies.php');
     if (!empty($id)) {
-        $toolproxy = $DB->get_record('lti_tool_proxies', array('id' => $id));
+        $toolproxy = $DB->get_record('casa_tool_proxies', array('id' => $id));
         switch($toolproxy->state) {
-            case LTI_TOOL_PROXY_STATE_ACCEPTED:
+            case CASA_TOOL_PROXY_STATE_ACCEPTED:
                 $redirect->param('tab', 'tp_accepted');
                 break;
-            case LTI_TOOL_PROXY_STATE_REJECTED:
+            case CASA_TOOL_PROXY_STATE_REJECTED:
                 $redirect->param('tab', 'tp_rejected');
                 break;
-            case LTI_TOOL_PROXY_STATE_PENDING:
+            case CASA_TOOL_PROXY_STATE_PENDING:
                 // Change the status to configured.
-                $toolproxy->state = LTI_TOOL_PROXY_STATE_CONFIGURED;
-                lti_update_tool_proxy($toolproxy);
+                $toolproxy->state = CASA_TOOL_PROXY_STATE_CONFIGURED;
+                casa_update_tool_proxy($toolproxy);
         }
     }
 

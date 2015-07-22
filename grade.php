@@ -33,9 +33,9 @@
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu.
 
 /**
- * This file contains submissions-specific code for the lti module
+ * This file contains submissions-specific code for the casa module
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu
  * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
@@ -53,19 +53,19 @@ $id = optional_param('id', 0, PARAM_INT);
 $l  = optional_param('l', 0, PARAM_INT);
 
 if ($l) {
-    $lti = $DB->get_record('lti', array('id' => $l), '*', MUST_EXIST);
-    $cm = get_coursemodule_from_instance('lti', $lti->id, $lti->course, false, MUST_EXIST);
+    $casa = $DB->get_record('casa', array('id' => $l), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('casa', $casa->id, $casa->course, false, MUST_EXIST);
 } else {
-    $cm = get_coursemodule_from_id('lti', $id, 0, false, MUST_EXIST);
-    $lti = $DB->get_record('lti', array('id' => $cm->instance), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_id('casa', $id, 0, false, MUST_EXIST);
+    $casa = $DB->get_record('casa', array('id' => $cm->instance), '*', MUST_EXIST);
 }
 
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 
 require_login($course, false, $cm);
-require_capability('mod/lti:view', context_module::instance($cm->id));
+require_capability('mod/casa:view', context_module::instance($cm->id));
 
 debugging('This file has been deprecated.  Links to this file should automatically '.
-    'fallback to /mod/lti/view.php once this file has been deleted.', DEBUG_DEVELOPER);
+    'fallback to /mod/casa/view.php once this file has been deleted.', DEBUG_DEVELOPER);
 
-redirect(new moodle_url('/mod/lti/view.php', array('l' => $lti->id)));
+redirect(new moodle_url('/mod/casa/view.php', array('l' => $casa->id)));

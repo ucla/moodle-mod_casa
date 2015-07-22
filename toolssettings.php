@@ -20,7 +20,7 @@
  * It is used to create a new form used to configure the capabilities
  * and services to be offered to the tool provider.
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,8 +28,8 @@
 
 require_once('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
-require_once($CFG->dirroot.'/mod/lti/edit_form.php');
-require_once($CFG->dirroot.'/mod/lti/locallib.php');
+require_once($CFG->dirroot.'/mod/casa/edit_form.php');
+require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
 $action       = optional_param('action', '', PARAM_ALPHANUMEXT);
 $id           = optional_param('id', '', PARAM_INT);
@@ -43,16 +43,16 @@ require_sesskey();
 // Check this is for a tool created from a tool proxy.
 $err = empty($id);
 if (!$err) {
-    $type = lti_get_type_type_config($id);
+    $type = casa_get_type_type_config($id);
     $err = empty($type->toolproxyid);
 }
 if ($err) {
-    $redirect = new moodle_url('/mod/lti/typessettings.php',
+    $redirect = new moodle_url('/mod/casa/typessettings.php',
         array('action' => $action, 'id' => $id, 'sesskey' => sesskey(), 'tab' => $tab));
     redirect($redirect);
 }
 
-$pageurl = new moodle_url('/mod/lti/toolssettings.php');
+$pageurl = new moodle_url('/mod/casa/toolssettings.php');
 if (!empty($id)) {
     $pageurl->param('id', $id);
 }
@@ -60,37 +60,37 @@ $PAGE->set_url($pageurl);
 
 admin_externalpage_setup('managemodules'); // Hacky solution for printing the admin page.
 
-$redirect = "$CFG->wwwroot/$CFG->admin/settings.php?section=modsettinglti&tab={$tab}";
+$redirect = "$CFG->wwwroot/$CFG->admin/settings.php?section=modsettingcasa&tab={$tab}";
 
 if ($action == 'accept') {
-    lti_set_state_for_type($id, LTI_TOOL_STATE_CONFIGURED);
+    casa_set_state_for_type($id, CASA_TOOL_STATE_CONFIGURED);
     redirect($redirect);
 } else if (($action == 'reject') || ($action == 'delete')) {
-    lti_set_state_for_type($id, LTI_TOOL_STATE_REJECTED);
+    casa_set_state_for_type($id, CASA_TOOL_STATE_REJECTED);
     redirect($redirect);
 }
 
-$form = new mod_lti_edit_types_form($pageurl, (object)array('isadmin' => true, 'istool' => true));
+$form = new mod_casa_edit_types_form($pageurl, (object)array('isadmin' => true, 'istool' => true));
 
 if ($data = $form->get_data()) {
     $type = new stdClass();
     if (!empty($id)) {
         $type->id = $id;
-        lti_update_type($type, $data);
+        casa_update_type($type, $data);
     } else {
-        $type->state = LTI_TOOL_STATE_CONFIGURED;
-        lti_add_type($type, $data);
+        $type->state = CASA_TOOL_STATE_CONFIGURED;
+        casa_add_type($type, $data);
     }
     redirect($redirect);
 } else if ($form->is_cancelled()) {
     redirect($redirect);
 }
 
-$PAGE->set_title(format_string($SITE->shortname) . ': ' . get_string('toolsetup', 'lti'));
-$PAGE->navbar->add(get_string('lti_administration', 'lti'), $CFG->wwwroot.'/'.$CFG->admin.'/settings.php?section=modsettinglti');
+$PAGE->set_title(format_string($SITE->shortname) . ': ' . get_string('toolsetup', 'casa'));
+$PAGE->navbar->add(get_string('casa_administration', 'casa'), $CFG->wwwroot.'/'.$CFG->admin.'/settings.php?section=modsettingcasa');
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('toolsetup', 'lti'));
+echo $OUTPUT->heading(get_string('toolsetup', 'casa'));
 echo $OUTPUT->box_start('generalbox');
 
 if ($action == 'update') {

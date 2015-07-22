@@ -20,7 +20,7 @@
  * It is used to provide immediate feedback
  * of which tool provider is to be used based on the Launch URL.
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @subpackage xml
  * @copyright Copyright (c) 2011 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,7 +28,7 @@
  */
 
 require_once(dirname(__FILE__) . "/../../config.php");
-require_once($CFG->dirroot . '/mod/lti/locallib.php');
+require_once($CFG->dirroot . '/mod/casa/locallib.php');
 
 $courseid = required_param('course', PARAM_INT);
 
@@ -44,7 +44,7 @@ switch ($action) {
         $toolid = optional_param('toolid', 0, PARAM_INT);
 
         if (empty($toolid) && !empty($toolurl)) {
-            $tool = lti_get_tool_by_url_match($toolurl, $courseid);
+            $tool = casa_get_tool_by_url_match($toolurl, $courseid);
 
             if (!empty($tool)) {
                 $toolid = $tool->id;
@@ -61,7 +61,7 @@ switch ($action) {
             // Look up privacy settings.
             $query = '
                 SELECT name, value
-                FROM {lti_types_config}
+                FROM {casa_types_config}
                 WHERE
                     typeid = :typeid
                 AND name IN (\'sendname\', \'sendemailaddr\', \'acceptgrades\')

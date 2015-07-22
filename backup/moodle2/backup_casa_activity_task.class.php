@@ -33,9 +33,9 @@
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu.
 
 /**
- * Defines backup_lti_activity_task class
+ * Defines backup_casa_activity_task class
  *
- * @package     mod_lti
+ * @package     mod_casa
  * @category    backup
  * @copyright   2009 Marc Alier <marc.alier@upc.edu>, Jordi Piguillem, Nikolas Galanis
  * @copyright   2009 Universitat Politecnica de Catalunya http://www.upc.edu
@@ -47,12 +47,12 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->dirroot . '/mod/lti/backup/moodle2/backup_lti_stepslib.php');
+require_once($CFG->dirroot . '/mod/casa/backup/moodle2/backup_casa_stepslib.php');
 
 /**
- * Provides the steps to perform one complete backup of the LTI instance
+ * Provides the steps to perform one complete backup of the CASA instance
  */
-class backup_lti_activity_task extends backup_activity_task {
+class backup_casa_activity_task extends backup_activity_task {
 
     /**
      * No specific settings for this activity
@@ -61,10 +61,10 @@ class backup_lti_activity_task extends backup_activity_task {
     }
 
     /**
-     * Defines a backup step to store the instance data in the lti.xml file
+     * Defines a backup step to store the instance data in the casa.xml file
      */
     protected function define_my_steps() {
-        $this->add_step(new backup_lti_activity_structure_step('lti_structure', 'lti.xml'));
+        $this->add_step(new backup_casa_activity_structure_step('casa_structure', 'casa.xml'));
     }
 
     /**
@@ -78,13 +78,13 @@ class backup_lti_activity_task extends backup_activity_task {
 
         $base = preg_quote($CFG->wwwroot, "/");
 
-        // Link to the list of basiclti tools.
-        $search = "/(".$base."\/mod\/lti\/index.php\?id\=)([0-9]+)/";
-        $content = preg_replace($search, '$@LTIINDEX*$2@$', $content);
+        // Link to the list of basiccasa tools.
+        $search = "/(".$base."\/mod\/casa\/index.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@CASAINDEX*$2@$', $content);
 
-        // Link to basiclti view by moduleid.
-        $search = "/(".$base."\/mod\/lti\/view.php\?id\=)([0-9]+)/";
-        $content = preg_replace($search, '$@LTIVIEWBYID*$2@$', $content);
+        // Link to basiccasa view by moduleid.
+        $search = "/(".$base."\/mod\/casa\/view.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@CASAVIEWBYID*$2@$', $content);
 
         return $content;
     }

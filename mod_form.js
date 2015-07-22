@@ -17,20 +17,20 @@
  * Javascript extensions for the External Tool activity editor.
  *
  * @package    mod
- * @subpackage lti
+ * @subpackage casa
  * @copyright  Copyright (c) 2011 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 (function(){
     var Y;
 
-    M.mod_lti = M.mod_lti || {};
+    M.mod_casa = M.mod_casa || {};
 
-    M.mod_lti.LTI_SETTING_NEVER = 0;
-    M.mod_lti.LTI_SETTING_ALWAYS = 1;
-    M.mod_lti.LTI_SETTING_DELEGATE = 2;
+    M.mod_casa.CASA_SETTING_NEVER = 0;
+    M.mod_casa.CASA_SETTING_ALWAYS = 1;
+    M.mod_casa.CASA_SETTING_DELEGATE = 2;
 
-    M.mod_lti.editor = {
+    M.mod_casa.editor = {
         init: function(yui3, settings){
             if(yui3){
                 Y = yui3;
@@ -120,7 +120,7 @@
             var toolurl = field;
             var typeSelector = Y.one('#id_typeid');
 
-            var id = field.get('id') + '_lti_automatch_tool';
+            var id = field.get('id') + '_casa_automatch_tool';
             var automatchToolDisplay = Y.one('#' + id);
 
             if(!automatchToolDisplay){
@@ -151,10 +151,10 @@
                 var domainRegex = /(?:https?:\/\/)?(?:www\.)?([^\/]+)(?:\/|$)/i;
                 var match = domainRegex.exec(url);
                 if(match && match[1] && match[1].toLowerCase() === selectedOption.getAttribute('domain').toLowerCase()){
-                    automatchToolDisplay.set('innerHTML',  '<img style="vertical-align:text-bottom" src="' + self.settings.green_check_icon_url + '" />' + M.str.lti.using_tool_configuration + selectedOption.get('text'));
+                    automatchToolDisplay.set('innerHTML',  '<img style="vertical-align:text-bottom" src="' + self.settings.green_check_icon_url + '" />' + M.str.casa.using_tool_configuration + selectedOption.get('text'));
                 } else {
                     // The entered URL does not match the domain of the tool configuration
-                    automatchToolDisplay.set('innerHTML', '<img style="vertical-align:text-bottom" src="' + self.settings.warning_icon_url + '" />' + M.str.lti.domain_mismatch);
+                    automatchToolDisplay.set('innerHTML', '<img style="vertical-align:text-bottom" src="' + self.settings.warning_icon_url + '" />' + M.str.casa.domain_mismatch);
                 }
             }
 
@@ -164,7 +164,7 @@
             // Indicate the tool is manually configured
             // We still check the Launch URL with the server as course/site tools may override privacy settings
             if(key.get('value') !== '' && secret.get('value') !== ''){
-                automatchToolDisplay.set('innerHTML',  '<img style="vertical-align:text-bottom" src="' + self.settings.green_check_icon_url + '" />' + M.str.lti.custom_config);
+                automatchToolDisplay.set('innerHTML',  '<img style="vertical-align:text-bottom" src="' + self.settings.green_check_icon_url + '" />' + M.str.casa.custom_config);
             }
 
             var continuation = function(toolInfo, inputfield){
@@ -172,11 +172,11 @@
                     self.updatePrivacySettings(toolInfo);
                 }
                 if(toolInfo.toolname){
-                    automatchToolDisplay.set('innerHTML',  '<img style="vertical-align:text-bottom" src="' + self.settings.green_check_icon_url + '" />' + M.str.lti.using_tool_configuration + toolInfo.toolname);
+                    automatchToolDisplay.set('innerHTML',  '<img style="vertical-align:text-bottom" src="' + self.settings.green_check_icon_url + '" />' + M.str.casa.using_tool_configuration + toolInfo.toolname);
                 } else if(!selectedToolType) {
                     // Inform them custom configuration is in use
                     if(key.get('value') === '' || secret.get('value') === ''){
-                        automatchToolDisplay.set('innerHTML', '<img style="vertical-align:text-bottom" src="' + self.settings.warning_icon_url + '" />' + M.str.lti.tool_config_not_found);
+                        automatchToolDisplay.set('innerHTML', '<img style="vertical-align:text-bottom" src="' + self.settings.warning_icon_url + '" />' + M.str.casa.tool_config_not_found);
                     }
                 }
             };
@@ -214,9 +214,9 @@
         updatePrivacySettings: function(toolInfo){
             if(!toolInfo || !toolInfo.toolid){
                 toolInfo = {
-                    sendname: M.mod_lti.LTI_SETTING_DELEGATE,
-                    sendemailaddr: M.mod_lti.LTI_SETTING_DELEGATE,
-                    acceptgrades: M.mod_lti.LTI_SETTING_DELEGATE
+                    sendname: M.mod_casa.CASA_SETTING_DELEGATE,
+                    sendemailaddr: M.mod_casa.CASA_SETTING_DELEGATE,
+                    acceptgrades: M.mod_casa.CASA_SETTING_DELEGATE
                 }
             }
 
@@ -250,15 +250,15 @@
                     var settingValue = toolInfo[setting];
                     control = privacyControls[setting];
 
-                    if(settingValue == M.mod_lti.LTI_SETTING_NEVER){
+                    if(settingValue == M.mod_casa.CASA_SETTING_NEVER){
                         control.set('disabled', true);
                         control.set('checked', false);
-                        control.set('title', M.str.lti.forced_help);
-                    } else if(settingValue == M.mod_lti.LTI_SETTING_ALWAYS){
+                        control.set('title', M.str.casa.forced_help);
+                    } else if(settingValue == M.mod_casa.CASA_SETTING_ALWAYS){
                         control.set('disabled', true);
                         control.set('checked', true);
-                        control.set('title', M.str.lti.forced_help);
-                    } else if(settingValue == M.mod_lti.LTI_SETTING_DELEGATE){
+                        control.set('title', M.str.casa.forced_help);
+                    } else if(settingValue == M.mod_casa.CASA_SETTING_DELEGATE){
                         control.set('disabled', false);
 
                         // Get the value out of the stored copy
@@ -289,11 +289,11 @@
 
                 var globalGroup = Y.Node.create('<optgroup />')
                                     .set('id', 'global_tool_group')
-                                    .set('label', M.str.lti.global_tool_types);
+                                    .set('label', M.str.casa.global_tool_types);
 
                 var courseGroup = Y.Node.create('<optgroup />')
                                     .set('id', 'course_tool_group')
-                                    .set('label', M.str.lti.course_tool_types);
+                                    .set('label', M.str.casa.course_tool_types);
 
                 var globalOptions = typeSelector.all('option[globalTool=1]').remove().each(function(node){
                     globalGroup.append(node);
@@ -322,18 +322,18 @@
 
             var typeSelector = Y.one('#id_typeid');
 
-            var createIcon = function(id, tooltip, iconUrl){
+            var createIcon = function(id, toocasap, iconUrl){
                 return Y.Node.create('<a />')
                         .set('id', id)
-                        .set('title', tooltip)
+                        .set('title', toocasap)
                         .setStyle('margin-left', '.5em')
                         .set('href', 'javascript:void(0);')
                         .append(Y.Node.create('<img src="' + iconUrl + '" />'));
             }
 
-            var addIcon = createIcon('lti_add_tool_type', M.str.lti.addtype, this.settings.add_icon_url);
-            var editIcon = createIcon('lti_edit_tool_type', M.str.lti.edittype, this.settings.edit_icon_url);
-            var deleteIcon  = createIcon('lti_delete_tool_type', M.str.lti.deletetype, this.settings.delete_icon_url);
+            var addIcon = createIcon('casa_add_tool_type', M.str.casa.addtype, this.settings.add_icon_url);
+            var editIcon = createIcon('casa_edit_tool_type', M.str.casa.edittype, this.settings.edit_icon_url);
+            var deleteIcon  = createIcon('casa_delete_tool_type', M.str.casa.deletetype, this.settings.delete_icon_url);
 
             editIcon.on('click', function(e){
                 var toolTypeId = typeSelector.get('value');
@@ -341,7 +341,7 @@
                 if(self.getSelectedToolTypeOption().getAttribute('editable')){
                     window.open(self.settings.instructor_tool_type_edit_url + '&action=edit&typeid=' + toolTypeId, 'edit_tool');
                 } else {
-                    alert(M.str.lti.cannot_edit);
+                    alert(M.str.casa.cannot_edit);
                 }
             });
 
@@ -353,11 +353,11 @@
                 var toolTypeId = typeSelector.get('value');
 
                 if(self.getSelectedToolTypeOption().getAttribute('editable')){
-                    if(confirm(M.str.lti.delete_confirmation)){
+                    if(confirm(M.str.casa.delete_confirmation)){
                         self.deleteTool(toolTypeId);
                     }
                 } else {
-                    alert(M.str.lti.cannot_delete);
+                    alert(M.str.casa.cannot_delete);
                 }
             });
 
@@ -367,17 +367,17 @@
         },
 
         toggleEditButtons: function(){
-            var lti_edit_tool_type = Y.one('#lti_edit_tool_type');
-            var lti_delete_tool_type = Y.one('#lti_delete_tool_type');
+            var casa_edit_tool_type = Y.one('#casa_edit_tool_type');
+            var casa_delete_tool_type = Y.one('#casa_delete_tool_type');
 
             // Make the edit / delete icons look enabled / disabled.
             // Does not work in older browsers, but alerts will catch those cases.
             if(this.getSelectedToolTypeOption().getAttribute('editable')){
-                lti_edit_tool_type.setStyle('opacity', '1');
-                lti_delete_tool_type.setStyle('opacity', '1');
+                casa_edit_tool_type.setStyle('opacity', '1');
+                casa_delete_tool_type.setStyle('opacity', '1');
             } else {
-                lti_edit_tool_type.setStyle('opacity', '.2');
-                lti_delete_tool_type.setStyle('opacity', '.2');
+                casa_edit_tool_type.setStyle('opacity', '.2');
+                casa_delete_tool_type.setStyle('opacity', '.2');
             }
         },
 
@@ -464,10 +464,10 @@
         },
 
         contentItem: function(el){
-					  var opt = el.options[el.selectedIndex];
+            var opt = el.options[el.selectedIndex];
             if (opt.getAttribute('contentitem') == '1') {
-							  window.location.href = opt.getAttribute('contentitemurl') + '&title=' + encodeURIComponent(document.getElementById('id_name').value);
-						}
+                window.location.href = opt.getAttribute('contentitemurl') + '&title=' + encodeURIComponent(document.getElementById('id_name').value);
+            }
         }
 
     };

@@ -33,9 +33,9 @@
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu.
 
 /**
- * This file contains all necessary code to view a lti activity instance
+ * This file contains all necessary code to view a casa activity instance
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu
  * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
@@ -48,27 +48,27 @@
 
 require_once('../../config.php');
 require_once($CFG->libdir.'/completionlib.php');
-require_once($CFG->dirroot.'/mod/lti/lib.php');
-require_once($CFG->dirroot.'/mod/lti/locallib.php');
+require_once($CFG->dirroot.'/mod/casa/lib.php');
+require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course Module ID, or
-$l  = optional_param('l', 0, PARAM_INT);  // lti ID.
+$l  = optional_param('l', 0, PARAM_INT);  // casa ID.
 
 if ($l) {  // Two ways to specify the module.
-    $lti = $DB->get_record('lti', array('id' => $l), '*', MUST_EXIST);
-    $cm = get_coursemodule_from_instance('lti', $lti->id, $lti->course, false, MUST_EXIST);
+    $casa = $DB->get_record('casa', array('id' => $l), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('casa', $casa->id, $casa->course, false, MUST_EXIST);
 
 } else {
-    $cm = get_coursemodule_from_id('lti', $id, 0, false, MUST_EXIST);
-    $lti = $DB->get_record('lti', array('id' => $cm->instance), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_id('casa', $id, 0, false, MUST_EXIST);
+    $casa = $DB->get_record('casa', array('id' => $cm->instance), '*', MUST_EXIST);
 }
 
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 
-if (!empty($lti->typeid)) {
-    $toolconfig = lti_get_type_config($lti->typeid);
-} else if ($tool = lti_get_tool_by_url_match($lti->toolurl)) {
-    $toolconfig = lti_get_type_config($tool->id);
+if (!empty($casa->typeid)) {
+    $toolconfig = casa_get_type_config($casa->typeid);
+} else if ($tool = casa_get_tool_by_url_match($casa->toolurl)) {
+    $toolconfig = casa_get_type_config($tool->id);
 } else {
     $toolconfig = array();
 }
@@ -78,16 +78,16 @@ $context = context_module::instance($cm->id);
 $PAGE->set_context($context);
 
 require_login($course, true, $cm);
-require_capability('mod/lti:view', $context);
+require_capability('mod/casa:view', $context);
 
-$url = new moodle_url('/mod/lti/view.php', array('id' => $cm->id));
+$url = new moodle_url('/mod/casa/view.php', array('id' => $cm->id));
 $PAGE->set_url($url);
 
-$launchcontainer = lti_get_launch_container($lti, $toolconfig);
-if ($launchcontainer == LTI_LAUNCH_CONTAINER_EMBED_NO_BLOCKS) {
+$launchcontainer = casa_get_launch_container($casa, $toolconfig);
+if ($launchcontainer == CASA_LAUNCH_CONTAINER_EMBED_NO_BLOCKS) {
     $PAGE->set_pagelayout('frametop'); // Most frametops don't include footer, and pre-post blocks.
     $PAGE->blocks->show_only_fake_blocks(); // Disable blocks for layouts which do include pre-post blocks.
-} else if ($launchcontainer == LTI_LAUNCH_CONTAINER_REPLACE_MOODLE_WINDOW) {
+} else if ($launchcontainer == CASA_LAUNCH_CONTAINER_REPLACE_MOODLE_WINDOW) {
     redirect('launch.php?id=' . $cm->id);
 } else {
     $PAGE->set_pagelayout('incourse');
@@ -99,36 +99,36 @@ $completion->set_module_viewed($cm);
 
 $params = array(
     'context' => $context,
-    'objectid' => $lti->id
+    'objectid' => $casa->id
 );
-$event = \mod_lti\event\course_module_viewed::create($params);
+$event = \mod_casa\event\course_module_viewed::create($params);
 $event->add_record_snapshot('course_modules', $cm);
 $event->add_record_snapshot('course', $course);
-$event->add_record_snapshot('lti', $lti);
+$event->add_record_snapshot('casa', $casa);
 $event->trigger();
 
-$pagetitle = strip_tags($course->shortname.': '.format_string($lti->name));
+$pagetitle = strip_tags($course->shortname.': '.format_string($casa->name));
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 
 // Print the page header.
 echo $OUTPUT->header();
 
-if ($lti->showtitlelaunch) {
+if ($casa->showtitlelaunch) {
     // Print the main part of the page.
-    echo $OUTPUT->heading(format_string($lti->name, true, array('context' => $context)));
+    echo $OUTPUT->heading(format_string($casa->name, true, array('context' => $context)));
 }
 
-if ($lti->showdescriptionlaunch && $lti->intro) {
-    echo $OUTPUT->box(format_module_intro('lti', $lti, $cm->id), 'generalbox description', 'intro');
+if ($casa->showdescriptionlaunch && $casa->intro) {
+    echo $OUTPUT->box(format_module_intro('casa', $casa, $cm->id), 'generalbox description', 'intro');
 }
 
-if ( $launchcontainer == LTI_LAUNCH_CONTAINER_WINDOW ) {
+if ( $launchcontainer == CASA_LAUNCH_CONTAINER_WINDOW ) {
     echo "<script language=\"javascript\">//<![CDATA[\n";
-    echo "window.open('launch.php?id=".$cm->id."','lti');";
+    echo "window.open('launch.php?id=".$cm->id."','casa');";
     echo "//]]\n";
     echo "</script>\n";
-    echo "<p>".get_string("basiclti_in_new_window", "lti")."</p>\n";
+    echo "<p>".get_string("basiccasa_in_new_window", "casa")."</p>\n";
 } else {
     // Request the launch content with an iframe tag.
     echo '<iframe id="contentframe" height="600px" width="100%" src="launch.php?id='.$cm->id.'"></iframe>';

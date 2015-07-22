@@ -33,9 +33,9 @@
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu.
 
 /**
- * This file defines the version of lti
+ * This file defines the version of casa
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu
  * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
@@ -51,6 +51,6 @@
 defined('MOODLE_INTERNAL') || die;
 
 $plugin->version   = 2015012100;    // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2014110400;    // Requires this Moodle version.
-$plugin->component = 'mod_lti';     // Full name of the plugin (used for diagnostics).
+$plugin->requires  = 2014050800;    // Requires this Moodle version.
+$plugin->component = 'mod_casa';     // Full name of the plugin (used for diagnostics).
 $plugin->cron      = 0;

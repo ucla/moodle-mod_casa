@@ -33,9 +33,9 @@
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu.
 
 /**
- * This file defines the main lti configuration form
+ * This file defines the main casa configuration form
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu
  * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
@@ -51,15 +51,15 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/lti/locallib.php');
+require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
-class mod_lti_mod_form extends moodleform_mod {
+class mod_casa_mod_form extends moodleform_mod {
 
     public function definition() {
         global $DB, $PAGE, $OUTPUT, $USER, $COURSE, $sesskey, $section;
 
         if ($type = optional_param('type', false, PARAM_ALPHA)) {
-            component_callback("ltisource_$type", 'add_instance_hook');
+            component_callback("casasource_$type", 'add_instance_hook');
         }
         $sectionreturn = optional_param('sr', 0, PARAM_INT);
 
@@ -74,11 +74,11 @@ class mod_lti_mod_form extends moodleform_mod {
         if ($update = optional_param('update', false, PARAM_INT)) {
             $attributes['disabled'] = 'disabled';
         }
-        $attributes['onchange'] = 'M.mod_lti.editor.contentItem(this);';
-        $tooltypes = $mform->addElement('select', 'typeid', get_string('external_tool_type', 'lti'), array(), $attributes);
-        $mform->addHelpButton('typeid', 'external_tool_type', 'lti');
+        $attributes['onchange'] = 'M.mod_casa.editor.contentItem(this);';
+        $tooltypes = $mform->addElement('select', 'typeid', get_string('external_tool_type', 'casa'), array(), $attributes);
+        $mform->addHelpButton('typeid', 'external_tool_type', 'casa');
         $toolproxy = array();
-        foreach (lti_get_types_for_add_instance() as $id => $type) {
+        foreach (casa_get_types_for_add_instance() as $id => $type) {
             if (!empty($type->toolproxyid)) {
                 $toolproxy[] = $type->id;
                 $attributes = array( 'globalTool' => 1, 'toolproxy' => 1);
@@ -99,9 +99,9 @@ class mod_lti_mod_form extends moodleform_mod {
                 } else if ($id != 0) {
                     $attributes = array( 'globalTool' => 1, 'domain' => $type->tooldomain);
                     if (!$update) {
-                        $config = lti_get_type_config($id);
+                        $config = casa_get_type_config($id);
                         if (isset($config['contentitem']) && $config['contentitem']) {
-                            $contentitemurl = new moodle_url('/mod/lti/contentitem.php',
+                            $contentitemurl = new moodle_url('/mod/casa/contentitem.php',
                                 array('course' => $COURSE->id, 'section' => $section, 'id' => $id, 'sr' => $sectionreturn));
                             $attributes['contentitem'] = 1;
                             $attributes['contentitemurl'] = $contentitemurl->out(false);
@@ -116,12 +116,12 @@ class mod_lti_mod_form extends moodleform_mod {
         }
         
         // Adding the standard "name" field.
-        $mform->addElement('text', 'name', get_string('basicltiname', 'lti'), array('size' => '64'));
+        $mform->addElement('text', 'name', get_string('basiccasaname', 'casa'), array('size' => '64'));
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         // Adding the optional "intro" and "introformat" pair of fields.
-        $this->add_intro_editor(false, get_string('basicltiintro', 'lti'));
+        $this->add_intro_editor(false, get_string('basiccasaintro', 'casa'));
         $mform->setAdvanced('introeditor');
 
         // Display the label to the right of the checkbox so it looks better & matches rest of the form.
@@ -133,85 +133,85 @@ class mod_lti_mod_form extends moodleform_mod {
 
         $mform->setAdvanced('showdescription');
 
-        $mform->addElement('checkbox', 'showtitlelaunch', '&nbsp;', ' ' . get_string('display_name', 'lti'));
+        $mform->addElement('checkbox', 'showtitlelaunch', '&nbsp;', ' ' . get_string('display_name', 'casa'));
         $mform->setAdvanced('showtitlelaunch');
         $mform->setDefault('showtitlelaunch', true);
-        $mform->addHelpButton('showtitlelaunch', 'display_name', 'lti');
+        $mform->addHelpButton('showtitlelaunch', 'display_name', 'casa');
 
-        $mform->addElement('checkbox', 'showdescriptionlaunch', '&nbsp;', ' ' . get_string('display_description', 'lti'));
+        $mform->addElement('checkbox', 'showdescriptionlaunch', '&nbsp;', ' ' . get_string('display_description', 'casa'));
         $mform->setAdvanced('showdescriptionlaunch');
-        $mform->addHelpButton('showdescriptionlaunch', 'display_description', 'lti');
+        $mform->addHelpButton('showdescriptionlaunch', 'display_description', 'casa');
 
-        $mform->addElement('text', 'toolurl', get_string('launch_url', 'lti'), array('size' => '64'));
+        $mform->addElement('text', 'toolurl', get_string('launch_url', 'casa'), array('size' => '64'));
         $mform->setType('toolurl', PARAM_TEXT);
-        $mform->addHelpButton('toolurl', 'launch_url', 'lti');
+        $mform->addHelpButton('toolurl', 'launch_url', 'casa');
         $mform->disabledIf('toolurl', 'typeid', 'neq', '0');
 
-        $mform->addElement('text', 'securetoolurl', get_string('secure_launch_url', 'lti'), array('size' => '64'));
+        $mform->addElement('text', 'securetoolurl', get_string('secure_launch_url', 'casa'), array('size' => '64'));
         $mform->setType('securetoolurl', PARAM_TEXT);
         $mform->setAdvanced('securetoolurl');
-        $mform->addHelpButton('securetoolurl', 'secure_launch_url', 'lti');
+        $mform->addHelpButton('securetoolurl', 'secure_launch_url', 'casa');
         $mform->disabledIf('securetoolurl', 'typeid', 'neq', '0');
 
         $mform->addElement('hidden', 'urlmatchedtypeid', '', array( 'id' => 'id_urlmatchedtypeid' ));
         $mform->setType('urlmatchedtypeid', PARAM_INT);
 
         $launchoptions = array();
-        $launchoptions[LTI_LAUNCH_CONTAINER_DEFAULT] = get_string('default', 'lti');
-        $launchoptions[LTI_LAUNCH_CONTAINER_EMBED] = get_string('embed', 'lti');
-        $launchoptions[LTI_LAUNCH_CONTAINER_EMBED_NO_BLOCKS] = get_string('embed_no_blocks', 'lti');
-        $launchoptions[LTI_LAUNCH_CONTAINER_REPLACE_MOODLE_WINDOW] = get_string('existing_window', 'lti');
-        $launchoptions[LTI_LAUNCH_CONTAINER_WINDOW] = get_string('new_window', 'lti');
+        $launchoptions[CASA_LAUNCH_CONTAINER_DEFAULT] = get_string('default', 'casa');
+        $launchoptions[CASA_LAUNCH_CONTAINER_EMBED] = get_string('embed', 'casa');
+        $launchoptions[CASA_LAUNCH_CONTAINER_EMBED_NO_BLOCKS] = get_string('embed_no_blocks', 'casa');
+        $launchoptions[CASA_LAUNCH_CONTAINER_REPLACE_MOODLE_WINDOW] = get_string('existing_window', 'casa');
+        $launchoptions[CASA_LAUNCH_CONTAINER_WINDOW] = get_string('new_window', 'casa');
 
-        $mform->addElement('select', 'launchcontainer', get_string('launchinpopup', 'lti'), $launchoptions);
-        $mform->setDefault('launchcontainer', LTI_LAUNCH_CONTAINER_DEFAULT);
-        $mform->addHelpButton('launchcontainer', 'launchinpopup', 'lti');
+        $mform->addElement('select', 'launchcontainer', get_string('launchinpopup', 'casa'), $launchoptions);
+        $mform->setDefault('launchcontainer', CASA_LAUNCH_CONTAINER_DEFAULT);
+        $mform->addHelpButton('launchcontainer', 'launchinpopup', 'casa');
 
-        $mform->addElement('text', 'resourcekey', get_string('resourcekey', 'lti'));
+        $mform->addElement('text', 'resourcekey', get_string('resourcekey', 'casa'));
         $mform->setType('resourcekey', PARAM_TEXT);
         $mform->setAdvanced('resourcekey');
-        $mform->addHelpButton('resourcekey', 'resourcekey', 'lti');
+        $mform->addHelpButton('resourcekey', 'resourcekey', 'casa');
         $mform->disabledIf('resourcekey', 'typeid', 'neq', '0');
 
-        $mform->addElement('passwordunmask', 'password', get_string('password', 'lti'));
+        $mform->addElement('passwordunmask', 'password', get_string('password', 'casa'));
         $mform->setType('password', PARAM_TEXT);
         $mform->setAdvanced('password');
-        $mform->addHelpButton('password', 'password', 'lti');
+        $mform->addHelpButton('password', 'password', 'casa');
         $mform->disabledIf('password', 'typeid', 'neq', '0');
 
-        $mform->addElement('textarea', 'instructorcustomparameters', get_string('custom', 'lti'), array('rows' => 4, 'cols' => 60));
+        $mform->addElement('textarea', 'instructorcustomparameters', get_string('custom', 'casa'), array('rows' => 4, 'cols' => 60));
         $mform->setType('instructorcustomparameters', PARAM_TEXT);
         $mform->setAdvanced('instructorcustomparameters');
-        $mform->addHelpButton('instructorcustomparameters', 'custom', 'lti');
+        $mform->addHelpButton('instructorcustomparameters', 'custom', 'casa');
 
-        $mform->addElement('text', 'icon', get_string('icon_url', 'lti'), array('size' => '64'));
+        $mform->addElement('text', 'icon', get_string('icon_url', 'casa'), array('size' => '64'));
         $mform->setType('icon', PARAM_TEXT);
         $mform->setAdvanced('icon');
-        $mform->addHelpButton('icon', 'icon_url', 'lti');
+        $mform->addHelpButton('icon', 'icon_url', 'casa');
         $mform->disabledIf('icon', 'typeid', 'neq', '0');
 
-        $mform->addElement('text', 'secureicon', get_string('secure_icon_url', 'lti'), array('size' => '64'));
+        $mform->addElement('text', 'secureicon', get_string('secure_icon_url', 'casa'), array('size' => '64'));
         $mform->setType('secureicon', PARAM_TEXT);
         $mform->setAdvanced('secureicon');
-        $mform->addHelpButton('secureicon', 'secure_icon_url', 'lti');
+        $mform->addHelpButton('secureicon', 'secure_icon_url', 'casa');
         $mform->disabledIf('secureicon', 'typeid', 'neq', '0');
 
         // Add privacy preferences fieldset where users choose whether to send their data.
-        $mform->addElement('header', 'privacy', get_string('privacy', 'lti'));
+        $mform->addElement('header', 'privacy', get_string('privacy', 'casa'));
 
-        $mform->addElement('advcheckbox', 'instructorchoicesendname', '&nbsp;', ' ' . get_string('share_name', 'lti'));
+        $mform->addElement('advcheckbox', 'instructorchoicesendname', '&nbsp;', ' ' . get_string('share_name', 'casa'));
         $mform->setDefault('instructorchoicesendname', '1');
-        $mform->addHelpButton('instructorchoicesendname', 'share_name', 'lti');
+        $mform->addHelpButton('instructorchoicesendname', 'share_name', 'casa');
         $mform->disabledIf('instructorchoicesendname', 'typeid', 'in', $toolproxy);
 
-        $mform->addElement('advcheckbox', 'instructorchoicesendemailaddr', '&nbsp;', ' ' . get_string('share_email', 'lti'));
+        $mform->addElement('advcheckbox', 'instructorchoicesendemailaddr', '&nbsp;', ' ' . get_string('share_email', 'casa'));
         $mform->setDefault('instructorchoicesendemailaddr', '1');
-        $mform->addHelpButton('instructorchoicesendemailaddr', 'share_email', 'lti');
+        $mform->addHelpButton('instructorchoicesendemailaddr', 'share_email', 'casa');
         $mform->disabledIf('instructorchoicesendemailaddr', 'typeid', 'in', $toolproxy);
 
-        $mform->addElement('advcheckbox', 'instructorchoiceacceptgrades', '&nbsp;', ' ' . get_string('accept_grades', 'lti'));
+        $mform->addElement('advcheckbox', 'instructorchoiceacceptgrades', '&nbsp;', ' ' . get_string('accept_grades', 'casa'));
         $mform->setDefault('instructorchoiceacceptgrades', '1');
-        $mform->addHelpButton('instructorchoiceacceptgrades', 'accept_grades', 'lti');
+        $mform->addHelpButton('instructorchoiceacceptgrades', 'accept_grades', 'casa');
         $mform->disabledIf('instructorchoiceacceptgrades', 'typeid', 'in', $toolproxy);
 
         // Add standard course module grading elements.
@@ -224,43 +224,43 @@ class mod_lti_mod_form extends moodleform_mod {
         // Add standard buttons, common to all modules.
         $this->add_action_buttons();
 
-        $editurl = new moodle_url('/mod/lti/instructor_edit_tool_type.php',
+        $editurl = new moodle_url('/mod/casa/instructor_edit_tool_type.php',
                 array('sesskey' => sesskey(), 'course' => $COURSE->id));
-        $ajaxurl = new moodle_url('/mod/lti/ajax.php');
+        $ajaxurl = new moodle_url('/mod/casa/ajax.php');
 
         $jsinfo = (object)array(
                         'edit_icon_url' => (string)$OUTPUT->pix_url('t/edit'),
                         'add_icon_url' => (string)$OUTPUT->pix_url('t/add'),
                         'delete_icon_url' => (string)$OUTPUT->pix_url('t/delete'),
                         'green_check_icon_url' => (string)$OUTPUT->pix_url('i/valid'),
-                        'warning_icon_url' => (string)$OUTPUT->pix_url('warning', 'lti'),
+                        'warning_icon_url' => (string)$OUTPUT->pix_url('warning', 'casa'),
                         'instructor_tool_type_edit_url' => $editurl->out(false),
                         'ajax_url' => $ajaxurl->out(true),
                         'courseId' => $COURSE->id
                   );
 
         $module = array(
-            'name' => 'mod_lti_edit',
-            'fullpath' => '/mod/lti/mod_form.js',
+            'name' => 'mod_casa_edit',
+            'fullpath' => '/mod/casa/mod_form.js',
             'requires' => array('base', 'io', 'querystring-stringify-simple', 'node', 'event', 'json-parse'),
             'strings' => array(
-                array('addtype', 'lti'),
-                array('edittype', 'lti'),
-                array('deletetype', 'lti'),
-                array('delete_confirmation', 'lti'),
-                array('cannot_edit', 'lti'),
-                array('cannot_delete', 'lti'),
-                array('global_tool_types', 'lti'),
-                array('course_tool_types', 'lti'),
-                array('using_tool_configuration', 'lti'),
-                array('domain_mismatch', 'lti'),
-                array('custom_config', 'lti'),
-                array('tool_config_not_found', 'lti'),
-                array('forced_help', 'lti')
+                array('addtype', 'casa'),
+                array('edittype', 'casa'),
+                array('deletetype', 'casa'),
+                array('delete_confirmation', 'casa'),
+                array('cannot_edit', 'casa'),
+                array('cannot_delete', 'casa'),
+                array('global_tool_types', 'casa'),
+                array('course_tool_types', 'casa'),
+                array('using_tool_configuration', 'casa'),
+                array('domain_mismatch', 'casa'),
+                array('custom_config', 'casa'),
+                array('tool_config_not_found', 'casa'),
+                array('forced_help', 'casa')
             ),
         );
 
-        $PAGE->requires->js_init_call('M.mod_lti.editor.init', array(json_encode($jsinfo)), true, $module);
+        $PAGE->requires->js_init_call('M.mod_casa.editor.init', array(json_encode($jsinfo)), true, $module);
     }
 
 }

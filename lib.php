@@ -33,9 +33,9 @@
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu.
 
 /**
- * This file contains a library of functions and constants for the lti module
+ * This file contains a library of functions and constants for the casa module
  *
- * @package mod_lti
+ * @package    mod_casa
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu
  * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
@@ -53,7 +53,7 @@ defined('MOODLE_INTERNAL') || die;
  *
  * @return array
  */
-function lti_get_extra_capabilities() {
+function casa_get_extra_capabilities() {
     return array('moodle/site:accessallgroups');
 }
 
@@ -62,7 +62,7 @@ function lti_get_extra_capabilities() {
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed True if module supports feature, false if not, null if doesn't know
  */
-function lti_supports($feature) {
+function casa_supports($feature) {
     switch ($feature) {
         case FEATURE_GROUPS:
         case FEATURE_GROUPINGS:
@@ -87,42 +87,42 @@ function lti_supports($feature) {
  * of the new instance.
  *
  * @param object $instance An object from the form in mod.html
- * @return int The id of the newly inserted basiclti record
+ * @return int The id of the newly inserted basiccasa record
  **/
-function lti_add_instance($lti, $mform) {
+function casa_add_instance($casa, $mform) {
     global $DB, $CFG;
-    require_once($CFG->dirroot.'/mod/lti/locallib.php');
+    require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
-    if (!isset($lti->toolurl)) {
-        $lti->toolurl = '';
+    if (!isset($casa->toolurl)) {
+        $casa->toolurl = '';
     }
 
-    $lti->timecreated = time();
-    $lti->timemodified = $lti->timecreated;
-    $lti->servicesalt = uniqid('', true);
+    $casa->timecreated = time();
+    $casa->timemodified = $casa->timecreated;
+    $casa->servicesalt = uniqid('', true);
 
-    lti_force_type_config_settings($lti, lti_get_type_config_by_instance($lti));
+    casa_force_type_config_settings($casa, casa_get_type_config_by_instance($casa));
 
-    if (empty($lti->typeid) && isset($lti->urlmatchedtypeid)) {
-        $lti->typeid = $lti->urlmatchedtypeid;
+    if (empty($casa->typeid) && isset($casa->urlmatchedtypeid)) {
+        $casa->typeid = $casa->urlmatchedtypeid;
     }
 
-    if (!isset($lti->instructorchoiceacceptgrades) || $lti->instructorchoiceacceptgrades != LTI_SETTING_ALWAYS) {
+    if (!isset($casa->instructorchoiceacceptgrades) || $casa->instructorchoiceacceptgrades != CASA_SETTING_ALWAYS) {
         // The instance does not accept grades back from the provider, so set to "No grade" value 0.
-        $lti->grade = 0;
+        $casa->grade = 0;
     }
 
-    $lti->id = $DB->insert_record('lti', $lti);
+    $casa->id = $DB->insert_record('casa', $casa);
 
-    if (isset($lti->instructorchoiceacceptgrades) && $lti->instructorchoiceacceptgrades == LTI_SETTING_ALWAYS) {
-        if (!isset($lti->cmidnumber)) {
-            $lti->cmidnumber = '';
+    if (isset($casa->instructorchoiceacceptgrades) && $casa->instructorchoiceacceptgrades == CASA_SETTING_ALWAYS) {
+        if (!isset($casa->cmidnumber)) {
+            $casa->cmidnumber = '';
         }
 
-        lti_grade_item_update($lti);
+        casa_grade_item_update($casa);
     }
 
-    return $lti->id;
+    return $casa->id;
 }
 
 /**
@@ -133,38 +133,38 @@ function lti_add_instance($lti, $mform) {
  * @param object $instance An object from the form in mod.html
  * @return boolean Success/Fail
  **/
-function lti_update_instance($lti, $mform) {
+function casa_update_instance($casa, $mform) {
     global $DB, $CFG;
-    require_once($CFG->dirroot.'/mod/lti/locallib.php');
+    require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
-    $lti->timemodified = time();
-    $lti->id = $lti->instance;
+    $casa->timemodified = time();
+    $casa->id = $casa->instance;
 
-    if (!isset($lti->showtitlelaunch)) {
-        $lti->showtitlelaunch = 0;
+    if (!isset($casa->showtitlelaunch)) {
+        $casa->showtitlelaunch = 0;
     }
 
-    if (!isset($lti->showdescriptionlaunch)) {
-        $lti->showdescriptionlaunch = 0;
+    if (!isset($casa->showdescriptionlaunch)) {
+        $casa->showdescriptionlaunch = 0;
     }
 
-    lti_force_type_config_settings($lti, lti_get_type_config_by_instance($lti));
+    casa_force_type_config_settings($casa, casa_get_type_config_by_instance($casa));
 
-    if (isset($lti->instructorchoiceacceptgrades) && $lti->instructorchoiceacceptgrades == LTI_SETTING_ALWAYS) {
-        lti_grade_item_update($lti);
+    if (isset($casa->instructorchoiceacceptgrades) && $casa->instructorchoiceacceptgrades == CASA_SETTING_ALWAYS) {
+        casa_grade_item_update($casa);
     } else {
         // Instance is no longer accepting grades from Provider, set grade to "No grade" value 0.
-        $lti->grade = 0;
-        $lti->instructorchoiceacceptgrades = 0;
+        $casa->grade = 0;
+        $casa->instructorchoiceacceptgrades = 0;
 
-        lti_grade_item_delete($lti);
+        casa_grade_item_delete($casa);
     }
 
-    if ($lti->typeid == 0 && isset($lti->urlmatchedtypeid)) {
-        $lti->typeid = $lti->urlmatchedtypeid;
+    if ($casa->typeid == 0 && isset($casa->urlmatchedtypeid)) {
+        $casa->typeid = $casa->urlmatchedtypeid;
     }
 
-    return $DB->update_record('lti', $lti);
+    return $DB->update_record('casa', $casa);
 }
 
 /**
@@ -175,31 +175,31 @@ function lti_update_instance($lti, $mform) {
  * @param int $id Id of the module instance
  * @return boolean Success/Failure
  **/
-function lti_delete_instance($id) {
+function casa_delete_instance($id) {
     global $DB;
 
-    if (! $basiclti = $DB->get_record("lti", array("id" => $id))) {
+    if (! $basiccasa = $DB->get_record("casa", array("id" => $id))) {
         return false;
     }
 
     $result = true;
 
     // Delete any dependent records here.
-    lti_grade_item_delete($basiclti);
+    casa_grade_item_delete($basiccasa);
 
-    $ltitype = $DB->get_record('lti_types', array('id' => $basiclti->typeid));
-    $DB->delete_records('lti_tool_settings',
-        array('toolproxyid' => $ltitype->toolproxyid, 'course' => $basiclti->course, 'coursemoduleid' => $id));
+    $casatype = $DB->get_record('casa_types', array('id' => $basiccasa->typeid));
+    $DB->delete_records('casa_tool_settings',
+        array('toolproxyid' => $casatype->toolproxyid, 'course' => $basiccasa->course, 'coursemoduleid' => $id));
 
-    return $DB->delete_records("lti", array("id" => $basiclti->id));
+    return $DB->delete_records("casa", array("id" => $basiccasa->id));
 }
 
-function lti_get_types() {
+function casa_get_types() {
     global $OUTPUT;
 
     $subtypes = array();
-    foreach (get_plugin_list('ltisource') as $name => $dir) {
-        if ($moretypes = component_callback("ltisource_$name", 'get_types')) {
+    foreach (get_plugin_list('casasource') as $name => $dir) {
+        if ($moretypes = component_callback("casasource_$name", 'get_types')) {
             $subtypes = array_merge($subtypes, $moretypes);
         }
     }
@@ -211,19 +211,19 @@ function lti_get_types() {
 
     $type           = new stdClass();
     $type->modclass = MOD_CLASS_ACTIVITY;
-    $type->type     = 'lti_group_start';
-    $type->typestr  = '--'.get_string('modulenameplural', 'mod_lti');
+    $type->type     = 'casa_group_start';
+    $type->typestr  = '--'.get_string('modulenameplural', 'mod_casa');
     $types[]        = $type;
 
-    $link     = get_string('modulename_link', 'mod_lti');
+    $link     = get_string('modulename_link', 'mod_casa');
     $linktext = get_string('morehelp');
-    $help     = get_string('modulename_help', 'mod_lti');
+    $help     = get_string('modulename_help', 'mod_casa');
     $help    .= html_writer::tag('div', $OUTPUT->doc_link($link, $linktext, true), array('class' => 'helpdoclink'));
 
     $type           = new stdClass();
     $type->modclass = MOD_CLASS_ACTIVITY;
     $type->type     = '';
-    $type->typestr  = get_string('generaltool', 'mod_lti');
+    $type->typestr  = get_string('generaltool', 'mod_casa');
     $type->help     = $help;
     $types[]        = $type;
 
@@ -231,7 +231,7 @@ function lti_get_types() {
 
     $type           = new stdClass();
     $type->modclass = MOD_CLASS_ACTIVITY;
-    $type->type     = 'lti_group_end';
+    $type->type     = 'casa_group_end';
     $type->typestr  = '--';
     $types[]        = $type;
 
@@ -247,11 +247,11 @@ function lti_get_types() {
  * @param stdClass $coursemodule
  * @return cached_cm_info info
  */
-function lti_get_coursemodule_info($coursemodule) {
+function casa_get_coursemodule_info($coursemodule) {
     global $DB, $CFG;
-    require_once($CFG->dirroot.'/mod/lti/locallib.php');
+    require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
-    if (!$lti = $DB->get_record('lti', array('id' => $coursemodule->instance),
+    if (!$casa = $DB->get_record('casa', array('id' => $coursemodule->instance),
             'icon, secureicon, intro, introformat, name, toolurl, launchcontainer')) {
         return null;
     }
@@ -260,31 +260,31 @@ function lti_get_coursemodule_info($coursemodule) {
 
     // We want to use the right icon based on whether the
     // current page is being requested over http or https.
-    if (lti_request_is_using_ssl() && !empty($lti->secureicon)) {
-        $info->iconurl = new moodle_url($lti->secureicon);
-    } else if (!empty($lti->icon)) {
-        $info->iconurl = new moodle_url($lti->icon);
+    if (casa_request_is_using_ssl() && !empty($casa->secureicon)) {
+        $info->iconurl = new moodle_url($casa->secureicon);
+    } else if (!empty($casa->icon)) {
+        $info->iconurl = new moodle_url($casa->icon);
     }
 
     if ($coursemodule->showdescription) {
         // Convert intro to html. Do not filter cached version, filters run at display time.
-        $info->content = format_module_intro('lti', $lti, $coursemodule->id, false);
+        $info->content = format_module_intro('casa', $casa, $coursemodule->id, false);
     }
 
     // Does the link open in a new window?
-    $tool = lti_get_tool_by_url_match($lti->toolurl);
+    $tool = casa_get_tool_by_url_match($casa->toolurl);
     if ($tool) {
-        $toolconfig = lti_get_type_config($tool->id);
+        $toolconfig = casa_get_type_config($tool->id);
     } else {
         $toolconfig = array();
     }
-    $launchcontainer = lti_get_launch_container($lti, $toolconfig);
-    if ($launchcontainer == LTI_LAUNCH_CONTAINER_WINDOW) {
-        $launchurl = new moodle_url('/mod/lti/launch.php', array('id' => $coursemodule->id));
-        $info->onclick = "window.open('" . $launchurl->out(false) . "', 'lti'); return false;";
+    $launchcontainer = casa_get_launch_container($casa, $toolconfig);
+    if ($launchcontainer == CASA_LAUNCH_CONTAINER_WINDOW) {
+        $launchurl = new moodle_url('/mod/casa/launch.php', array('id' => $coursemodule->id));
+        $info->onclick = "window.open('" . $launchurl->out(false) . "', 'casa'); return false;";
     }
 
-    $info->name = $lti->name;
+    $info->name = $casa->name;
 
     return $info;
 }
@@ -299,7 +299,7 @@ function lti_get_coursemodule_info($coursemodule) {
  * @return null
  * @TODO: implement this moodle function (if needed)
  **/
-function lti_user_outline($course, $user, $mod, $basiclti) {
+function casa_user_outline($course, $user, $mod, $basiccasa) {
     return null;
 }
 
@@ -310,20 +310,20 @@ function lti_user_outline($course, $user, $mod, $basiclti) {
  * @return boolean
  * @TODO: implement this moodle function (if needed)
  **/
-function lti_user_complete($course, $user, $mod, $basiclti) {
+function casa_user_complete($course, $user, $mod, $basiccasa) {
     return true;
 }
 
 /**
  * Given a course and a time, this module should find recent activity
- * that has occurred in basiclti activities and print it out.
+ * that has occurred in basiccasa activities and print it out.
  * Return true if there was output, or false is there was none.
  *
  * @uses $CFG
  * @return boolean
  * @TODO: implement this moodle function
  **/
-function lti_print_recent_activity($course, $isteacher, $timestart) {
+function casa_print_recent_activity($course, $isteacher, $timestart) {
     return false;  //  True if anything was printed, otherwise false.
 }
 
@@ -335,7 +335,7 @@ function lti_print_recent_activity($course, $isteacher, $timestart) {
  * @uses $CFG
  * @return boolean
  **/
-function lti_cron () {
+function casa_cron () {
     return true;
 }
 
@@ -349,30 +349,30 @@ function lti_cron () {
  *
  *    return $return;
  *
- * @param int $basicltiid ID of an instance of this module
+ * @param int $basiccasaid ID of an instance of this module
  * @return mixed Null or object with an array of grades and with the maximum grade
  *
  * @TODO: implement this moodle function (if needed)
  **/
-function lti_grades($basicltiid) {
+function casa_grades($basiccasaid) {
     return null;
 }
 
 /**
- * This function returns if a scale is being used by one basiclti
+ * This function returns if a scale is being used by one basiccasa
  * it it has support for grading and scales. Commented code should be
  * modified if necessary. See forum, glossary or journal modules
  * as reference.
  *
- * @param int $basicltiid ID of an instance of this module
+ * @param int $basiccasaid ID of an instance of this module
  * @return mixed
  *
  * @TODO: implement this moodle function (if needed)
  **/
-function lti_scale_used ($basicltiid, $scaleid) {
+function casa_scale_used ($basiccasaid, $scaleid) {
     $return = false;
 
-    // $rec = get_record("basiclti","id","$basicltiid","scale","-$scaleid");
+    // $rec = get_record("basiccasa","id","$basiccasaid","scale","-$scaleid");
     //
     // if (!empty($rec)  && !empty($scaleid)) {
     //     $return = true;
@@ -382,18 +382,18 @@ function lti_scale_used ($basicltiid, $scaleid) {
 }
 
 /**
- * Checks if scale is being used by any instance of basiclti.
+ * Checks if scale is being used by any instance of basiccasa.
  * This function was added in 1.9
  *
  * This is used to find out if scale used anywhere
  * @param $scaleid int
- * @return boolean True if the scale is used by any basiclti
+ * @return boolean True if the scale is used by any basiccasa
  *
  */
-function lti_scale_used_anywhere($scaleid) {
+function casa_scale_used_anywhere($scaleid) {
     global $DB;
 
-    if ($scaleid and $DB->record_exists('lti', array('grade' => -$scaleid))) {
+    if ($scaleid and $DB->record_exists('casa', array('grade' => -$scaleid))) {
         return true;
     } else {
         return false;
@@ -406,7 +406,7 @@ function lti_scale_used_anywhere($scaleid) {
  *
  * @return boolean true if success, false on error
  */
-function lti_install() {
+function casa_install() {
      return true;
 }
 
@@ -416,7 +416,7 @@ function lti_install() {
  *
  * @return boolean true if success, false on error
  */
-function lti_uninstall() {
+function casa_uninstall() {
     return true;
 }
 
@@ -425,34 +425,34 @@ function lti_uninstall() {
  *
  * @return array of basicLTI types
  */
-function lti_get_lti_types() {
+function casa_get_casa_types() {
     global $DB;
 
-    return $DB->get_records('lti_types');
+    return $DB->get_records('casa_types');
 }
 
 /**
- * Create grade item for given basiclti
+ * Create grade item for given basiccasa
  *
  * @category grade
- * @param object $basiclti object with extra cmidnumber
+ * @param object $basiccasa object with extra cmidnumber
  * @param mixed optional array/object of grade(s); 'reset' means reset grades in gradebook
  * @return int 0 if ok, error code otherwise
  */
-function lti_grade_item_update($basiclti, $grades = null) {
+function casa_grade_item_update($basiccasa, $grades = null) {
     global $CFG;
     require_once($CFG->libdir.'/gradelib.php');
 
-    $params = array('itemname' => $basiclti->name, 'idnumber' => $basiclti->cmidnumber);
+    $params = array('itemname' => $basiccasa->name, 'idnumber' => $basiccasa->cmidnumber);
 
-    if ($basiclti->grade > 0) {
+    if ($basiccasa->grade > 0) {
         $params['gradetype'] = GRADE_TYPE_VALUE;
-        $params['grademax']  = $basiclti->grade;
+        $params['grademax']  = $basiccasa->grade;
         $params['grademin']  = 0;
 
-    } else if ($basiclti->grade < 0) {
+    } else if ($basiccasa->grade < 0) {
         $params['gradetype'] = GRADE_TYPE_SCALE;
-        $params['scaleid']   = -$basiclti->grade;
+        $params['scaleid']   = -$basiccasa->grade;
 
     } else {
         $params['gradetype'] = GRADE_TYPE_TEXT; // Allow text comments only.
@@ -463,32 +463,32 @@ function lti_grade_item_update($basiclti, $grades = null) {
         $grades = null;
     }
 
-    return grade_update('mod/lti', $basiclti->course, 'mod', 'lti', $basiclti->id, 0, $grades, $params);
+    return grade_update('mod/casa', $basiccasa->course, 'mod', 'casa', $basiccasa->id, 0, $grades, $params);
 }
 
 /**
- * Delete grade item for given basiclti
+ * Delete grade item for given basiccasa
  *
  * @category grade
- * @param object $basiclti object
- * @return object basiclti
+ * @param object $basiccasa object
+ * @return object basiccasa
  */
-function lti_grade_item_delete($basiclti) {
+function casa_grade_item_delete($basiccasa) {
     global $CFG;
     require_once($CFG->libdir.'/gradelib.php');
 
-    return grade_update('mod/lti', $basiclti->course, 'mod', 'lti', $basiclti->id, 0, null, array('deleted' => 1));
+    return grade_update('mod/casa', $basiccasa->course, 'mod', 'casa', $basiccasa->id, 0, null, array('deleted' => 1));
 }
 
-function lti_extend_settings_navigation($settings, $parentnode) {
+function casa_extend_settings_navigation($settings, $parentnode) {
     global $PAGE;
 
-    if (has_capability('mod/lti:manage', context_module::instance($PAGE->cm->id))) {
+    if (has_capability('mod/casa:manage', context_module::instance($PAGE->cm->id))) {
         $keys = $parentnode->get_children_key_list();
 
         $node = navigation_node::create('Submissions',
-            new moodle_url('/mod/lti/grade.php', array('id' => $PAGE->cm->id)),
-            navigation_node::TYPE_SETTING, null, 'mod_lti_submissions');
+            new moodle_url('/mod/casa/grade.php', array('id' => $PAGE->cm->id)),
+            navigation_node::TYPE_SETTING, null, 'mod_casa_submissions');
 
         $parentnode->add_node($node, $keys[1]);
     }
@@ -499,7 +499,7 @@ function lti_extend_settings_navigation($settings, $parentnode) {
  *
  * @return array
  */
-function lti_get_post_actions() {
+function casa_get_post_actions() {
     return array();
 }
 
@@ -508,6 +508,6 @@ function lti_get_post_actions() {
  *
  * @return array
  */
-function lti_get_view_actions() {
+function casa_get_view_actions() {
     return array('view all', 'view');
 }

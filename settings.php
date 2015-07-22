@@ -33,9 +33,9 @@
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu.
 
 /**
- * This file defines the global lti administration form
+ * This file defines the global casa administration form
  *
- * @package mod_lti
+ * @package    mod_casa
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu
  * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
@@ -51,34 +51,34 @@ defined('MOODLE_INTERNAL') || die;
 /*
  * @var admin_settingpage $settings
  */
-$modltifolder = new admin_category('modltifolder', new lang_string('pluginname', 'mod_lti'), $module->is_enabled() === false);
-$ADMIN->add('modsettings', $modltifolder);
-$settings->visiblename = new lang_string('manage_tools', 'mod_lti');
-$ADMIN->add('modltifolder', $settings);
-$ADMIN->add('modltifolder', new admin_externalpage('ltitoolproxies',
-        get_string('manage_tool_proxies', 'lti'),
-        new moodle_url('/mod/lti/toolproxies.php')));
+$modcasafolder = new admin_category('modcasafolder', new lang_string('pluginname', 'mod_casa'), $module->is_enabled() === false);
+$ADMIN->add('modsettings', $modcasafolder);
+$settings->visiblename = new lang_string('manage_tools', 'mod_casa');
+$ADMIN->add('modcasafolder', $settings);
+$ADMIN->add('modcasafolder', new admin_externalpage('casatoolproxies',
+        get_string('manage_tool_proxies', 'casa'),
+        new moodle_url('/mod/casa/toolproxies.php')));
 
-foreach (core_plugin_manager::instance()->get_plugins_of_type('ltisource') as $plugin) {
+foreach (core_plugin_manager::instance()->get_plugins_of_type('casasource') as $plugin) {
     /*
-     * @var \mod_lti\plugininfo\ltisource $plugin
+     * @var \mod_casa\plugininfo\casasource $plugin
      */
-    $plugin->load_settings($ADMIN, 'modltifolder', $hassiteconfig);
+    $plugin->load_settings($ADMIN, 'modcasafolder', $hassiteconfig);
 }
 
-$toolproxiesurl = new moodle_url('/mod/lti/toolproxies.php');
+$toolproxiesurl = new moodle_url('/mod/casa/toolproxies.php');
 $toolproxiesurl = $toolproxiesurl->out();
 
 if ($ADMIN->fulltree) {
-    require_once($CFG->dirroot.'/mod/lti/locallib.php');
+    require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
     $configuredtoolshtml = '';
     $pendingtoolshtml = '';
     $rejectedtoolshtml = '';
 
-    $active = get_string('active', 'lti');
-    $pending = get_string('pending', 'lti');
-    $rejected = get_string('rejected', 'lti');
+    $active = get_string('active', 'casa');
+    $pending = get_string('pending', 'casa');
+    $rejected = get_string('rejected', 'casa');
 
     // Gather strings used for labels in the inline JS.
     $PAGE->requires->strings_for_js(
@@ -88,46 +88,46 @@ if ($ADMIN->fulltree) {
             'action',
             'createdon'
         ),
-        'mod_lti'
+        'mod_casa'
     );
 
-    $types = lti_filter_get_types(get_site()->id);
+    $types = casa_filter_get_types(get_site()->id);
 
-    $configuredtools = lti_filter_tool_types($types, LTI_TOOL_STATE_CONFIGURED);
+    $configuredtools = casa_filter_tool_types($types, CASA_TOOL_STATE_CONFIGURED);
 
-    $configuredtoolshtml = lti_get_tool_table($configuredtools, 'lti_configured');
+    $configuredtoolshtml = casa_get_tool_table($configuredtools, 'casa_configured');
 
-    $pendingtools = lti_filter_tool_types($types, LTI_TOOL_STATE_PENDING);
+    $pendingtools = casa_filter_tool_types($types, CASA_TOOL_STATE_PENDING);
 
-    $pendingtoolshtml = lti_get_tool_table($pendingtools, 'lti_pending');
+    $pendingtoolshtml = casa_get_tool_table($pendingtools, 'casa_pending');
 
-    $rejectedtools = lti_filter_tool_types($types, LTI_TOOL_STATE_REJECTED);
+    $rejectedtools = casa_filter_tool_types($types, CASA_TOOL_STATE_REJECTED);
 
-    $rejectedtoolshtml = lti_get_tool_table($rejectedtools, 'lti_rejected');
+    $rejectedtoolshtml = casa_get_tool_table($rejectedtools, 'casa_rejected');
 
     $tab = optional_param('tab', '', PARAM_ALPHAEXT);
     $activeselected = '';
     $pendingselected = '';
     $rejectedselected = '';
     switch ($tab) {
-        case 'lti_pending':
+        case 'casa_pending':
             $pendingselected = 'class="selected"';
             break;
-        case 'lti_rejected':
+        case 'casa_rejected':
             $rejectedselected = 'class="selected"';
             break;
         default:
             $activeselected = 'class="selected"';
             break;
     }
-    $addtype = get_string('addtype', 'lti');
-    $config = get_string('manage_tool_proxies', 'lti');
+    $addtype = get_string('addtype', 'casa');
+    $config = get_string('manage_tool_proxies', 'casa');
 
-    $addtypeurl = "{$CFG->wwwroot}/mod/lti/typessettings.php?action=add&amp;sesskey={$USER->sesskey}";
+    $addtypeurl = "{$CFG->wwwroot}/mod/casa/typessettings.php?action=add&amp;sesskey={$USER->sesskey}";
 
     $template = <<< EOD
-<div id="lti_tabs" class="yui-navset">
-    <ul id="lti_tab_heading" class="yui-nav" style="display:none">
+<div id="casa_tabs" class="yui-navset">
+    <ul id="casa_tab_heading" class="yui-nav" style="display:none">
         <li {$activeselected}>
             <a href="#tab1">
                 <em>$active</em>
@@ -162,22 +162,22 @@ if ($ADMIN->fulltree) {
 //<![CDATA[
     YUI().use('yui2-tabview', 'yui2-datatable', function(Y) {
         //If javascript is disabled, they will just see the three tabs one after another
-        var lti_tab_heading = document.getElementById('lti_tab_heading');
-        lti_tab_heading.style.display = '';
+        var casa_tab_heading = document.getElementById('casa_tab_heading');
+        casa_tab_heading.style.display = '';
 
-        new Y.YUI2.widget.TabView('lti_tabs');
+        new Y.YUI2.widget.TabView('casa_tabs');
 
         var setupTools = function(id, sort){
-            var lti_tools = Y.YUI2.util.Dom.get(id);
+            var casa_tools = Y.YUI2.util.Dom.get(id);
 
-            if(lti_tools){
-                var dataSource = new Y.YUI2.util.DataSource(lti_tools);
+            if(casa_tools){
+                var dataSource = new Y.YUI2.util.DataSource(casa_tools);
 
                 var configuredColumns = [
-                    {key:'name', label: M.util.get_string('typename', 'mod_lti'), sortable: true},
-                    {key:'baseURL', label: M.util.get_string('baseurl', 'mod_lti'), sortable: true},
-                    {key:'timecreated', label: M.util.get_string('createdon', 'mod_lti'), sortable: true},
-                    {key:'action', label: M.util.get_string('action', 'mod_lti')}
+                    {key:'name', label: M.util.get_string('typename', 'mod_casa'), sortable: true},
+                    {key:'baseURL', label: M.util.get_string('baseurl', 'mod_casa'), sortable: true},
+                    {key:'timecreated', label: M.util.get_string('createdon', 'mod_casa'), sortable: true},
+                    {key:'action', label: M.util.get_string('action', 'mod_casa')}
                 ];
 
                 dataSource.responseType = Y.YUI2.util.DataSource.TYPE_HTMLTABLE;
@@ -198,15 +198,15 @@ if ($ADMIN->fulltree) {
             }
         };
 
-        setupTools('lti_configured_tools', {key:'name', dir:'asc'});
-        setupTools('lti_pending_tools', {key:'timecreated', dir:'desc'});
-        setupTools('lti_rejected_tools', {key:'timecreated', dir:'desc'});
+        setupTools('casa_configured_tools', {key:'name', dir:'asc'});
+        setupTools('casa_pending_tools', {key:'timecreated', dir:'desc'});
+        setupTools('casa_rejected_tools', {key:'timecreated', dir:'desc'});
     });
 //]]
 </script>
 EOD;
-    $settings->add(new admin_setting_heading('lti_types', new lang_string('external_tool_types', 'lti') .
-        $OUTPUT->help_icon('main_admin', 'lti'), $template));
+    $settings->add(new admin_setting_heading('casa_types', new lang_string('external_tool_types', 'casa') .
+        $OUTPUT->help_icon('main_admin', 'casa'), $template));
 }
 
 // Tell core we already added the settings structure.

@@ -17,19 +17,19 @@
 /**
  * This file contains all necessary code to initiate a tool registration process
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once("../../config.php");
-require_once($CFG->dirroot.'/mod/lti/lib.php');
-require_once($CFG->dirroot.'/mod/lti/locallib.php');
+require_once($CFG->dirroot.'/mod/casa/lib.php');
+require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
 $id = required_param('id', PARAM_INT); // Tool Proxy ID.
 
-$toolproxy = $DB->get_record('lti_tool_proxies', array('id' => $id), '*', MUST_EXIST);
+$toolproxy = $DB->get_record('casa_tool_proxies', array('id' => $id), '*', MUST_EXIST);
 
 require_login(0, false);
 require_sesskey();
@@ -37,4 +37,4 @@ require_sesskey();
 $systemcontext = context_system::instance();
 require_capability('moodle/site:config', $systemcontext);
 
-lti_register($toolproxy);
+casa_register($toolproxy);

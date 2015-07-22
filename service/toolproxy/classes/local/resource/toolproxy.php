@@ -17,44 +17,44 @@
 /**
  * This file contains a class definition for the Tool Proxy resource
  *
- * @package    ltiservice_toolproxy
+ * @package    casaservice_toolproxy
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
-namespace ltiservice_toolproxy\local\resource;
+namespace casaservice_toolproxy\local\resource;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/lti/OAuth.php');
-require_once($CFG->dirroot . '/mod/lti/TrivialStore.php');
+require_once($CFG->dirroot . '/mod/casa/OAuth.php');
+require_once($CFG->dirroot . '/mod/casa/TrivialStore.php');
 
 // TODO: Switch to core oauthlib once implemented - MDL-30149.
-use moodle\mod\lti as lti;
+use moodle\mod\casa as casa;
 
 /**
  * A resource implementing the Tool Proxy.
  *
- * @package    ltiservice_toolproxy
+ * @package    casaservice_toolproxy
  * @since      Moodle 2.8
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class toolproxy extends \mod_lti\local\ltiservice\resource_base {
+class toolproxy extends \mod_casa\local\casaservice\resource_base {
 
     /**
      * Class constructor.
      *
-     * @param ltiservice_toolproxy\local\resource\toolproxy $service Service instance
+     * @param casaservice_toolproxy\local\resource\toolproxy $service Service instance
      */
     public function __construct($service) {
 
         parent::__construct($service);
         $this->id = 'ToolProxy.collection';
         $this->template = '/toolproxy';
-        $this->formats[] = 'application/vnd.ims.lti.v2.toolproxy+json';
+        $this->formats[] = 'application/vnd.ims.casa.v2.toolproxy+json';
         $this->methods[] = 'POST';
 
     }
@@ -62,7 +62,7 @@ class toolproxy extends \mod_lti\local\ltiservice\resource_base {
     /**
      * Execute the request for this resource.
      *
-     * @param mod_lti\local\ltiservice\response $response  Response object for this request.
+     * @param mod_casa\local\casaservice\response $response  Response object for this request.
      */
     public function execute($response) {
 
@@ -119,21 +119,21 @@ class toolproxy extends \mod_lti\local\ltiservice\resource_base {
 
         // Check all services requested were offered (only tool services currently supported).
         if ($ok && isset($toolproxyjson->security_contract->tool_service)) {
-            $contexts = lti_get_contexts($toolproxyjson);
-            $profileservice = lti_get_service_by_name('profile');
+            $contexts = casa_get_contexts($toolproxyjson);
+            $profileservice = casa_get_service_by_name('profile');
             $profileservice->set_tool_proxy($toolproxy);
             $context = $profileservice->get_service_path() . $profileservice->get_resources()[0]->get_path() . '#';
             $offeredservices = explode("\n", $toolproxy->serviceoffered);
-            $services = lti_get_services();
+            $services = casa_get_services();
             $tpservices = $toolproxyjson->security_contract->tool_service;
             $errors = array();
             foreach ($tpservices as $service) {
-                $fqid = lti_get_fqid($contexts, $service->service);
+                $fqid = casa_get_fqid($contexts, $service->service);
                 if (substr($fqid, 0, strlen($context)) !== $context) {
                     $errors[] = $service->service;
                 } else {
                     $id = explode('#', $fqid, 2);
-                    $aservice = lti_get_service_by_resource_id($services, $id[1]);
+                    $aservice = casa_get_service_by_resource_id($services, $id[1]);
                     $classname = explode('\\', get_class($aservice));
                     if (empty($aservice) || !in_array($classname[count($classname) - 1], $offeredservices)) {
                         $errors[] = $service->service;
@@ -153,7 +153,7 @@ class toolproxy extends \mod_lti\local\ltiservice\resource_base {
                 $found = false;
                 $tool = new \stdClass();
                 foreach ($resource->message as $message) {
-                    if ($message->message_type == 'basic-lti-launch-request') {
+                    if ($message->message_type == 'basic-casa-launch-request') {
                         $found = true;
                         $tool->path = $message->path;
                         $tool->enabled_capability = $message->enabled_capability;
@@ -186,16 +186,16 @@ class toolproxy extends \mod_lti\local\ltiservice\resource_base {
             }
             foreach ($tools as $tool) {
                 $config = new \stdClass();
-                $config->lti_toolurl = "{$baseurl}{$tool->path}";
-                $config->lti_typename = $tool->name;
-                $config->lti_coursevisible = 1;
-                $config->lti_forcessl = 0;
+                $config->casa_toolurl = "{$baseurl}{$tool->path}";
+                $config->casa_typename = $tool->name;
+                $config->casa_coursevisible = 1;
+                $config->casa_forcessl = 0;
 
                 $type = new \stdClass();
-                $type->state = LTI_TOOL_STATE_PENDING;
+                $type->state = CASA_TOOL_STATE_PENDING;
                 $type->toolproxyid = $toolproxy->id;
                 $type->enabledcapability = implode("\n", $tool->enabled_capability);
-                $type->parameter = self::lti_extract_parameters($tool->parameter);
+                $type->parameter = self::casa_extract_parameters($tool->parameter);
 
                 if (isset($resource->icon_info[0]->default_location->path)) {
                     $iconpath = $resource->icon_info[0]->default_location->path;
@@ -204,17 +204,17 @@ class toolproxy extends \mod_lti\local\ltiservice\resource_base {
                         $type->secureicon = "{$securebaseurl}{$iconpath}";
                     }
                 }
-                $ok = $ok && (lti_add_type($type, $config) !== false);
+                $ok = $ok && (casa_add_type($type, $config) !== false);
             }
             if (isset($toolproxyjson->custom)) {
-                lti_set_tool_settings($toolproxyjson->custom, $toolproxy->id);
+                casa_set_tool_settings($toolproxyjson->custom, $toolproxy->id);
             }
         }
 
         if (!empty($toolproxy)) {
             if ($ok) {
                 // If all went OK accept the tool proxy.
-                $toolproxy->state = LTI_TOOL_PROXY_STATE_ACCEPTED;
+                $toolproxy->state = CASA_TOOL_PROXY_STATE_ACCEPTED;
                 $toolproxy->toolproxy = $response->get_request_data();
                 $toolproxy->secret = $toolproxyjson->security_contract->shared_secret;
                 $toolproxy->vendorcode = $toolproxyjson->tool_profile->product_instance->product_info->product_family->vendor->code;
@@ -222,21 +222,21 @@ class toolproxy extends \mod_lti\local\ltiservice\resource_base {
                 $url = $this->get_endpoint();
                 $body = <<< EOD
 {
-  "@context" : "http://purl.imsglobal.org/ctx/lti/v2/ToolProxyId",
+  "@context" : "http://purl.imsglobal.org/ctx/casa/v2/ToolProxyId",
   "@type" : "ToolProxy",
   "@id" : "{$url}",
   "tool_proxy_guid" : "{$toolproxy->guid}"
 }
 EOD;
                 $response->set_code(201);
-                $response->set_content_type('application/vnd.ims.lti.v2.toolproxy.id+json');
+                $response->set_content_type('application/vnd.ims.casa.v2.toolproxy.id+json');
                 $response->set_body($body);
             } else {
                 // Otherwise reject the tool proxy.
-                $toolproxy->state = LTI_TOOL_PROXY_STATE_REJECTED;
+                $toolproxy->state = CASA_TOOL_PROXY_STATE_REJECTED;
                 $response->set_code(400);
             }
-            lti_update_tool_proxy($toolproxy);
+            casa_update_tool_proxy($toolproxy);
         } else {
             $response->set_code(400);
         }
@@ -249,7 +249,7 @@ EOD;
      *
      * @return String  containing parameters
      */
-    private static function lti_extract_parameters($parameters) {
+    private static function casa_extract_parameters($parameters) {
 
         $params = array();
         foreach ($parameters as $parameter) {

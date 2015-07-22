@@ -32,12 +32,12 @@
 // of the Universitat Politecnica de Catalunya http://www.upc.edu
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu.
 
-namespace moodle\mod\lti; // Using a namespace as the basicLTI module imports classes with the same names.
+namespace moodle\mod\casa; // Using a namespace as the basicLTI module imports classes with the same names.
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->dirroot . '/mod/lti/OAuth.php');
-require_once($CFG->dirroot . '/mod/lti/TrivialStore.php');
+require_once($CFG->dirroot . '/mod/casa/OAuth.php');
+require_once($CFG->dirroot . '/mod/casa/TrivialStore.php');
 
 function get_oauth_key_from_headers() {
     $requestheaders = OAuthUtil::get_headers();

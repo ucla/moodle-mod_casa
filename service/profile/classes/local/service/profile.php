@@ -17,26 +17,26 @@
 /**
  * This file contains a class definition for the Tool Consumer Profile service
  *
- * @package    ltiservice_profile
+ * @package    casaservice_profile
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
-namespace ltiservice_profile\local\service;
+namespace casaservice_profile\local\service;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
  * A service implementing the Tool Consumer Profile.
  *
- * @package    ltiservice_profile
+ * @package    casaservice_profile
  * @since      Moodle 2.8
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class profile extends \mod_lti\local\ltiservice\service_base {
+class profile extends \mod_casa\local\casaservice\service_base {
 
     /**
      * Class constructor.
@@ -59,7 +59,7 @@ class profile extends \mod_lti\local\ltiservice\service_base {
 
         if (empty($this->resources)) {
             $this->resources = array();
-            $this->resources[] = new \ltiservice_profile\local\resource\profile($this);
+            $this->resources[] = new \casaservice_profile\local\resource\profile($this);
         }
 
         return $this->resources;

@@ -17,34 +17,34 @@
 /**
  * This file contains a class definition for the Context Settings resource
  *
- * @package    ltiservice_toolsettings
+ * @package    casaservice_toolsettings
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
-namespace ltiservice_toolsettings\local\resource;
+namespace casaservice_toolsettings\local\resource;
 
-use ltiservice_toolsettings\local\resource\systemsettings;
-use ltiservice_toolsettings\local\service\toolsettings;
+use casaservice_toolsettings\local\resource\systemsettings;
+use casaservice_toolsettings\local\service\toolsettings;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
  * A resource implementing the Context-level (ToolProxyBinding) Settings.
  *
- * @package    ltiservice_toolsettings
+ * @package    casaservice_toolsettings
  * @since      Moodle 2.8
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class contextsettings extends \mod_lti\local\ltiservice\resource_base {
+class contextsettings extends \mod_casa\local\casaservice\resource_base {
 
     /**
      * Class constructor.
      *
-     * @param ltiservice_toolsettings\local\resource\contextsettings $service Service instance
+     * @param casaservice_toolsettings\local\resource\contextsettings $service Service instance
      */
     public function __construct($service) {
 
@@ -52,8 +52,8 @@ class contextsettings extends \mod_lti\local\ltiservice\resource_base {
         $this->id = 'ToolProxyBindingSettings';
         $this->template = '/{context_type}/{context_id}/bindings/{vendor_code}/{product_code}/custom';
         $this->variables[] = 'ToolProxyBinding.custom.url';
-        $this->formats[] = 'application/vnd.ims.lti.v2.toolsettings+json';
-        $this->formats[] = 'application/vnd.ims.lti.v2.toolsettings.simple+json';
+        $this->formats[] = 'application/vnd.ims.casa.v2.toolsettings+json';
+        $this->formats[] = 'application/vnd.ims.casa.v2.toolsettings.simple+json';
         $this->methods[] = 'GET';
         $this->methods[] = 'PUT';
 
@@ -62,7 +62,7 @@ class contextsettings extends \mod_lti\local\ltiservice\resource_base {
     /**
      * Execute the request for this resource.
      *
-     * @param mod_lti\local\ltiservice\response $response  Response object for this request.
+     * @param mod_casa\local\casaservice\response $response  Response object for this request.
      */
     public function execute($response) {
 
@@ -90,11 +90,11 @@ class contextsettings extends \mod_lti\local\ltiservice\resource_base {
             $response->set_code(404);
         } else {
             $systemsetting = null;
-            $contextsettings = lti_get_tool_settings($this->get_service()->get_tool_proxy()->id, $contextid);
+            $contextsettings = casa_get_tool_settings($this->get_service()->get_tool_proxy()->id, $contextid);
             if (!empty($bubble)) {
                 $systemsetting = new systemsettings($this->get_service());
                 $systemsetting->params['tool_proxy_id'] = $productcode;
-                $systemsettings = lti_get_tool_settings($this->get_service()->get_tool_proxy()->id);
+                $systemsettings = casa_get_tool_settings($this->get_service()->get_tool_proxy()->id);
                 if ($bubble == 'distinct') {
                     toolsettings::distinct_settings($systemsettings, $contextsettings, null);
                 }
@@ -108,7 +108,7 @@ class contextsettings extends \mod_lti\local\ltiservice\resource_base {
                     $json .= "{";
                 } else {
                     $response->set_content_type($this->formats[0]);
-                    $json .= "{\n  \"@context\":\"http://purl.imsglobal.org/ctx/lti/v2/ToolSettings\",\n  \"@graph\":[\n";
+                    $json .= "{\n  \"@context\":\"http://purl.imsglobal.org/ctx/casa/v2/ToolSettings\",\n  \"@graph\":[\n";
                 }
                 $settings = toolsettings::settings_to_json($systemsettings, $simpleformat, 'ToolProxy', $systemsetting);
                 $json .= $settings;
@@ -147,7 +147,7 @@ class contextsettings extends \mod_lti\local\ltiservice\resource_base {
                     }
                 }
                 if ($ok) {
-                    lti_set_tool_settings($settings, $this->get_service()->get_tool_proxy()->id, $contextid);
+                    casa_set_tool_settings($settings, $this->get_service()->get_tool_proxy()->id, $contextid);
                 } else {
                     $response->set_code(406);
                 }

@@ -17,7 +17,7 @@
 /**
  * Utility code for LTI service handling.
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  Copyright (c) 2011 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     Chris Scribner
@@ -25,18 +25,18 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->dirroot.'/mod/lti/OAuthBody.php');
+require_once($CFG->dirroot.'/mod/casa/OAuthBody.php');
 
 // TODO: Switch to core oauthlib once implemented - MDL-30149.
-use moodle\mod\lti as lti;
+use moodle\mod\casa as casa;
 
-define('LTI_ITEM_TYPE', 'mod');
-define('LTI_ITEM_MODULE', 'lti');
-define('LTI_SOURCE', 'mod/lti');
+define('CASA_ITEM_TYPE', 'mod');
+define('CASA_ITEM_MODULE', 'casa');
+define('CASA_SOURCE', 'mod/casa');
 
-function lti_get_response_xml($codemajor, $description, $messageref, $messagetype) {
+function casa_get_response_xml($codemajor, $description, $messageref, $messagetype) {
     $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><imsx_POXEnvelopeResponse />');
-    $xml->addAttribute('xmlns', 'http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0');
+    $xml->addAttribute('xmlns', 'http://www.imsglobal.org/services/casav1p1/xsd/imsoms_v1p0');
 
     $headerinfo = $xml->addChild('imsx_POXHeader')->addChild('imsx_POXResponseHeaderInfo');
 
@@ -56,14 +56,14 @@ function lti_get_response_xml($codemajor, $description, $messageref, $messagetyp
     return $xml;
 }
 
-function lti_parse_message_id($xml) {
+function casa_parse_message_id($xml) {
     $node = $xml->imsx_POXHeader->imsx_POXRequestHeaderInfo->imsx_messageIdentifier;
     $messageid = (string)$node;
 
     return $messageid;
 }
 
-function lti_parse_grade_replace_message($xml) {
+function casa_parse_grade_replace_message($xml) {
     $node = $xml->imsx_POXBody->replaceResultRequest->resultRecord->sourcedGUID->sourcedId;
     $resultjson = json_decode((string)$node);
 
@@ -87,12 +87,12 @@ function lti_parse_grade_replace_message($xml) {
     $parsed->typeid = $resultjson->data->typeid;
     $parsed->sourcedidhash = $resultjson->hash;
 
-    $parsed->messageid = lti_parse_message_id($xml);
+    $parsed->messageid = casa_parse_message_id($xml);
 
     return $parsed;
 }
 
-function lti_parse_grade_read_message($xml) {
+function casa_parse_grade_read_message($xml) {
     $node = $xml->imsx_POXBody->readResultRequest->resultRecord->sourcedGUID->sourcedId;
     $resultjson = json_decode((string)$node);
 
@@ -103,12 +103,12 @@ function lti_parse_grade_read_message($xml) {
     $parsed->typeid = $resultjson->data->typeid;
     $parsed->sourcedidhash = $resultjson->hash;
 
-    $parsed->messageid = lti_parse_message_id($xml);
+    $parsed->messageid = casa_parse_message_id($xml);
 
     return $parsed;
 }
 
-function lti_parse_grade_delete_message($xml) {
+function casa_parse_grade_delete_message($xml) {
     $node = $xml->imsx_POXBody->deleteResultRequest->resultRecord->sourcedGUID->sourcedId;
     $resultjson = json_decode((string)$node);
 
@@ -119,28 +119,28 @@ function lti_parse_grade_delete_message($xml) {
     $parsed->typeid = $resultjson->data->typeid;
     $parsed->sourcedidhash = $resultjson->hash;
 
-    $parsed->messageid = lti_parse_message_id($xml);
+    $parsed->messageid = casa_parse_message_id($xml);
 
     return $parsed;
 }
 
-function lti_accepts_grades($ltiinstance) {
+function casa_accepts_grades($casainstance) {
     global $DB;
 
     $acceptsgrades = true;
-    $ltitype = $DB->get_record('lti_types', array('id' => $ltiinstance->typeid));
+    $casatype = $DB->get_record('casa_types', array('id' => $casainstance->typeid));
 
-    if (empty($ltitype->toolproxyid)) {
-        $typeconfig = lti_get_config($ltiinstance);
+    if (empty($casatype->toolproxyid)) {
+        $typeconfig = casa_get_config($casainstance);
 
-        $typeacceptgrades = isset($typeconfig['acceptgrades']) ? $typeconfig['acceptgrades'] : LTI_SETTING_DELEGATE;
+        $typeacceptgrades = isset($typeconfig['acceptgrades']) ? $typeconfig['acceptgrades'] : CASA_SETTING_DELEGATE;
 
-        if (!($typeacceptgrades == LTI_SETTING_ALWAYS ||
-            ($typeacceptgrades == LTI_SETTING_DELEGATE && $ltiinstance->instructorchoiceacceptgrades == LTI_SETTING_ALWAYS))) {
+        if (!($typeacceptgrades == CASA_SETTING_ALWAYS ||
+            ($typeacceptgrades == CASA_SETTING_DELEGATE && $casainstance->instructorchoiceacceptgrades == CASA_SETTING_ALWAYS))) {
             $acceptsgrades = false;
         }
     } else {
-        $enabledcapabilities = explode("\n", $ltitype->enabledcapability);
+        $enabledcapabilities = explode("\n", $casatype->enabledcapability);
         $acceptsgrades = in_array('Result.autocreate', $enabledcapabilities);
     }
 
@@ -152,7 +152,7 @@ function lti_accepts_grades($ltiinstance) {
  *
  * @param int $userid
  */
-function lti_set_session_user($userid) {
+function casa_set_session_user($userid) {
     global $DB;
 
     if ($user = $DB->get_record('user', array('id' => $userid))) {
@@ -160,22 +160,22 @@ function lti_set_session_user($userid) {
     }
 }
 
-function lti_update_grade($ltiinstance, $userid, $launchid, $gradeval) {
+function casa_update_grade($casainstance, $userid, $launchid, $gradeval) {
     global $CFG, $DB;
     require_once($CFG->libdir . '/gradelib.php');
 
     $params = array();
-    $params['itemname'] = $ltiinstance->name;
+    $params['itemname'] = $casainstance->name;
 
-    $gradeval = $gradeval * floatval($ltiinstance->grade);
+    $gradeval = $gradeval * floatval($casainstance->grade);
 
     $grade = new stdClass();
     $grade->userid   = $userid;
     $grade->rawgrade = $gradeval;
 
-    $status = grade_update(LTI_SOURCE, $ltiinstance->course, LTI_ITEM_TYPE, LTI_ITEM_MODULE, $ltiinstance->id, 0, $grade, $params);
+    $status = grade_update(CASA_SOURCE, $casainstance->course, CASA_ITEM_TYPE, CASA_ITEM_MODULE, $casainstance->id, 0, $grade, $params);
 
-    $record = $DB->get_record('lti_submission', array('ltiid' => $ltiinstance->id, 'userid' => $userid,
+    $record = $DB->get_record('casa_submission', array('casaid' => $casainstance->id, 'userid' => $userid,
         'launchid' => $launchid), 'id');
     if ($record) {
         $id = $record->id;
@@ -184,15 +184,15 @@ function lti_update_grade($ltiinstance, $userid, $launchid, $gradeval) {
     }
 
     if (!empty($id)) {
-        $DB->update_record('lti_submission', array(
+        $DB->update_record('casa_submission', array(
             'id' => $id,
             'dateupdated' => time(),
             'gradepercent' => $gradeval,
             'state' => 2
         ));
     } else {
-        $DB->insert_record('lti_submission', array(
-            'ltiid' => $ltiinstance->id,
+        $DB->insert_record('casa_submission', array(
+            'casaid' => $casainstance->id,
             'userid' => $userid,
             'datesubmitted' => time(),
             'dateupdated' => time(),
@@ -206,18 +206,18 @@ function lti_update_grade($ltiinstance, $userid, $launchid, $gradeval) {
     return $status == GRADE_UPDATE_OK;
 }
 
-function lti_read_grade($ltiinstance, $userid) {
+function casa_read_grade($casainstance, $userid) {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
 
-    $grades = grade_get_grades($ltiinstance->course, LTI_ITEM_TYPE, LTI_ITEM_MODULE, $ltiinstance->id, $userid);
+    $grades = grade_get_grades($casainstance->course, CASA_ITEM_TYPE, CASA_ITEM_MODULE, $casainstance->id, $userid);
 
-    $ltigrade = floatval($ltiinstance->grade);
+    $casagrade = floatval($casainstance->grade);
 
-    if (!empty($ltigrade) && isset($grades) && isset($grades->items[0]) && is_array($grades->items[0]->grades)) {
+    if (!empty($casagrade) && isset($grades) && isset($grades->items[0]) && is_array($grades->items[0]->grades)) {
         foreach ($grades->items[0]->grades as $agrade) {
             $grade = $agrade->grade;
-            $grade = $grade / $ltigrade;
+            $grade = $grade / $casagrade;
             break;
         }
     }
@@ -227,7 +227,7 @@ function lti_read_grade($ltiinstance, $userid) {
     }
 }
 
-function lti_delete_grade($ltiinstance, $userid) {
+function casa_delete_grade($casainstance, $userid) {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
 
@@ -235,18 +235,18 @@ function lti_delete_grade($ltiinstance, $userid) {
     $grade->userid   = $userid;
     $grade->rawgrade = null;
 
-    $status = grade_update(LTI_SOURCE, $ltiinstance->course, LTI_ITEM_TYPE, LTI_ITEM_MODULE, $ltiinstance->id, 0, $grade);
+    $status = grade_update(CASA_SOURCE, $casainstance->course, CASA_ITEM_TYPE, CASA_ITEM_MODULE, $casainstance->id, 0, $grade);
 
     return $status == GRADE_UPDATE_OK;
 }
 
-function lti_verify_message($key, $sharedsecrets, $body, $headers = null) {
+function casa_verify_message($key, $sharedsecrets, $body, $headers = null) {
     foreach ($sharedsecrets as $secret) {
         $signaturefailed = false;
 
         try {
             // TODO: Switch to core oauthlib once implemented - MDL-30149.
-            lti\handle_oauth_body_post($key, $secret, $body, $headers);
+            casa\handle_oauth_body_post($key, $secret, $body, $headers);
         } catch (Exception $e) {
             $signaturefailed = true;
         }
@@ -262,13 +262,13 @@ function lti_verify_message($key, $sharedsecrets, $body, $headers = null) {
 /**
  * Validate source ID from external request
  *
- * @param object $ltiinstance
+ * @param object $casainstance
  * @param object $parsed
  * @throws Exception
  */
-function lti_verify_sourcedid($ltiinstance, $parsed) {
-    $sourceid = lti_build_sourcedid($parsed->instanceid, $parsed->userid,
-        $ltiinstance->servicesalt, $parsed->typeid, $parsed->launchid);
+function casa_verify_sourcedid($casainstance, $parsed) {
+    $sourceid = casa_build_sourcedid($parsed->instanceid, $parsed->userid,
+        $casainstance->servicesalt, $parsed->typeid, $parsed->launchid);
 
     if ($sourceid->hash != $parsed->sourcedidhash) {
         throw new Exception('SourcedId hash not valid');
@@ -276,19 +276,19 @@ function lti_verify_sourcedid($ltiinstance, $parsed) {
 }
 
 /**
- * Extend the LTI services through the ltisource plugins
+ * Extend the LTI services through the casasource plugins
  *
  * @param stdClass $data LTI request data
  * @return bool
  * @throws coding_exception
  */
-function lti_extend_lti_services($data) {
-    $plugins = get_plugin_list_with_function('ltisource', $data->messagetype);
+function casa_extend_casa_services($data) {
+    $plugins = get_plugin_list_with_function('casasource', $data->messagetype);
     if (!empty($plugins)) {
         try {
             // There can only be one.
             if (count($plugins) > 1) {
-                throw new coding_exception('More than one ltisource plugin handler found');
+                throw new coding_exception('More than one casasource plugin handler found');
             }
             $data->xml = new SimpleXMLElement($data->body);
             $callback = current($plugins);
@@ -298,7 +298,7 @@ function lti_extend_lti_services($data) {
             if (debugging('', DEBUG_DEVELOPER)) {
                 $error .= ' '.format_backtrace(get_exception_info($e)->backtrace);
             }
-            $responsexml = lti_get_response_xml(
+            $responsexml = casa_get_response_xml(
                 'failure',
                 $error,
                 $data->messageid,

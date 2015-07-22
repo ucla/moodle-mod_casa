@@ -33,10 +33,10 @@
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu.
 
 /**
- * This file contains all the restore steps that will be used
- * by the restore_lti_activity_task
+ * This file contains all the backup steps that will be used
+ * by the backup_casa_activity_task
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu
  * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
@@ -49,49 +49,61 @@
 defined('MOODLE_INTERNAL') || die;
 
 /**
- * Structure step to restore one lti activity
+ * Define the complete assignment structure for backup, with file and id annotations
  */
-class restore_lti_activity_structure_step extends restore_activity_structure_step {
+class backup_casa_activity_structure_step extends backup_activity_structure_step {
 
     protected function define_structure() {
 
-        $paths = array();
-        $lti = new restore_path_element('lti', '/activity/lti');
-        $paths[] = $lti;
+        // TODO: MDL-34161 - Fix restore to support course/site tools & submissions.
+
+        // To know if we are including userinfo.
+        $userinfo = $this->get_setting_value('userinfo');
+
+        // Define each element separated.
+        $casa = new backup_nested_element('casa', array('id'), array(
+            'name',
+            'intro',
+            'introformat',
+            'timecreated',
+            'timemodified',
+            'typeid',
+            'toolurl',
+            'securetoolurl',
+            'preferheight',
+            'launchcontainer',
+            'instructorchoicesendname',
+            'instructorchoicesendemailaddr',
+            'instructorchoiceacceptgrades',
+            'instructorchoiceallowroster',
+            'instructorchoiceallowsetting',
+            'grade',
+            'instructorcustomparameters',
+            'debuglaunch',
+            'showtitlelaunch',
+            'showdescriptionlaunch',
+            'icon',
+            'secureicon',
+            )
+        );
+
+        // Build the tree
+        // (none).
+
+        // Define sources.
+        $casa->set_source_table('casa', array('id' => backup::VAR_ACTIVITYID));
+
+        // Define id annotations
+        // (none).
+
+        // Define file annotations.
+        $casa->annotate_files('mod_casa', 'intro', null); // This file areas haven't itemid.
 
         // Add support for subplugin structures.
-        $this->add_subplugin_structure('ltisource', $lti);
-        $this->add_subplugin_structure('ltiservice', $lti);
+        $this->add_subplugin_structure('casasource', $casa, true);
+        $this->add_subplugin_structure('casaservice', $casa, true);
 
-        // Return the paths wrapped into standard activity structure.
-        return $this->prepare_activity_structure($paths);
-    }
-
-    protected function process_lti($data) {
-        global $DB;
-
-        $data = (object)$data;
-        $oldid = $data->id;
-        $data->course = $this->get_courseid();
-        $data->servicesalt = uniqid('', true);
-
-         // Grade used to be a float (whole numbers only), restore as int.
-        $data->grade = (int) $data->grade;
-
-        // Clean any course or site typeid. All modules
-        // are restored as self-contained. Note this is
-        // an interim solution until the issue below is implemented.
-        // TODO: MDL-34161 - Fix restore to support course/site tools & submissions.
-        $data->typeid = 0;
-
-        $newitemid = $DB->insert_record('lti', $data);
-
-        // Immediately after inserting "activity" record, call this.
-        $this->apply_activity_instance($newitemid);
-    }
-
-    protected function after_execute() {
-        // Add lti related files, no need to match by itemname (just internally handled context).
-        $this->add_related_files('mod_lti', 'intro', null);
+        // Return the root element (casa), wrapped into standard activity structure.
+        return $this->prepare_activity_structure($casa);
     }
 }

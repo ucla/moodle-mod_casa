@@ -17,24 +17,24 @@
 /**
  * This file contains an abstract definition of an LTI resource
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
-namespace mod_lti\local\ltiservice;
+namespace mod_casa\local\casaservice;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/lti/locallib.php');
+require_once($CFG->dirroot . '/mod/casa/locallib.php');
 
 
 /**
- * The mod_lti\local\ltiservice\resource_base class.
+ * The mod_casa\local\casaservice\resource_base class.
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @since      Moodle 2.8
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -62,7 +62,7 @@ abstract class resource_base {
     /**
      * Class constructor.
      *
-     * @param mod_lti\local\ltiservice\service_base $service Service instance
+     * @param mod_casa\local\casaservice\service_base $service Service instance
      */
     public function __construct($service) {
 
@@ -125,7 +125,7 @@ abstract class resource_base {
     /**
      * Get the resource's service.
      *
-     * @return mod_lti\local\ltiservice\service_base
+     * @return mod_casa\local\casaservice\service_base
      */
     public function get_service() {
 
@@ -190,7 +190,7 @@ abstract class resource_base {
     /**
      * Execute the request for this resource.
      *
-     * @param mod_lti\local\ltiservice\response $response  Response object for this request.
+     * @param mod_casa\local\casaservice\response $response  Response object for this request.
      */
     public abstract function execute($response);
 
@@ -212,10 +212,10 @@ abstract class resource_base {
             } else {
                 $toolproxy = json_decode($toolproxyjson);
                 if (!empty($toolproxy) && isset($toolproxy->security_contract->tool_service)) {
-                    $contexts = lti_get_contexts($toolproxy);
+                    $contexts = casa_get_contexts($toolproxy);
                     $tpservices = $toolproxy->security_contract->tool_service;
                     foreach ($tpservices as $service) {
-                        $fqid = lti_get_fqid($contexts, $service->service);
+                        $fqid = casa_get_fqid($contexts, $service->service);
                         $id = explode('#', $fqid, 2);
                         if ($this->get_id() === $id[1]) {
                             $ok = true;

@@ -20,7 +20,7 @@
  * It is used to create a new form used to configure the capabilities
  * and services to be offered to the tool provider.
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,8 +28,8 @@
 
 require_once('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
-require_once($CFG->dirroot.'/mod/lti/register_form.php');
-require_once($CFG->dirroot.'/mod/lti/locallib.php');
+require_once($CFG->dirroot.'/mod/casa/register_form.php');
+require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
 $action       = optional_param('action', null, PARAM_ALPHANUMEXT);
 $id           = optional_param('id', null, PARAM_INT);
@@ -39,21 +39,21 @@ $tab          = optional_param('tab', '', PARAM_ALPHAEXT);
 require_login(0, false);
 
 $isupdate = !empty($id);
-$pageurl = new moodle_url('/mod/lti/registersettings.php');
+$pageurl = new moodle_url('/mod/casa/registersettings.php');
 if ($isupdate) {
     $pageurl->param('id', $id);
 }
 $PAGE->set_url($pageurl);
 
-admin_externalpage_setup('ltitoolproxies');
+admin_externalpage_setup('casatoolproxies');
 
-$redirect = new moodle_url('/mod/lti/toolproxies.php', array('tab' => $tab));
+$redirect = new moodle_url('/mod/casa/toolproxies.php', array('tab' => $tab));
 $redirect = $redirect->out();
 
 require_sesskey();
 
 if ($action == 'delete') {
-    lti_delete_tool_proxy($id);
+    casa_delete_tool_proxy($id);
     redirect($redirect);
 }
 
@@ -62,24 +62,24 @@ if ($isupdate) {
     $data['isupdate'] = true;
 }
 
-$form = new mod_lti_register_types_form($pageurl, (object)$data);
+$form = new mod_casa_register_types_form($pageurl, (object)$data);
 
 if ($form->is_cancelled()) {
     redirect($redirect);
 } else if ($data = $form->get_data()) {
-    $id = lti_add_tool_proxy($data);
+    $id = casa_add_tool_proxy($data);
     redirect($redirect);
 } else {
-    $PAGE->set_title("{$SITE->shortname}: " . get_string('toolregistration', 'lti'));
-    $PAGE->navbar->add(get_string('lti_administration', 'lti'), $redirect);
+    $PAGE->set_title("{$SITE->shortname}: " . get_string('toolregistration', 'casa'));
+    $PAGE->navbar->add(get_string('casa_administration', 'casa'), $redirect);
 
     echo $OUTPUT->header();
-    echo $OUTPUT->heading(get_string('toolregistration', 'lti'));
+    echo $OUTPUT->heading(get_string('toolregistration', 'casa'));
     echo $OUTPUT->box_start('generalbox');
     if ($action == 'update') {
-        $toolproxy = lti_get_tool_proxy_config($id);
+        $toolproxy = casa_get_tool_proxy_config($id);
         $form->set_data($toolproxy);
-        if ($toolproxy->state == LTI_TOOL_PROXY_STATE_ACCEPTED) {
+        if ($toolproxy->state == CASA_TOOL_PROXY_STATE_ACCEPTED) {
             $form->disable_fields();
         }
     }

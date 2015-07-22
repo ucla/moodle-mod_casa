@@ -17,7 +17,7 @@
 /**
  * This file contains all necessary code to launch a Tool Proxy registration
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,23 +25,23 @@
 
 require_once('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
-require_once($CFG->dirroot.'/mod/lti/locallib.php');
+require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
 $id = required_param('id', PARAM_INT);
 $tab = optional_param('tab', '', PARAM_ALPHAEXT);
 
 require_login(0, false);
 
-$redirect = new moodle_url('/mod/lti/toolproxies.php', array('tab' => $tab));
+$redirect = new moodle_url('/mod/casa/toolproxies.php', array('tab' => $tab));
 $redirect = $redirect->out();
 
 require_sesskey();
 
-$toolproxies = $DB->get_records('lti_tool_proxies');
+$toolproxies = $DB->get_records('casa_tool_proxies');
 
 $duplicate = false;
 foreach ($toolproxies as $key => $toolproxy) {
-    if (($toolproxy->state == LTI_TOOL_PROXY_STATE_PENDING) || ($toolproxy->state == LTI_TOOL_PROXY_STATE_ACCEPTED)) {
+    if (($toolproxy->state == CASA_TOOL_PROXY_STATE_PENDING) || ($toolproxy->state == CASA_TOOL_PROXY_STATE_ACCEPTED)) {
         if ($toolproxy->regurl == $toolproxies[$id]->regurl) {
             $duplicate = true;
             break;
@@ -49,39 +49,39 @@ foreach ($toolproxies as $key => $toolproxy) {
     }
 }
 
-$redirect = new moodle_url('/mod/lti/toolproxies.php');
+$redirect = new moodle_url('/mod/casa/toolproxies.php');
 if ($duplicate) {
-    redirect($redirect,  get_string('duplicateregurl', 'lti'));
+    redirect($redirect,  get_string('duplicateregurl', 'casa'));
 }
 
 
-$profileservice = lti_get_service_by_name('profile');
+$profileservice = casa_get_service_by_name('profile');
 if (empty($profileservice)) {
-    redirect($redirect,  get_string('noprofileservice', 'lti'));
+    redirect($redirect,  get_string('noprofileservice', 'casa'));
 }
 
-$url = new moodle_url('/mod/lti/register.php', array('id' => $id));
+$url = new moodle_url('/mod/casa/register.php', array('id' => $id));
 $PAGE->set_url($url);
 
-admin_externalpage_setup('ltitoolproxies');
+admin_externalpage_setup('casatoolproxies');
 
 
-$PAGE->set_heading(get_string('toolproxyregistration', 'lti'));
-$PAGE->set_title("{$SITE->shortname}: " . get_string('toolproxyregistration', 'lti'));
+$PAGE->set_heading(get_string('toolproxyregistration', 'casa'));
+$PAGE->set_title("{$SITE->shortname}: " . get_string('toolproxyregistration', 'casa'));
 
 // Print the page header.
 echo $OUTPUT->header();
 
-echo $OUTPUT->heading(get_string('toolproxyregistration', 'lti'));
+echo $OUTPUT->heading(get_string('toolproxyregistration', 'casa'));
 
 echo $OUTPUT->box_start('generalbox');
 
 // Request the registration request content with an object tag.
-$registration = new moodle_url('/mod/lti/registration.php',
+$registration = new moodle_url('/mod/casa/registration.php',
     array('id' => $id, 'sesskey' => sesskey()));
 
 echo "<p id=\"id_warning\" style=\"display: none; color: red; font-weight: bold; margin-top: 1em; padding-top: 1em;\">\n";
-echo get_string('register_warning', 'lti');
+echo get_string('register_warning', 'casa');
 echo "\n</p>\n";
 
 echo '<iframe id="contentframe" height="600px" width="100%" src="' . $registration->out() . '" onload="doOnload()"></iframe>';
@@ -95,9 +95,9 @@ $resize = '
               el.style.display = \'block\';
             }
             function doOnload() {
-                window.clearTimeout(mod_lti_timer);
+                window.clearTimeout(mod_casa_timer);
             }
-            var mod_lti_timer = window.setTimeout(doReveal, 20000);
+            var mod_casa_timer = window.setTimeout(doReveal, 20000);
             YUI().use("node", "event", function(Y) {
                 //Take scrollbars off the outer document to prevent double scroll bar effect
                 var doc = Y.one("body");

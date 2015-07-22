@@ -15,21 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_lti instance list viewed event.
+ * The mod_casa instance list viewed event.
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @copyright  2013 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_lti\event;
+namespace mod_casa\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_lti instance list viewed event class.
+ * The mod_casa instance list viewed event class.
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @since      Moodle 2.7
  * @copyright  2013 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

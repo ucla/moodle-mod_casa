@@ -17,33 +17,33 @@
 /**
  * This file contains a class definition for the System Settings resource
  *
- * @package    ltiservice_toolsettings
+ * @package    casaservice_toolsettings
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
-namespace ltiservice_toolsettings\local\resource;
+namespace casaservice_toolsettings\local\resource;
 
-use ltiservice_toolsettings\local\service\toolsettings;
+use casaservice_toolsettings\local\service\toolsettings;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
  * A resource implementing the System-level (ToolProxy) Settings.
  *
- * @package    ltiservice_toolsettings
+ * @package    casaservice_toolsettings
  * @since      Moodle 2.8
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class systemsettings extends \mod_lti\local\ltiservice\resource_base {
+class systemsettings extends \mod_casa\local\casaservice\resource_base {
 
     /**
      * Class constructor.
      *
-     * @param ltiservice_toolsettings\local\service\toolsettings $service Service instance
+     * @param casaservice_toolsettings\local\service\toolsettings $service Service instance
      */
     public function __construct($service) {
 
@@ -51,8 +51,8 @@ class systemsettings extends \mod_lti\local\ltiservice\resource_base {
         $this->id = 'ToolProxySettings';
         $this->template = '/toolproxy/{tool_proxy_id}/custom';
         $this->variables[] = 'ToolProxy.custom.url';
-        $this->formats[] = 'application/vnd.ims.lti.v2.toolsettings+json';
-        $this->formats[] = 'application/vnd.ims.lti.v2.toolsettings.simple+json';
+        $this->formats[] = 'application/vnd.ims.casa.v2.toolsettings+json';
+        $this->formats[] = 'application/vnd.ims.casa.v2.toolsettings.simple+json';
         $this->methods[] = 'GET';
         $this->methods[] = 'PUT';
 
@@ -61,7 +61,7 @@ class systemsettings extends \mod_lti\local\ltiservice\resource_base {
     /**
      * Execute the request for this resource.
      *
-     * @param mod_lti\local\ltiservice\response $response  Response object for this request.
+     * @param mod_casa\local\casaservice\response $response  Response object for this request.
      */
     public function execute($response) {
 
@@ -84,7 +84,7 @@ class systemsettings extends \mod_lti\local\ltiservice\resource_base {
         }
 
         if ($ok) {
-            $systemsettings = lti_get_tool_settings($this->get_service()->get_tool_proxy()->id);
+            $systemsettings = casa_get_tool_settings($this->get_service()->get_tool_proxy()->id);
             if ($response->get_request_method() == 'GET') {
                 $json = '';
                 if ($simpleformat) {
@@ -92,7 +92,7 @@ class systemsettings extends \mod_lti\local\ltiservice\resource_base {
                     $json .= "{";
                 } else {
                     $response->set_content_type($this->formats[0]);
-                    $json .= "{\n  \"@context\":\"http://purl.imsglobal.org/ctx/lti/v2/ToolSettings\",\n  \"@graph\":[\n";
+                    $json .= "{\n  \"@context\":\"http://purl.imsglobal.org/ctx/casa/v2/ToolSettings\",\n  \"@graph\":[\n";
                 }
                 $json .= toolsettings::settings_to_json($systemsettings, $simpleformat,
                     'ToolProxy', $this);
@@ -125,7 +125,7 @@ class systemsettings extends \mod_lti\local\ltiservice\resource_base {
                     }
                 }
                 if ($ok) {
-                    lti_set_tool_settings($settings, $this->get_service()->get_tool_proxy()->id);
+                    casa_set_tool_settings($settings, $this->get_service()->get_tool_proxy()->id);
                 } else {
                     $response->set_code(406);
                 }

@@ -33,9 +33,9 @@
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu.
 
 /**
- * This page lists all the instances of lti in a particular course
+ * This page lists all the instances of casa in a particular course
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu
  * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
@@ -46,7 +46,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once("../../config.php");
-require_once($CFG->dirroot.'/mod/lti/lib.php');
+require_once($CFG->dirroot.'/mod/casa/lib.php');
 
 $id = required_param('id', PARAM_INT);   // Course id.
 
@@ -58,23 +58,23 @@ $PAGE->set_pagelayout('incourse');
 $params = array(
     'context' => context_course::instance($course->id)
 );
-$event = \mod_lti\event\course_module_instance_list_viewed::create($params);
+$event = \mod_casa\event\course_module_instance_list_viewed::create($params);
 $event->add_record_snapshot('course', $course);
 $event->trigger();
 
-$PAGE->set_url('/mod/lti/index.php', array('id' => $course->id));
-$pagetitle = strip_tags($course->shortname.': '.get_string("modulenamepluralformatted", "lti"));
+$PAGE->set_url('/mod/casa/index.php', array('id' => $course->id));
+$pagetitle = strip_tags($course->shortname.': '.get_string("modulenamepluralformatted", "casa"));
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 
 echo $OUTPUT->header();
 
 // Print the main part of the page.
-echo $OUTPUT->heading(get_string("modulenamepluralformatted", "lti"));
+echo $OUTPUT->heading(get_string("modulenamepluralformatted", "casa"));
 
 // Get all the appropriate data.
-if (! $basicltis = get_all_instances_in_course("lti", $course)) {
-    notice(get_string('noltis', 'lti'), "../../course/view.php?id=$course->id");
+if (! $basiccasas = get_all_instances_in_course("casa", $course)) {
+    notice(get_string('nocasas', 'casa'), "../../course/view.php?id=$course->id");
     die;
 }
 
@@ -94,17 +94,17 @@ if ($usesections) {
     $table->head  = array ($strname);
 }
 
-foreach ($basicltis as $basiclti) {
-    if (!$basiclti->visible) {
+foreach ($basiccasas as $basiccasa) {
+    if (!$basiccasa->visible) {
         // Show dimmed if the mod is hidden.
-        $link = "<a class=\"dimmed\" href=\"view.php?id=$basiclti->coursemodule\">$basiclti->name</a>";
+        $link = "<a class=\"dimmed\" href=\"view.php?id=$basiccasa->coursemodule\">$basiccasa->name</a>";
     } else {
         // Show normal if the mod is visible.
-        $link = "<a href=\"view.php?id=$basiclti->coursemodule\">$basiclti->name</a>";
+        $link = "<a href=\"view.php?id=$basiccasa->coursemodule\">$basiccasa->name</a>";
     }
 
     if ($usesections) {
-        $table->data[] = array (get_section_name($course, $basiclti->section), $link);
+        $table->data[] = array (get_section_name($course, $basiccasa->section), $link);
     } else {
         $table->data[] = array ($link);
     }

@@ -35,7 +35,7 @@
 /**
  * This file contains en_utf8 translation of the Basic LTI module
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu
  * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
@@ -74,16 +74,16 @@ $string['allowsetting'] = 'Allow tool to store 8K of settings in Moodle';
 $string['always'] = 'Always';
 $string['automatic'] = 'Automatic, based on launch URL';
 $string['baseurl'] = 'Base URL/tool registration name';
-$string['basiclti'] = 'LTI';
-$string['basiclti_base_string'] = 'LTI OAuth base string';
-$string['basiclti_endpoint'] = 'LTI launch endpoint';
-$string['basiclti_in_new_window'] = 'Your activity has opened in a new window';
-$string['basiclti_parameters'] = 'LTI launch parameters';
-$string['basicltiactivities'] = 'LTI activities';
-$string['basicltifieldset'] = 'Custom example fieldset';
-$string['basicltiintro'] = 'Activity description';
-$string['basicltiname'] = 'Activity name';
-$string['basicltisettings'] = 'Basic Learning Tool Interoperability (LTI) settings';
+$string['basiccasa'] = 'LTI';
+$string['basiccasa_base_string'] = 'LTI OAuth base string';
+$string['basiccasa_endpoint'] = 'LTI launch endpoint';
+$string['basiccasa_in_new_window'] = 'Your activity has opened in a new window';
+$string['basiccasa_parameters'] = 'LTI launch parameters';
+$string['basiccasaactivities'] = 'LTI activities';
+$string['basiccasafieldset'] = 'Custom example fieldset';
+$string['basiccasaintro'] = 'Activity description';
+$string['basiccasaname'] = 'Activity name';
+$string['basiccasasettings'] = 'Basic Learning Tool Interoperability (LTI) settings';
 $string['cancel'] = 'Cancel';
 $string['cancelled'] = 'Cancelled';
 $string['cannot_delete'] = 'You may not delete this tool configuration.';
@@ -183,8 +183,8 @@ Three icons are available after the External tool type dropdown list:
 * **Delete** - Remove the selected course level tool type.';
 $string['external_tool_types'] = 'External tool types';
 $string['failedtoconnect'] = 'Moodle was unable to communicate with the "{$a}" system';
-$string['filter_basiclti_configlink'] = 'Configure your preferred sites and their passwords';
-$string['filter_basiclti_password'] = 'Password is mandatory';
+$string['filter_basiccasa_configlink'] = 'Configure your preferred sites and their passwords';
+$string['filter_basiccasa_password'] = 'Password is mandatory';
 $string['filterconfig'] = 'LTI administration';
 $string['filtername'] = 'LTI';
 $string['fixexistingconf'] = 'Use an existing configuration for the misconfigured instance';
@@ -226,26 +226,26 @@ real estate to the tool, and others provide a more integrated feel with the Mood
         Depending on the browser, it will open in a new tab or a popup window.
         It is possible that browsers will prevent the new window from opening.';
 $string['launchoptions'] = 'Launch options';
-$string['lti'] = 'LTI';
-$string['lti:addinstance'] = 'Add new external tool activities';
-$string['lti:addcoursetool'] = 'Add course-specific tool configurations';
-$string['lti:grade'] = 'View grades returned by the external tool';
-$string['lti:manage'] = 'Be an Instructor when the tool is launched';
-$string['lti:requesttooladd'] = 'Request a tool is configured site-wide';
-$string['lti:view'] = 'Launch external tool activities';
-$string['ltisettings'] = 'LTI settings';
-$string['lti_administration'] = 'LTI administration';
-$string['lti_errormsg'] = 'The tool returned the following error message: "{$a}"';
-$string['lti_launch_error'] = 'An error occurred when launching the external tool:';
-$string['lti_launch_error_tool_request'] = '<p>
+$string['casa'] = 'LTI';
+$string['casa:addinstance'] = 'Add new external tool activities';
+$string['casa:addcoursetool'] = 'Add course-specific tool configurations';
+$string['casa:grade'] = 'View grades returned by the external tool';
+$string['casa:manage'] = 'Be an Instructor when the tool is launched';
+$string['casa:requesttooladd'] = 'Request a tool is configured site-wide';
+$string['casa:view'] = 'Launch external tool activities';
+$string['casasettings'] = 'LTI settings';
+$string['casa_administration'] = 'LTI administration';
+$string['casa_errormsg'] = 'The tool returned the following error message: "{$a}"';
+$string['casa_launch_error'] = 'An error occurred when launching the external tool:';
+$string['casa_launch_error_tool_request'] = '<p>
 To submit a request for an administrator to complete the tool configuration, click <a href="{$a->admin_request_url}" target="_top">here</a>.
 </p>';
-$string['lti_launch_error_unsigned_help'] = '<p>This error may be a result of a missing consumer key and shared secret for the tool provider.</p>
+$string['casa_launch_error_unsigned_help'] = '<p>This error may be a result of a missing consumer key and shared secret for the tool provider.</p>
 <p>If you have a consumer key and shared secret, you may enter it when editing the external tool instance (make sure advanced options are visible).</p>
 <p>Alternatively, you may <a href="{$a->course_tool_editor}">create a course level tool provider configuration</a>.</p>';
-$string['lti_tool_request_added'] = 'Tool configuration request successfully submitted. You may need to contact an administrator to complete the tool configuration.';
-$string['lti_tool_request_existing'] = 'A tool configuration for the tool domain has already been submitted.';
-$string['ltiunknownserviceapicall'] = 'LTI unknown service API call.';
+$string['casa_tool_request_added'] = 'Tool configuration request successfully submitted. You may need to contact an administrator to complete the tool configuration.';
+$string['casa_tool_request_existing'] = 'A tool configuration for the tool domain has already been submitted.';
+$string['casaunknownserviceapicall'] = 'LTI unknown service API call.';
 $string['main_admin'] = 'General help';
 $string['main_admin_help'] = 'External tools allow Moodle users to seamlessly interact with learning resources hosted remotely. Through a special
 launch protocol, the remote tool will have access to some general information about the launching user. For example,
@@ -266,32 +266,24 @@ $string['miscellaneous'] = 'Miscellaneous';
 $string['misconfiguredtools'] = 'Misconfigured tool instances were detected';
 $string['missingparameterserror'] = 'The page is misconfigured: "{$a}"';
 $string['module_class_type'] = 'Moodle module type';
-$string['modulename'] = 'External tool';
-$string['modulename_help'] = 'The external tool activity module enables students to interact with learning resources and activities on other web sites. For example, an external tool could provide access to a new activity type or learning materials from a publisher.
-
-To create an external tool activity, a tool provider which supports LTI (Learning Tools Interoperability) is required. A teacher can create an external tool activity or make use of a tool configured by the site administrator.
-
-External tool activities differ from URL resources in a few ways:
-
-* External tools are context aware i.e. they have access to information about the user who launched the tool, such as institution, course and name
-* External tools support reading, updating, and deleting grades associated with the activity instance
-* External tool configurations create a trust relationship between your site and the tool provider, allowing secure communication between them';
-$string['modulename_link'] = 'mod/lti/view';
+$string['modulename'] = 'CASA';
+$string['modulename_help'] = 'Community App Store Architecture (CASA) provides an easy way to search and add external learning tools and resources';
+$string['modulename_link'] = 'mod/casa/view';
 $string['modulenameplural'] = 'External tools';
 $string['modulenamepluralformatted'] = 'LTI Instances';
 $string['name'] = 'Name';
 $string['never'] = 'Never';
 $string['new_window'] = 'New window';
-$string['no_lti_configured'] = 'There are no active external tools configured.';
-$string['no_lti_pending'] = 'There are no pending external tools.';
-$string['no_lti_rejected'] = 'There are no rejected external tools.';
+$string['no_casa_configured'] = 'There are no active external tools configured.';
+$string['no_casa_pending'] = 'There are no pending external tools.';
+$string['no_casa_rejected'] = 'There are no rejected external tools.';
 $string['no_tp_accepted'] = 'There are no accepted external tool registrations.';
 $string['no_tp_cancelled'] = 'There are no cancelled external tool registrations.';
 $string['no_tp_configured'] = 'There are no unregistered external tool registrations configured.';
 $string['no_tp_pending'] = 'There are no pending external tool registrations.';
 $string['no_tp_rejected'] = 'There are no rejected external tool registrations.';
 $string['noattempts'] = 'No attempts have been made on this tool instance';
-$string['noltis'] = 'There are no external tool instances';
+$string['nocasas'] = 'There are no external tool instances';
 $string['noprofileservice'] = 'Profile service not found';
 $string['noservers'] = 'No servers found';
 $string['notypes'] = 'There are currently no LTI tools set up in Moodle. Click the Install link above to add some.';
@@ -329,8 +321,8 @@ along with the consumer key from the tool provider.
 Tools which do not require secure communication from Moodle and do not provide additional services (such as grade reporting)
 may not require a shared secret.';
 $string['pending'] = 'Pending';
-$string['pluginadministration'] = 'LTI administration';
-$string['pluginname'] = 'LTI';
+$string['pluginadministration'] = 'CASA administration';
+$string['pluginname'] = 'CASA';
 $string['preferheight'] = 'Preferred height';
 $string['preferwidget'] = 'Prefer widget launch';
 $string['preferwidth'] = 'Preferred width';
@@ -427,12 +419,12 @@ $string['size'] = 'Size parameters';
 $string['submission'] = 'Submission';
 $string['submissions'] = 'Submissions';
 $string['submissionsfor'] = 'Submissions for {$a}';
-$string['subplugintype_ltiresource'] = 'LTI service resource';
-$string['subplugintype_ltiresource_plural'] = 'LTI service resources';
-$string['subplugintype_ltiservice'] = 'LTI service';
-$string['subplugintype_ltiservice_plural'] = 'LTI services';
-$string['subplugintype_ltisource'] = 'LTI source';
-$string['subplugintype_ltisource_plural'] = 'LTI sources';
+$string['subplugintype_casaresource'] = 'LTI service resource';
+$string['subplugintype_casaresource_plural'] = 'LTI service resources';
+$string['subplugintype_casaservice'] = 'LTI service';
+$string['subplugintype_casaservice_plural'] = 'LTI services';
+$string['subplugintype_casasource'] = 'LTI source';
+$string['subplugintype_casasource_plural'] = 'LTI sources';
 $string['toggle_debug_data'] = 'Toggle debug data';
 $string['tool_config_not_found'] = 'Tool configuration not found for this URL.';
 $string['tool_settings'] = 'Tool settings';

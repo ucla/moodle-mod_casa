@@ -17,25 +17,25 @@
 /**
  * LTI source plugin info.
  *
- * @package   mod_lti
+ * @package   mod_casa
  * @copyright 2013 Damyon Wiese
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace mod_lti\plugininfo;
+namespace mod_casa\plugininfo;
 
 use core\plugininfo\base;
 
 defined('MOODLE_INTERNAL') || die();
 
 
-class ltisource extends base {
+class casasource extends base {
     /**
      * Returns the node name used in admin settings menu for this plugin settings (if applicable)
      *
      * @return null|string node name or null if plugin does not create settings node (default)
      */
     public function get_settings_section_name() {
-        return 'ltisourcesetting'.$this->name;
+        return 'casasourcesetting'.$this->name;
     }
 
     /**

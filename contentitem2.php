@@ -17,23 +17,23 @@
 /**
  * Handle sending a user to a tool provider to initiate a content-item selection.
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2015 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once("../../config.php");
-require_once($CFG->dirroot.'/mod/lti/lib.php');
-require_once($CFG->dirroot.'/mod/lti/locallib.php');
+require_once($CFG->dirroot.'/mod/casa/lib.php');
+require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
 $courseid = required_param('course', PARAM_INT);
 $sectionid = required_param('section', PARAM_INT);
 $id = required_param('id', PARAM_INT);
 $sectionreturn = required_param('sr', PARAM_INT);
 
-$tool = lti_get_type($id);
-$typeconfig = lti_get_type_config($id);
+$tool = casa_get_type($id);
+$typeconfig = casa_get_type_config($id);
 
 $title = optional_param('title', $tool->name, PARAM_TEXT);
 
@@ -45,7 +45,7 @@ $endpoint = !empty($instance->toolurl) ? $instance->toolurl : $typeconfig['toolu
 $endpoint = trim($endpoint);
 
 // If the current request is using SSL and a secure tool URL is specified, use it.
-if (lti_request_is_using_ssl() && !empty($instance->securetoolurl)) {
+if (casa_request_is_using_ssl() && !empty($instance->securetoolurl)) {
     $endpoint = trim($instance->securetoolurl);
 }
 
@@ -55,7 +55,7 @@ if (isset($typeconfig['forcessl']) && ($typeconfig['forcessl'] == '1')) {
         $endpoint = trim($instance->securetoolurl);
     }
 
-    $endpoint = lti_ensure_url_is_https($endpoint);
+    $endpoint = casa_ensure_url_is_https($endpoint);
 } else {
     if (!strstr($endpoint, '://')) {
         $endpoint = 'http://' . $endpoint;
@@ -79,7 +79,7 @@ $customstr = '';
 if (isset($typeconfig['customparameters'])) {
     $customstr = $typeconfig['customparameters'];
 }
-$requestparams = array_merge($requestparams, lti_build_custom_parameters(null, $tool, null, $requestparams, $customstr,
+$requestparams = array_merge($requestparams, casa_build_custom_parameters(null, $tool, null, $requestparams, $customstr,
     '', false));
 
 
@@ -90,17 +90,17 @@ $returnurlparams = array('course' => $courseid,
                          'sesskey' => sesskey());
 
 // Add the return URL. We send the launch container along to help us avoid frames-within-frames when the user returns.
-$url = new \moodle_url('/mod/lti/contentitem_return.php', $returnurlparams);
+$url = new \moodle_url('/mod/casa/contentitem_return.php', $returnurlparams);
 $returnurl = $url->out(false);
 
 if (isset($typeconfig['forcessl']) && ($typeconfig['forcessl'] == '1')) {
-    $returnurl = lti_ensure_url_is_https($returnurl);
+    $returnurl = casa_ensure_url_is_https($returnurl);
 }
 
 $requestparams['content_item_return_url'] = $returnurl;
 
 
-$parms = lti_sign_parameters($requestparams, $endpoint, "POST", $key, $secret);
+$parms = casa_sign_parameters($requestparams, $endpoint, "POST", $key, $secret);
 
 $endpointurl = new \moodle_url($endpoint);
 $endpointparams = $endpointurl->params();
@@ -114,6 +114,6 @@ if (!empty($endpointparams) && !empty($parms)) {
     }
 }
 
-$content = lti_post_launch_html($parms, $endpoint, false);
+$content = casa_post_launch_html($parms, $endpoint, false);
 
 echo $content;

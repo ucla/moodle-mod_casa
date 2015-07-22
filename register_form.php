@@ -17,7 +17,7 @@
 /**
  * This file defines the main tool registration configuration form
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,17 +26,17 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir.'/formslib.php');
-require_once($CFG->dirroot.'/mod/lti/locallib.php');
+require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
 /**
- * The mod_lti_register_types_form class.
+ * The mod_casa_register_types_form class.
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @since      Moodle 2.8
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_lti_register_types_form extends moodleform {
+class mod_casa_register_types_form extends moodleform {
 
     /**
      * Set up the form definition.
@@ -46,46 +46,46 @@ class mod_lti_register_types_form extends moodleform {
 
         $mform    =& $this->_form;
 
-        $mform->addElement('header', 'setup', get_string('registration_options', 'lti'));
+        $mform->addElement('header', 'setup', get_string('registration_options', 'casa'));
 
         // Tool Provider name.
 
         $strrequired = get_string('required');
-        $mform->addElement('text', 'lti_registrationname', get_string('registrationname', 'lti'));
-        $mform->setType('lti_registrationname', PARAM_TEXT);
-        $mform->addHelpButton('lti_registrationname', 'registrationname', 'lti');
-        $mform->addRule('lti_registrationname', $strrequired, 'required', null, 'client');
+        $mform->addElement('text', 'casa_registrationname', get_string('registrationname', 'casa'));
+        $mform->setType('casa_registrationname', PARAM_TEXT);
+        $mform->addHelpButton('casa_registrationname', 'registrationname', 'casa');
+        $mform->addRule('casa_registrationname', $strrequired, 'required', null, 'client');
 
         // Registration URL.
 
-        $mform->addElement('text', 'lti_registrationurl', get_string('registrationurl', 'lti'), array('size' => '64'));
-        $mform->setType('lti_registrationurl', PARAM_URL);
-        $mform->addHelpButton('lti_registrationurl', 'registrationurl', 'lti');
-        $mform->addRule('lti_registrationurl', $strrequired, 'required', null, 'client');
+        $mform->addElement('text', 'casa_registrationurl', get_string('registrationurl', 'casa'), array('size' => '64'));
+        $mform->setType('casa_registrationurl', PARAM_URL);
+        $mform->addHelpButton('casa_registrationurl', 'registrationurl', 'casa');
+        $mform->addRule('casa_registrationurl', $strrequired, 'required', null, 'client');
 
         // LTI Capabilities.
 
-        $options = array_keys(lti_get_capabilities());
+        $options = array_keys(casa_get_capabilities());
         natcasesort($options);
         $attributes = array( 'multiple' => 1, 'size' => min(count($options), 10) );
-        $mform->addElement('select', 'lti_capabilities', get_string('capabilities', 'lti'),
+        $mform->addElement('select', 'casa_capabilities', get_string('capabilities', 'casa'),
             array_combine($options, $options), $attributes);
-        $mform->setType('lti_capabilities', PARAM_TEXT);
-        $mform->addHelpButton('lti_capabilities', 'capabilities', 'lti');
-        $mform->addRule('lti_capabilities', $strrequired, 'required', null, 'client');
+        $mform->setType('casa_capabilities', PARAM_TEXT);
+        $mform->addHelpButton('casa_capabilities', 'capabilities', 'casa');
+        $mform->addRule('casa_capabilities', $strrequired, 'required', null, 'client');
 
         // LTI Services.
 
-        $services = lti_get_services();
+        $services = casa_get_services();
         $options = array();
         foreach ($services as $service) {
             $options[$service->get_id()] = $service->get_name();
         }
         $attributes = array( 'multiple' => 1, 'size' => min(count($options), 10) );
-        $mform->addElement('select', 'lti_services', get_string('services', 'lti'), $options, $attributes);
-        $mform->setType('lti_services', PARAM_TEXT);
-        $mform->addHelpButton('lti_services', 'services', 'lti');
-        $mform->addRule('lti_services', $strrequired, 'required', null, 'client');
+        $mform->addElement('select', 'casa_services', get_string('services', 'casa'), $options, $attributes);
+        $mform->setType('casa_services', PARAM_TEXT);
+        $mform->addHelpButton('casa_services', 'services', 'casa');
+        $mform->addRule('casa_services', $strrequired, 'required', null, 'client');
 
         $mform->addElement('hidden', 'toolproxyid');
         $mform->setType('toolproxyid', PARAM_INT);
@@ -110,9 +110,9 @@ class mod_lti_register_types_form extends moodleform {
 
         $mform    =& $this->_form;
 
-        $mform->disabledIf('lti_registrationurl', null);
-        $mform->disabledIf('lti_capabilities', null);
-        $mform->disabledIf('lti_services', null);
+        $mform->disabledIf('casa_registrationurl', null);
+        $mform->disabledIf('casa_capabilities', null);
+        $mform->disabledIf('casa_services', null);
 
     }
 }

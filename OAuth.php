@@ -54,7 +54,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
-namespace moodle\mod\lti;//Using a namespace as the basicLTI module imports classes with the same names
+namespace moodle\mod\casa;//Using a namespace as the basicLTI module imports classes with the same names
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -252,7 +252,7 @@ class OAuthRequest {
      * attempt to build up a request from what was passed to the server
      */
     public static function from_request($http_method = null, $http_url = null, $parameters = null) {
-        $scheme = (!is_https()) ? 'http' : 'https';
+        $scheme = (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on") ? 'http' : 'https';
         $port = "";
         if ($_SERVER['SERVER_PORT'] != "80" && $_SERVER['SERVER_PORT'] != "443" && strpos(':', $_SERVER['HTTP_HOST']) < 0) {
             $port = ':' . $_SERVER['SERVER_PORT'];
@@ -706,7 +706,7 @@ class OAuthUtil {
     public static function urlencode_rfc3986($input) {
         if (is_array($input)) {
             return array_map(array(
-                'moodle\mod\lti\OAuthUtil',
+                'moodle\mod\casa\OAuthUtil',
                 'urlencode_rfc3986'
             ), $input);
         } else {

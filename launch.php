@@ -33,9 +33,9 @@
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu.
 
 /**
- * This file contains all necessary code to view a lti activity instance
+ * This file contains all necessary code to view a casa activity instance
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu
  * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
@@ -47,20 +47,20 @@
  */
 
 require_once("../../config.php");
-require_once($CFG->dirroot.'/mod/lti/lib.php');
-require_once($CFG->dirroot.'/mod/lti/locallib.php');
+require_once($CFG->dirroot.'/mod/casa/lib.php');
+require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
 
-$cm = get_coursemodule_from_id('lti', $id, 0, false, MUST_EXIST);
-$lti = $DB->get_record('lti', array('id' => $cm->instance), '*', MUST_EXIST);
+$cm = get_coursemodule_from_id('casa', $id, 0, false, MUST_EXIST);
+$casa = $DB->get_record('casa', array('id' => $cm->instance), '*', MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 
 $context = context_module::instance($cm->id);
 
 require_login($course, true, $cm);
-require_capability('mod/lti:view', $context);
+require_capability('mod/casa:view', $context);
 
-$lti->cmid = $cm->id;
-lti_view($lti);
+$casa->cmid = $cm->id;
+casa_view($casa);
 

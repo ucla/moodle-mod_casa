@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains the capabilities used by the lti module
+ * This file contains the capabilities used by the casa module
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis, marc.alier@upc.edu
  * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
  * @author     Marc Alier
@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die;
 $capabilities = array(
 
     // Whether the user can see the link to the external tool and follow it.
-    'mod/lti:view' => array(
+    'mod/casa:view' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
@@ -40,11 +40,12 @@ $capabilities = array(
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
-        )
+        ),
+        'clonepermissionsfrom' => 'mod/lti:view'
     ),
 
     // Add an External tool activity to a course.
-    'mod/lti:addinstance' => array(
+    'mod/casa:addinstance' => array(
         'riskbitmask' => RISK_XSS,
 
         'captype' => 'write',
@@ -53,13 +54,13 @@ $capabilities = array(
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
         ),
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
+        'clonepermissionsfrom' => 'mod/lti:addinstance'
     ),
 
     // When the user arrives at the external tool, if they have this capability
     // in Moodle, then they are given the Instructor role in the remote system,
-    // otherwise they are given Learner. See the lti_get_ims_role function.
-    'mod/lti:manage' => array(
+    // otherwise they are given Learner. See the casa_get_ims_role function.
+    'mod/casa:manage' => array(
         'riskbitmask' => RISK_PERSONAL, // A bit of a guess, but seems likely.
 
         'captype' => 'write',
@@ -68,27 +69,30 @@ $capabilities = array(
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
-        )
+        ),
+        'clonepermissionsfrom' => 'mod/lti:manage'
     ),
 
     // The ability to create or edit tool configurations for particular courses.
-    'mod/lti:addcoursetool' => array(
+    'mod/casa:addcoursetool' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
-        )
+        ),
+        'clonepermissionsfrom' => 'mod/lti:addcoursetool'
     ),
 
     // The ability to request the administrator to configure a particular
     // External tool globally.
-    'mod/lti:requesttooladd' => array(
+    'mod/casa:requesttooladd' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
-        )
+        ),
+        'clonepermissionsfrom' => 'mod/lti:requesttooladd'
     )
 );

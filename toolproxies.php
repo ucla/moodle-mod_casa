@@ -17,7 +17,7 @@
 /**
  * This file contains all necessary code to launch a Tool Proxy registration
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,46 +25,46 @@
 
 require_once('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
-require_once($CFG->dirroot.'/mod/lti/locallib.php');
+require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
 // No guest autologin.
 require_login(0, false);
 
-$pageurl = new moodle_url('/mod/lti/toolproxies.php');
+$pageurl = new moodle_url('/mod/casa/toolproxies.php');
 $PAGE->set_url($pageurl);
 
-admin_externalpage_setup('ltitoolproxies');
+admin_externalpage_setup('casatoolproxies');
 
-$PAGE->set_title("{$SITE->shortname}: " . get_string('toolregistration', 'lti'));
+$PAGE->set_title("{$SITE->shortname}: " . get_string('toolregistration', 'casa'));
 
 $configuredtoolproxieshtml = '';
 $pendingtoolproxieshtml = '';
 $acceptedtoolproxieshtml = '';
 $rejectedtoolproxieshtml = '';
 
-$configured = get_string('configured', 'lti');
-$pending = get_string('pending', 'lti');
-$accepted = get_string('accepted', 'lti');
-$rejected = get_string('rejected', 'lti');
+$configured = get_string('configured', 'casa');
+$pending = get_string('pending', 'casa');
+$accepted = get_string('accepted', 'casa');
+$rejected = get_string('rejected', 'casa');
 
-$name = get_string('name', 'lti');
-$url = get_string('registrationurl', 'lti');
-$action = get_string('action', 'lti');
-$createdon = get_string('createdon', 'lti');
+$name = get_string('name', 'casa');
+$url = get_string('registrationurl', 'casa');
+$action = get_string('action', 'casa');
+$createdon = get_string('createdon', 'casa');
 
-$toolproxies = $DB->get_records('lti_tool_proxies');
+$toolproxies = $DB->get_records('casa_tool_proxies');
 
-$configuredtoolproxies = lti_filter_tool_proxy_types($toolproxies, LTI_TOOL_PROXY_STATE_CONFIGURED);
-$configuredtoolproxieshtml = lti_get_tool_proxy_table($configuredtoolproxies, 'tp_configured');
+$configuredtoolproxies = casa_filter_tool_proxy_types($toolproxies, CASA_TOOL_PROXY_STATE_CONFIGURED);
+$configuredtoolproxieshtml = casa_get_tool_proxy_table($configuredtoolproxies, 'tp_configured');
 
-$pendingtoolproxies = lti_filter_tool_proxy_types($toolproxies, LTI_TOOL_PROXY_STATE_PENDING);
-$pendingtoolproxieshtml = lti_get_tool_proxy_table($pendingtoolproxies, 'tp_pending');
+$pendingtoolproxies = casa_filter_tool_proxy_types($toolproxies, CASA_TOOL_PROXY_STATE_PENDING);
+$pendingtoolproxieshtml = casa_get_tool_proxy_table($pendingtoolproxies, 'tp_pending');
 
-$acceptedtoolproxies = lti_filter_tool_proxy_types($toolproxies, LTI_TOOL_PROXY_STATE_ACCEPTED);
-$acceptedtoolproxieshtml = lti_get_tool_proxy_table($acceptedtoolproxies, 'tp_accepted');
+$acceptedtoolproxies = casa_filter_tool_proxy_types($toolproxies, CASA_TOOL_PROXY_STATE_ACCEPTED);
+$acceptedtoolproxieshtml = casa_get_tool_proxy_table($acceptedtoolproxies, 'tp_accepted');
 
-$rejectedtoolproxies = lti_filter_tool_proxy_types($toolproxies, LTI_TOOL_PROXY_STATE_REJECTED);
-$rejectedtoolproxieshtml = lti_get_tool_proxy_table($rejectedtoolproxies, 'tp_rejected');
+$rejectedtoolproxies = casa_filter_tool_proxy_types($toolproxies, CASA_TOOL_PROXY_STATE_REJECTED);
+$rejectedtoolproxieshtml = casa_get_tool_proxy_table($rejectedtoolproxies, 'tp_rejected');
 
 $tab = optional_param('tab', '', PARAM_ALPHAEXT);
 $configuredselected = '';
@@ -85,10 +85,10 @@ switch ($tab) {
         $configuredselected = 'class="selected"';
         break;
 }
-$registertype = get_string('registertype', 'lti');
-$config = get_string('manage_tools', 'lti');
+$registertype = get_string('registertype', 'casa');
+$config = get_string('manage_tools', 'casa');
 
-$registertypeurl = "{$CFG->wwwroot}/mod/lti/registersettings.php?action=add&amp;sesskey={$USER->sesskey}&amp;tab=tool_proxy";
+$registertypeurl = "{$CFG->wwwroot}/mod/casa/registersettings.php?action=add&amp;sesskey={$USER->sesskey}&amp;tab=tool_proxy";
 
 $template = <<< EOD
 <div id="tp_tabs" class="yui-navset">
@@ -181,9 +181,9 @@ $template = <<< EOD
 EOD;
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('manage_tool_proxies', 'lti'), 2);
-echo $OUTPUT->heading(new lang_string('toolproxy', 'lti') .
-        $OUTPUT->help_icon('toolproxy', 'lti'), 3);
+echo $OUTPUT->heading(get_string('manage_tool_proxies', 'casa'), 2);
+echo $OUTPUT->heading(new lang_string('toolproxy', 'casa') .
+        $OUTPUT->help_icon('toolproxy', 'casa'), 3);
 
 echo $OUTPUT->box_start('generalbox');
 

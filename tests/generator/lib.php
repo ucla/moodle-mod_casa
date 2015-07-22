@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * mod_lti data generator
+ * mod_casa data generator
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @category   test
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
@@ -29,13 +29,13 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * LTI module data generator class
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @category   test
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_lti_generator extends testing_module_generator {
+class mod_casa_generator extends testing_module_generator {
 
     public function create_instance($record = null, array $options = null) {
         $record  = (object) (array) $record;

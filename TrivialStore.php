@@ -35,7 +35,7 @@
 /**
  * This file contains a Trivial memory-based store - no support for tokens
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright IMS Global Learning Consortium
  *
  * @author Charles Severance csev@umich.edu
@@ -43,7 +43,7 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0
  */
 
-namespace moodle\mod\lti; // Using a namespace as the basicLTI module imports classes with the same names.
+namespace moodle\mod\casa; // Using a namespace as the basicLTI module imports classes with the same names.
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -70,7 +70,7 @@ class TrivialOAuthDataStore extends OAuthDataStore {
      *
      * @param string $consumerkey     Consumer key
      *
-     * @return moodle\mod\lti\OAuthConsumer  OAuthConsumer object
+     * @return moodle\mod\casa\OAuthConsumer  OAuthConsumer object
      */
     public function lookup_consumer($consumerkey) {
         if (strpos($consumerkey, "http://" ) === 0) {
@@ -87,11 +87,11 @@ class TrivialOAuthDataStore extends OAuthDataStore {
     /**
      * Create a dummy OAuthToken object for a consumer
      *
-     * @param moodle\mod\lti\OAuthConsumer $consumer     Consumer
+     * @param moodle\mod\casa\OAuthConsumer $consumer     Consumer
      * @param string $tokentype    Type of token
      * @param string $token        Token ID
      *
-     * @return moodle\mod\lti\OAuthToken OAuthToken object
+     * @return moodle\mod\casa\OAuthToken OAuthToken object
      */
     public function lookup_token($consumer, $tokentype, $token) {
         return new OAuthToken($consumer, '');
@@ -100,7 +100,7 @@ class TrivialOAuthDataStore extends OAuthDataStore {
     /**
      * Nonce values are not checked so just return a null
      *
-     * @param moodle\mod\lti\OAuthConsumer $consumer     Consumer
+     * @param moodle\mod\casa\OAuthConsumer $consumer     Consumer
      * @param string $token        Token ID
      * @param string $nonce        Nonce value
      * @param string $timestamp    Timestamp
@@ -117,7 +117,7 @@ class TrivialOAuthDataStore extends OAuthDataStore {
     /**
      * Tokens are not used so just return a null.
      *
-     * @param moodle\mod\lti\OAuthConsumer $consumer     Consumer
+     * @param moodle\mod\casa\OAuthConsumer $consumer     Consumer
      *
      * @return null
      */
@@ -129,7 +129,7 @@ class TrivialOAuthDataStore extends OAuthDataStore {
      * Tokens are not used so just return a null.
      *
      * @param string $token        Token ID
-     * @param moodle\mod\lti\OAuthConsumer $consumer     Consumer
+     * @param moodle\mod\casa\OAuthConsumer $consumer     Consumer
      *
      * @return null
      */

@@ -15,21 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_lti course module viewed event.
+ * The mod_casa course module viewed event.
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @copyright  2013 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_lti\event;
+namespace mod_casa\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_lti course module viewed event class.
+ * The mod_casa course module viewed event class.
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @since      Moodle 2.7
  * @copyright  2013 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -40,7 +40,7 @@ class course_module_viewed extends \core\event\course_module_viewed {
      * Init method.
      */
     protected function init() {
-        $this->data['objecttable'] = 'lti';
+        $this->data['objecttable'] = 'casa';
         $this->data['crud'] = 'r';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }

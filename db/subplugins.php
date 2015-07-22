@@ -17,7 +17,7 @@
 /**
  * LTI subplugin types declaration
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @copyright  2012 Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,6 +25,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $subplugins = array(
-    'ltisource' => 'mod/lti/source',
-    'ltiservice' => 'mod/lti/service'
+    'casasource' => 'mod/casa/source',
+    'casaservice' => 'mod/casa/service'
 );

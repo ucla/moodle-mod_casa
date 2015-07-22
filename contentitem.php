@@ -17,15 +17,15 @@
 /**
  * Display a page containing an iframe for the content-item selection process.
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2015 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once('../../config.php');
-require_once($CFG->dirroot.'/mod/lti/lib.php');
-require_once($CFG->dirroot.'/mod/lti/locallib.php');
+require_once($CFG->dirroot.'/mod/casa/lib.php');
+require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
 $courseid = required_param('course', PARAM_INT);
 $sectionid = required_param('section', PARAM_INT);
@@ -38,7 +38,7 @@ $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
 require_login($course);
 
-$url = new moodle_url('/mod/lti/contentitem.php', array('course' => $courseid));
+$url = new moodle_url('/mod/casa/contentitem.php', array('course' => $courseid));
 $PAGE->set_url($url);
 
 $pagetitle = strip_tags($course->shortname);
@@ -50,11 +50,11 @@ $PAGE->set_pagelayout('incourse');
 echo $OUTPUT->header();
 echo $OUTPUT->box_start('generalbox');
 
-$contentitem = new moodle_url('/mod/lti/contentitem2.php',
+$contentitem = new moodle_url('/mod/casa/contentitem2.php',
     array('course' => $courseid, 'section' => $sectionid, 'id' => $id, 'sr' => $sectionreturn, 'title' => $title));
 
 echo "<p id=\"id_warning\" style=\"display: none; color: red; font-weight: bold; margin-top: 1em; padding-top: 1em;\">\n";
-echo get_string('register_warning', 'lti');
+echo get_string('register_warning', 'casa');
 echo "\n</p>\n";
 
 echo '<iframe id="contentframe" height="600px" width="100%" src="' . $contentitem->out() . '" onload="doOnload()"></iframe>';
@@ -68,9 +68,9 @@ $resize = '
               el.style.display = \'block\';
             }
             function doOnload() {
-                window.clearTimeout(mod_lti_timer);
+                window.clearTimeout(mod_casa_timer);
             }
-            var mod_lti_timer = window.setTimeout(doReveal, 20000);
+            var mod_casa_timer = window.setTimeout(doReveal, 20000);
             YUI().use("node", "event", function(Y) {
                 //Take scrollbars off the outer document to prevent double scroll bar effect
                 var doc = Y.one("body");

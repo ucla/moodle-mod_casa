@@ -33,9 +33,9 @@
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu.
 
 /**
- * This file contains the lti module restore class
+ * This file contains the casa module restore class
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu
  * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
@@ -47,13 +47,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/lti/backup/moodle2/restore_lti_stepslib.php');
+require_once($CFG->dirroot . '/mod/casa/backup/moodle2/restore_casa_stepslib.php');
 
 /**
- * basiclti restore task that provides all the settings and steps to perform one
+ * basiccasa restore task that provides all the settings and steps to perform one
  * complete restore of the activity
  */
-class restore_lti_activity_task extends restore_activity_task {
+class restore_casa_activity_task extends restore_activity_task {
 
     /**
      * Define (add) particular settings this activity can have
@@ -67,7 +67,7 @@ class restore_lti_activity_task extends restore_activity_task {
      */
     protected function define_my_steps() {
         // Label only has one structure step.
-        $this->add_step(new restore_lti_activity_structure_step('lti_structure', 'lti.xml'));
+        $this->add_step(new restore_casa_activity_structure_step('casa_structure', 'casa.xml'));
     }
 
     /**
@@ -77,7 +77,7 @@ class restore_lti_activity_task extends restore_activity_task {
     static public function define_decode_contents() {
         $contents = array();
 
-        $contents[] = new restore_decode_content('lti', array('intro'), 'lti');
+        $contents[] = new restore_decode_content('casa', array('intro'), 'casa');
 
         return $contents;
     }
@@ -89,8 +89,8 @@ class restore_lti_activity_task extends restore_activity_task {
     static public function define_decode_rules() {
         $rules = array();
 
-        $rules[] = new restore_decode_rule('LTIVIEWBYID', '/mod/lti/view.php?id=$1', 'course_module');
-        $rules[] = new restore_decode_rule('LTIINDEX', '/mod/lti/index.php?id=$1', 'course');
+        $rules[] = new restore_decode_rule('CASAVIEWBYID', '/mod/casa/view.php?id=$1', 'course_module');
+        $rules[] = new restore_decode_rule('CASAINDEX', '/mod/casa/index.php?id=$1', 'course');
 
         return $rules;
 
@@ -99,15 +99,15 @@ class restore_lti_activity_task extends restore_activity_task {
     /**
      * Define the restore log rules that will be applied
      * by the {@link restore_logs_processor} when restoring
-     * basiclti logs. It must return one array
+     * basiccasa logs. It must return one array
      * of {@link restore_log_rule} objects
      */
     static public function define_restore_log_rules() {
         $rules = array();
 
-        $rules[] = new restore_log_rule('lti', 'add', 'view.php?id={course_module}', '{lti}');
-        $rules[] = new restore_log_rule('lti', 'update', 'view.php?id={course_module}', '{lti}');
-        $rules[] = new restore_log_rule('lti', 'view', 'view.php?id={course_module}', '{lti}');
+        $rules[] = new restore_log_rule('casa', 'add', 'view.php?id={course_module}', '{casa}');
+        $rules[] = new restore_log_rule('casa', 'update', 'view.php?id={course_module}', '{casa}');
+        $rules[] = new restore_log_rule('casa', 'view', 'view.php?id={course_module}', '{casa}');
 
         return $rules;
     }
@@ -125,13 +125,13 @@ class restore_lti_activity_task extends restore_activity_task {
     static public function define_restore_log_rules_for_course() {
         $rules = array();
 
-        $rules[] = new restore_log_rule('lti', 'view all', 'index.php?id={course}', null);
+        $rules[] = new restore_log_rule('casa', 'view all', 'index.php?id={course}', null);
 
         return $rules;
     }
 
     /**
-     * Getter for ltisource plugins.
+     * Getter for casasource plugins.
      *
      * @return int
      */

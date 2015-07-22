@@ -15,12 +15,45 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'ltiservice_toolproxy', language 'en'
+ * LTI service plugin info.
  *
- * @package    ltiservice_toolproxy
+ * @package    mod_casa
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace mod_casa\plugininfo;
 
-$string['pluginname'] = 'Tool Proxy Service';
+use core\plugininfo\base;
+
+defined('MOODLE_INTERNAL') || die();
+
+
+/**
+ * The mod_casa\plugininfo\casaservice class.
+ *
+ * @package    mod_casa
+ * @since      Moodle 2.8
+ * @copyright  2014 Vital Source Technologies http://vitalsource.com
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class casaservice extends base {
+
+    /**
+     * Should there be a way to uninstall the plugin via the administration UI?
+     *
+     * Uninstallation is not allowed for core subplugins.
+     *
+     * @return boolean
+     */
+    public function is_uninstall_allowed() {
+
+        if ($this->is_standard()) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+}

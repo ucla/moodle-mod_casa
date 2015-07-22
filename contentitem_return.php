@@ -17,7 +17,7 @@
 /**
  * Handle the return from the Tool Provider after selecting a content item.
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2015 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,14 +25,14 @@
 
 require_once('../../config.php');
 require_once($CFG->dirroot . '/course/modlib.php');
-require_once($CFG->dirroot . '/mod/lti/lib.php');
-require_once($CFG->dirroot . '/mod/lti/locallib.php');
-require_once($CFG->dirroot . '/mod/lti/OAuth.php');
-require_once($CFG->dirroot . '/mod/lti/TrivialStore.php');
+require_once($CFG->dirroot . '/mod/casa/lib.php');
+require_once($CFG->dirroot . '/mod/casa/locallib.php');
+require_once($CFG->dirroot . '/mod/casa/OAuth.php');
+require_once($CFG->dirroot . '/mod/casa/TrivialStore.php');
 require_once($CFG->dirroot . '/mod/url/lib.php');
 require_once($CFG->dirroot . '/mod/url/locallib.php');
 
-use moodle\mod\lti as lti;
+use moodle\mod\casa as casa;
 
 $courseid = required_param('course', PARAM_INT);
 $sectionid = required_param('section', PARAM_INT);
@@ -47,10 +47,10 @@ $errormsg = optional_param('lti_errormsg', '', PARAM_TEXT);
 $msg = optional_param('lti_msg', '', PARAM_TEXT);
 
 $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
-$module = $DB->get_record('modules', array('name' => 'lti'), '*', MUST_EXIST);
+$module = $DB->get_record('modules', array('name' => 'casa'), '*', MUST_EXIST);
 $urlmodule = $DB->get_record('modules', array('name' => 'url'), '*', MUST_EXIST);
-$tool = lti_get_type($id);
-$typeconfig = lti_get_type_config($id);
+$tool = casa_get_type($id);
+$typeconfig = casa_get_type_config($id);
 
 require_login($course);
 require_sesskey();
@@ -59,21 +59,21 @@ if ($key !== $typeconfig['resourcekey']) {
     throw new Exception('Consumer key is incorrect.');
 }
 
-$store = new lti\TrivialOAuthDataStore();
+$store = new casa\TrivialOAuthDataStore();
 $store->add_consumer($key, $typeconfig['password']);
 
-$server = new lti\OAuthServer($store);
+$server = new casa\OAuthServer($store);
 
-$method = new lti\OAuthSignatureMethod_HMAC_SHA1();
+$method = new casa\OAuthSignatureMethod_HMAC_SHA1();
 $server->add_signature_method($method);
-$request = lti\OAuthRequest::from_request();
+$request = casa\OAuthRequest::from_request();
 
 try {
     $server->verify_request($request);
 } catch (\Exception $e) {
     $message = $e->getMessage();
     debugging($e->getMessage() . "\n");
-    throw new lti\OAuthException("OAuth signature failed: " . $message);
+    throw new casa\OAuthException("OAuth signature failed: " . $message);
 }
 
 if ($items) {
@@ -109,11 +109,12 @@ if (count($items->{'@graph'}) > 0) {
             } else {
                 continue; // can't do anything with this
             }
+            $moduleinfo->display = get_config('url', 'display');
             $moduleinfo = add_moduleinfo($moduleinfo, $course, null);
             continue;
         }
         
-        $moduleinfo->modulename = 'lti';
+        $moduleinfo->modulename = 'casa';
         $moduleinfo->name = '';
         if (isset($item->title)) {
             $moduleinfo->name = $item->title;
@@ -130,14 +131,14 @@ if (count($items->{'@graph'}) > 0) {
         } else {
             $moduleinfo->typeid = $id;
         }
-        $moduleinfo->launchcontainer = LTI_LAUNCH_CONTAINER_DEFAULT;
+        $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_DEFAULT;
         if (isset($item->placementAdvice->presentationDocumentTarget)) {
             if ($item->presentationDocumentTarget === 'window') {
-                $moduleinfo->launchcontainer = LTI_LAUNCH_CONTAINER_WINDOW;
+                $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_WINDOW;
             } else if ($item->presentationDocumentTarget === 'frame') {
-                $moduleinfo->launchcontainer = LTI_LAUNCH_CONTAINER_EMBED_NO_BLOCKS;
+                $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_EMBED_NO_BLOCKS;
             } else if ($item->presentationDocumentTarget === 'iframe') {
-                $moduleinfo->launchcontainer = LTI_LAUNCH_CONTAINER_EMBED;
+                $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_EMBED;
             }
         }
         if (isset($item->icon) && isset($item->icon->{'@id'})) {
@@ -156,14 +157,14 @@ if (count($items->{'@graph'}) > 0) {
         }
         $moduleinfo = add_moduleinfo($moduleinfo, $course, null);
     }
-    $clickhere = get_string('click_to_continue', 'lti', (object)array('link' => $continueurl->out()));
+    $clickhere = get_string('click_to_continue', 'casa', (object)array('link' => $continueurl->out()));
 } else {
-    $clickhere = get_string('return_to_course', 'lti', (object)array('link' => $continueurl->out()));
+    $clickhere = get_string('return_to_course', 'casa', (object)array('link' => $continueurl->out()));
 }
 
 if (!empty($errormsg) || !empty($msg)) {
 
-    $url = new moodle_url('/mod/lti/contentitem_return.php',
+    $url = new moodle_url('/mod/casa/contentitem_return.php',
         array('course' => $courseid));
     $PAGE->set_url($url);
 
@@ -175,14 +176,14 @@ if (!empty($errormsg) || !empty($msg)) {
 
     echo $OUTPUT->header();
 
-    if (!empty($lti) and !empty($context)) {
-        echo $OUTPUT->heading(format_string($lti->name, true, array('context' => $context)));
+    if (!empty($casa) and !empty($context)) {
+        echo $OUTPUT->heading(format_string($casa->name, true, array('context' => $context)));
     }
 
     if (!empty($errormsg)) {
 
         echo '<p style="color: #f00; font-weight: bold; margin: 1em;">';
-        echo get_string('lti_launch_error', 'lti') . ' ';
+        echo get_string('casa_launch_error', 'casa') . ' ';
         p($errormsg);
         echo "</p>\n";
 

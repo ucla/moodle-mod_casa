@@ -17,15 +17,15 @@
 /**
  * Handle the return back to Moodle from the tool provider
  *
- * @package mod_lti
+ * @package    mod_casa
  * @copyright  Copyright (c) 2011 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author     Chris Scribner
  */
 
 require_once('../../config.php');
-require_once($CFG->dirroot.'/mod/lti/lib.php');
-require_once($CFG->dirroot.'/mod/lti/locallib.php');
+require_once($CFG->dirroot.'/mod/casa/lib.php');
+require_once($CFG->dirroot.'/mod/casa/locallib.php');
 
 $courseid = required_param('course', PARAM_INT);
 $instanceid = optional_param('instanceid', 0, PARAM_INT);
@@ -34,14 +34,14 @@ $errormsg = optional_param('lti_errormsg', '', PARAM_TEXT);
 $msg = optional_param('lti_msg', '', PARAM_TEXT);
 $unsigned = optional_param('unsigned', '0', PARAM_INT);
 
-$launchcontainer = optional_param('launch_container', LTI_LAUNCH_CONTAINER_WINDOW, PARAM_INT);
+$launchcontainer = optional_param('launch_container', CASA_LAUNCH_CONTAINER_WINDOW, PARAM_INT);
 
 $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
-$lti = null;
+$casa = null;
 $context = null;
 if (!empty($instanceid)) {
-    $lti = $DB->get_record('lti', array('id' => $instanceid), '*', MUST_EXIST);
-    $cm = get_coursemodule_from_instance('lti', $lti->id, $lti->course, false, MUST_EXIST);
+    $casa = $DB->get_record('casa', array('id' => $instanceid), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('casa', $casa->id, $casa->course, false, MUST_EXIST);
     $context = context_module::instance($cm->id);
 }
 
@@ -50,7 +50,7 @@ require_login($course);
 require_sesskey();
 
 if (!empty($errormsg) || !empty($msg)) {
-    $url = new moodle_url('/mod/lti/return.php', array('course' => $courseid));
+    $url = new moodle_url('/mod/casa/return.php', array('course' => $courseid));
     $PAGE->set_url($url);
 
     $pagetitle = strip_tags($course->shortname);
@@ -58,21 +58,21 @@ if (!empty($errormsg) || !empty($msg)) {
     $PAGE->set_heading($course->fullname);
 
     // Avoid frame-in-frame action.
-    if ($launchcontainer == LTI_LAUNCH_CONTAINER_EMBED || $launchcontainer == LTI_LAUNCH_CONTAINER_EMBED_NO_BLOCKS) {
+    if ($launchcontainer == CASA_LAUNCH_CONTAINER_EMBED || $launchcontainer == CASA_LAUNCH_CONTAINER_EMBED_NO_BLOCKS) {
         $PAGE->set_pagelayout('embedded');
     } else {
         $PAGE->set_pagelayout('incourse');
     }
 
     echo $OUTPUT->header();
-    if (!empty($lti) and !empty($context)) {
-        echo $OUTPUT->heading(format_string($lti->name, true, array('context' => $context)));
+    if (!empty($casa) and !empty($context)) {
+        echo $OUTPUT->heading(format_string($casa->name, true, array('context' => $context)));
     }
 
     if (!empty($errormsg)) {
 
         echo '<p style="color: #f00; font-weight: bold; margin: 1em;">';
-        echo get_string('lti_launch_error', 'lti') . ' ';
+        echo get_string('casa_launch_error', 'casa') . ' ';
         p($errormsg);
         echo "</p>\n";
 
@@ -82,19 +82,19 @@ if (!empty($errormsg) || !empty($msg)) {
             echo '<br /><br />';
             $links = new stdClass();
 
-            if (has_capability('mod/lti:addcoursetool', $contextcourse)) {
-                $coursetooleditor = new moodle_url('/mod/lti/instructor_edit_tool_type.php',
+            if (has_capability('mod/casa:addcoursetool', $contextcourse)) {
+                $coursetooleditor = new moodle_url('/mod/casa/instructor_edit_tool_type.php',
                     array('course' => $courseid, 'action' => 'add', 'sesskey' => sesskey()));
                 $links->course_tool_editor = $coursetooleditor->out(false);
 
-                echo get_string('lti_launch_error_unsigned_help', 'lti', $links);
+                echo get_string('casa_launch_error_unsigned_help', 'casa', $links);
             }
 
-            if (!empty($lti) && has_capability('mod/lti:requesttooladd', $contextcourse)) {
-                $adminrequesturl = new moodle_url('/mod/lti/request_tool.php', array('instanceid' => $lti->id, 'sesskey' => sesskey()));
+            if (!empty($casa) && has_capability('mod/casa:requesttooladd', $contextcourse)) {
+                $adminrequesturl = new moodle_url('/mod/casa/request_tool.php', array('instanceid' => $casa->id, 'sesskey' => sesskey()));
                 $links->admin_request_url = $adminrequesturl->out(false);
 
-                echo get_string('lti_launch_error_tool_request', 'lti', $links);
+                echo get_string('casa_launch_error_tool_request', 'casa', $links);
             }
         }
 
@@ -116,7 +116,7 @@ if (!empty($errormsg) || !empty($msg)) {
     $url = $courseurl->out();
 
     // Avoid frame-in-frame action.
-    if ($launchcontainer == LTI_LAUNCH_CONTAINER_EMBED || $launchcontainer == LTI_LAUNCH_CONTAINER_EMBED_NO_BLOCKS) {
+    if ($launchcontainer == CASA_LAUNCH_CONTAINER_EMBED || $launchcontainer == CASA_LAUNCH_CONTAINER_EMBED_NO_BLOCKS) {
         // Output a page containing some script to break out of frames and redirect them.
 
         echo '<html><body>';
@@ -131,7 +131,7 @@ if (!empty($errormsg) || !empty($msg)) {
             </script>
         ";
 
-        $clickhere = get_string('return_to_course', 'lti', (object)array('link' => $url));
+        $clickhere = get_string('return_to_course', 'casa', (object)array('link' => $url));
 
         $noscript = "
             <noscript>

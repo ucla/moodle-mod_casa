@@ -17,26 +17,26 @@
 /**
  * This file contains a class definition for the Tool Settings service
  *
- * @package    ltiservice_toolsettings
+ * @package    casaservice_toolsettings
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
-namespace ltiservice_toolsettings\local\service;
+namespace casaservice_toolsettings\local\service;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
  * A service implementing Tool Settings.
  *
- * @package    ltiservice_toolsettings
+ * @package    casaservice_toolsettings
  * @since      Moodle 2.8
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class toolsettings extends \mod_lti\local\ltiservice\service_base {
+class toolsettings extends \mod_casa\local\casaservice\service_base {
 
     /**
      * Class constructor.
@@ -58,9 +58,9 @@ class toolsettings extends \mod_lti\local\ltiservice\service_base {
 
         if (empty($this->resources)) {
             $this->resources = array();
-            $this->resources[] = new \ltiservice_toolsettings\local\resource\systemsettings($this);
-            $this->resources[] = new \ltiservice_toolsettings\local\resource\contextsettings($this);
-            $this->resources[] = new \ltiservice_toolsettings\local\resource\linksettings($this);
+            $this->resources[] = new \casaservice_toolsettings\local\resource\systemsettings($this);
+            $this->resources[] = new \casaservice_toolsettings\local\resource\contextsettings($this);
+            $this->resources[] = new \casaservice_toolsettings\local\resource\linksettings($this);
         }
 
         return $this->resources;
@@ -99,7 +99,7 @@ class toolsettings extends \mod_lti\local\ltiservice\service_base {
      * @param array $settings        Settings
      * @param boolean $simpleformat  <code>true</code> if simple JSON is to be returned
      * @param string $type           JSON-LD type
-     * @param \mod_lti\local\ltiservice\resource_base $resource       Resource handling the request
+     * @param \mod_casa\local\casaservice\resource_base $resource       Resource handling the request
      *
      * @return string
      */

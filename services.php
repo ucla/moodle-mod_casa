@@ -17,7 +17,7 @@
 /**
  * This file contains a controller for receiving LTI service requests
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,10 +27,10 @@ define('NO_DEBUG_DISPLAY', true);
 define('NO_MOODLE_COOKIES', true);
 
 require_once(dirname(__FILE__) . '/../../config.php');
-require_once($CFG->dirroot . '/mod/lti/locallib.php');
+require_once($CFG->dirroot . '/mod/casa/locallib.php');
 
 
-$response = new \mod_lti\local\ltiservice\response();
+$response = new \mod_casa\local\casaservice\response();
 
 $isget = $response->get_request_method() == 'GET';
 
@@ -45,7 +45,7 @@ $path = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
 
 $accept = $response->get_accept();
 
-$services = lti_get_services();
+$services = casa_get_services();
 foreach ($services as $service) {
     $resources = $service->get_resources();
     foreach ($resources as $resource) {

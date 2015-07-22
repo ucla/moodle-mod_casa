@@ -17,21 +17,21 @@
 /**
  * This file contains an abstract definition of an LTI service
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
-namespace mod_lti\local\ltiservice;
+namespace mod_casa\local\casaservice;
 
 defined('MOODLE_INTERNAL') || die;
 
 /**
- * The mod_lti\local\ltiservice\response class.
+ * The mod_casa\local\casaservice\response class.
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @since      Moodle 2.8
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -71,7 +71,7 @@ class response {
             200 => 'OK',
             201 => 'Created',
             202 => 'Accepted',
-            300 => 'Multiple Choices',
+            300 => 'Mucasaple Choices',
             400 => 'Bad Request',
             401 => 'Unauthorized',
             402 => 'Payment Required',

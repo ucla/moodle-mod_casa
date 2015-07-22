@@ -33,9 +33,9 @@
 // Contact info: Marc Alier Forment granludo @ gmail.com or marc.alier @ upc.edu.
 
 /**
- * This file contains the library of functions and constants for the lti module
+ * This file contains the library of functions and constants for the casa module
  *
- * @package mod_lti
+ * @package mod_casa
  * @copyright  2009 Marc Alier, Jordi Piguillem, Nikolas Galanis
  *  marc.alier@upc.edu
  * @copyright  2009 Universitat Politecnica de Catalunya http://www.upc.edu
@@ -49,43 +49,43 @@
 defined('MOODLE_INTERNAL') || die;
 
 // TODO: Switch to core oauthlib once implemented - MDL-30149.
-use moodle\mod\lti as lti;
+use moodle\mod\casa as casa;
 
-require_once($CFG->dirroot.'/mod/lti/OAuth.php');
+require_once($CFG->dirroot.'/mod/casa/OAuth.php');
 
-define('LTI_URL_DOMAIN_REGEX', '/(?:https?:\/\/)?(?:www\.)?([^\/]+)(?:\/|$)/i');
+define('CASA_URL_DOMAIN_REGEX', '/(?:https?:\/\/)?(?:www\.)?([^\/]+)(?:\/|$)/i');
 
-define('LTI_LAUNCH_CONTAINER_DEFAULT', 1);
-define('LTI_LAUNCH_CONTAINER_EMBED', 2);
-define('LTI_LAUNCH_CONTAINER_EMBED_NO_BLOCKS', 3);
-define('LTI_LAUNCH_CONTAINER_WINDOW', 4);
-define('LTI_LAUNCH_CONTAINER_REPLACE_MOODLE_WINDOW', 5);
+define('CASA_LAUNCH_CONTAINER_DEFAULT', 1);
+define('CASA_LAUNCH_CONTAINER_EMBED', 2);
+define('CASA_LAUNCH_CONTAINER_EMBED_NO_BLOCKS', 3);
+define('CASA_LAUNCH_CONTAINER_WINDOW', 4);
+define('CASA_LAUNCH_CONTAINER_REPLACE_MOODLE_WINDOW', 5);
 
-define('LTI_TOOL_STATE_ANY', 0);
-define('LTI_TOOL_STATE_CONFIGURED', 1);
-define('LTI_TOOL_STATE_PENDING', 2);
-define('LTI_TOOL_STATE_REJECTED', 3);
-define('LTI_TOOL_PROXY_TAB', 4);
+define('CASA_TOOL_STATE_ANY', 0);
+define('CASA_TOOL_STATE_CONFIGURED', 1);
+define('CASA_TOOL_STATE_PENDING', 2);
+define('CASA_TOOL_STATE_REJECTED', 3);
+define('CASA_TOOL_PROXY_TAB', 4);
 
-define('LTI_TOOL_PROXY_STATE_CONFIGURED', 1);
-define('LTI_TOOL_PROXY_STATE_PENDING', 2);
-define('LTI_TOOL_PROXY_STATE_ACCEPTED', 3);
-define('LTI_TOOL_PROXY_STATE_REJECTED', 4);
+define('CASA_TOOL_PROXY_STATE_CONFIGURED', 1);
+define('CASA_TOOL_PROXY_STATE_PENDING', 2);
+define('CASA_TOOL_PROXY_STATE_ACCEPTED', 3);
+define('CASA_TOOL_PROXY_STATE_REJECTED', 4);
 
-define('LTI_SETTING_NEVER', 0);
-define('LTI_SETTING_ALWAYS', 1);
-define('LTI_SETTING_DELEGATE', 2);
+define('CASA_SETTING_NEVER', 0);
+define('CASA_SETTING_ALWAYS', 1);
+define('CASA_SETTING_DELEGATE', 2);
 
 /**
  * Prints a Basic LTI activity
  *
- * $param int $basicltiid       Basic LTI activity id
+ * $param int $basiccasaid       Basic LTI activity id
  */
-function lti_view($instance) {
+function casa_view($instance) {
     global $PAGE, $CFG;
 
     if (empty($instance->typeid)) {
-        $tool = lti_get_tool_by_url_match($instance->toolurl, $instance->course);
+        $tool = casa_get_tool_by_url_match($instance->toolurl, $instance->course);
         if ($tool) {
             $typeid = $tool->id;
         } else {
@@ -93,13 +93,13 @@ function lti_view($instance) {
         }
     } else {
         $typeid = $instance->typeid;
-        $tool = lti_get_type($typeid);
+        $tool = casa_get_type($typeid);
     }
 
     if ($typeid) {
-        $typeconfig = lti_get_type_config($typeid);
+        $typeconfig = casa_get_type_config($typeid);
     } else {
-        // There is no admin configuration for this tool. Use configuration in the lti instance record plus some defaults.
+        // There is no admin configuration for this tool. Use configuration in the casa instance record plus some defaults.
         $typeconfig = (array)$instance;
 
         $typeconfig['sendname'] = $instance->instructorchoicesendname;
@@ -118,7 +118,7 @@ function lti_view($instance) {
     }
 
     if (isset($tool->toolproxyid)) {
-        $toolproxy = lti_get_tool_proxy($tool->toolproxyid);
+        $toolproxy = casa_get_tool_proxy($tool->toolproxyid);
         $key = $toolproxy->guid;
         $secret = $toolproxy->secret;
     } else {
@@ -143,7 +143,7 @@ function lti_view($instance) {
     $endpoint = trim($endpoint);
 
     // If the current request is using SSL and a secure tool URL is specified, use it.
-    if (lti_request_is_using_ssl() && !empty($instance->securetoolurl)) {
+    if (casa_request_is_using_ssl() && !empty($instance->securetoolurl)) {
         $endpoint = trim($instance->securetoolurl);
     }
 
@@ -153,7 +153,7 @@ function lti_view($instance) {
             $endpoint = trim($instance->securetoolurl);
         }
 
-        $endpoint = lti_ensure_url_is_https($endpoint);
+        $endpoint = casa_ensure_url_is_https($endpoint);
     } else {
         if (!strstr($endpoint, '://')) {
             $endpoint = 'http://' . $endpoint;
@@ -164,44 +164,44 @@ function lti_view($instance) {
 
     $course = $PAGE->course;
     $islti2 = isset($tool->toolproxyid);
-    $allparams = lti_build_request($instance, $typeconfig, $course, $typeid, $islti2);
+    $allparams = casa_build_request($instance, $typeconfig, $course, $typeid, $islti2);
     if ($islti2) {
-        $requestparams = lti_build_request_lti2($tool, $allparams);
+        $requestparams = casa_build_request_lti2($tool, $allparams);
     } else {
         $requestparams = $allparams;
     }
-    $requestparams = array_merge($requestparams, lti_build_standard_request($instance, $orgid, $islti2));
+    $requestparams = array_merge($requestparams, casa_build_standard_request($instance, $orgid, $islti2));
     $customstr = '';
     if (isset($typeconfig['customparameters'])) {
         $customstr = $typeconfig['customparameters'];
     }
-    $requestparams = array_merge($requestparams, lti_build_custom_parameters($toolproxy, $tool, $instance, $allparams, $customstr,
+    $requestparams = array_merge($requestparams, casa_build_custom_parameters($toolproxy, $tool, $instance, $allparams, $customstr,
         $instance->instructorcustomparameters, $islti2));
 
-    $launchcontainer = lti_get_launch_container($instance, $typeconfig);
+    $launchcontainer = casa_get_launch_container($instance, $typeconfig);
     $returnurlparams = array('course' => $course->id,
                              'launch_container' => $launchcontainer,
                              'instanceid' => $instance->id,
                              'sesskey' => sesskey());
 
     // Add the return URL. We send the launch container along to help us avoid frames-within-frames when the user returns.
-    $url = new \moodle_url('/mod/lti/return.php', $returnurlparams);
+    $url = new \moodle_url('/mod/casa/return.php', $returnurlparams);
     $returnurl = $url->out(false);
 
     if (isset($typeconfig['forcessl']) && ($typeconfig['forcessl'] == '1')) {
-        $returnurl = lti_ensure_url_is_https($returnurl);
+        $returnurl = casa_ensure_url_is_https($returnurl);
     }
 
     $target = '';
     switch($launchcontainer) {
-        case LTI_LAUNCH_CONTAINER_EMBED:
-        case LTI_LAUNCH_CONTAINER_EMBED_NO_BLOCKS:
+        case CASA_LAUNCH_CONTAINER_EMBED:
+        case CASA_LAUNCH_CONTAINER_EMBED_NO_BLOCKS:
             $target = 'iframe';
             break;
-        case LTI_LAUNCH_CONTAINER_REPLACE_MOODLE_WINDOW:
+        case CASA_LAUNCH_CONTAINER_REPLACE_MOODLE_WINDOW:
             $target = 'frame';
             break;
-        case LTI_LAUNCH_CONTAINER_WINDOW:
+        case CASA_LAUNCH_CONTAINER_WINDOW:
             $target = 'window';
             break;
     }
@@ -212,9 +212,9 @@ function lti_view($instance) {
     $requestparams['launch_presentation_return_url'] = $returnurl;
 
     // Allow request params to be updated by sub-plugins.
-    $plugins = core_component::get_plugin_list('ltisource');
+    $plugins = core_component::get_plugin_list('casasource');
     foreach (array_keys($plugins) as $plugin) {
-        $pluginparams = component_callback('ltisource_'.$plugin, 'before_launch',
+        $pluginparams = component_callback('casasource_'.$plugin, 'before_launch',
             array($instance, $endpoint, $requestparams), array());
 
         if (!empty($pluginparams) && is_array($pluginparams)) {
@@ -223,7 +223,7 @@ function lti_view($instance) {
     }
 
     if (!empty($key) && !empty($secret)) {
-        $parms = lti_sign_parameters($requestparams, $endpoint, "POST", $key, $secret);
+        $parms = casa_sign_parameters($requestparams, $endpoint, "POST", $key, $secret);
 
         $endpointurl = new \moodle_url($endpoint);
         $endpointparams = $endpointurl->params();
@@ -245,7 +245,7 @@ function lti_view($instance) {
 
     $debuglaunch = ( $instance->debuglaunch == 1 );
 
-    $content = lti_post_launch_html($parms, $endpoint, $debuglaunch);
+    $content = casa_post_launch_html($parms, $endpoint, $debuglaunch);
 
     echo $content;
 }
@@ -255,7 +255,7 @@ function lti_view($instance) {
  *
  * $param object $instance       Tool Proxy instance object
  */
-function lti_register($toolproxy) {
+function casa_register($toolproxy) {
     global $PAGE, $CFG;
 
     $key = $toolproxy->guid;
@@ -269,21 +269,21 @@ function lti_register($toolproxy) {
     $requestparams['reg_password'] = $secret;
 
     // Change the status to pending.
-    $toolproxy->state = LTI_TOOL_PROXY_STATE_PENDING;
-    lti_update_tool_proxy($toolproxy);
+    $toolproxy->state = CASA_TOOL_PROXY_STATE_PENDING;
+    casa_update_tool_proxy($toolproxy);
 
     // Add the profile URL.
-    $profileservice = lti_get_service_by_name('profile');
+    $profileservice = casa_get_service_by_name('profile');
     $profileservice->set_tool_proxy($toolproxy);
     $requestparams['tc_profile_url'] = $profileservice->parse_value('$ToolConsumerProfile.url');
 
     // Add the return URL.
     $returnurlparams = array('id' => $toolproxy->id, 'sesskey'=>sesskey());
-    $url = new \moodle_url('/mod/lti/registrationreturn.php', $returnurlparams);
+    $url = new \moodle_url('/mod/casa/registrationreturn.php', $returnurlparams);
     $returnurl = $url->out(false);
 
     $requestparams['launch_presentation_return_url'] = $returnurl;
-    $content = lti_post_launch_html($requestparams, $endpoint, false);
+    $content = casa_post_launch_html($requestparams, $endpoint, false);
 
     echo $content;
 }
@@ -298,7 +298,7 @@ function lti_register($toolproxy) {
  * @param null|int $launchid
  * @return stdClass
  */
-function lti_build_sourcedid($instanceid, $userid, $servicesalt, $typeid = null, $launchid = null) {
+function casa_build_sourcedid($instanceid, $userid, $servicesalt, $typeid = null, $launchid = null) {
     $data = new \stdClass();
 
     $data->instanceid = $instanceid;
@@ -332,18 +332,18 @@ function lti_build_sourcedid($instanceid, $userid, $servicesalt, $typeid = null,
  *
  * @return array                    Request details
  */
-function lti_build_request($instance, $typeconfig, $course, $typeid = null, $islti2 = false) {
+function casa_build_request($instance, $typeconfig, $course, $typeid = null, $islti2 = false) {
     global $USER, $CFG;
 
     if (empty($instance->cmid)) {
         $instance->cmid = 0;
     }
 
-    $role = lti_get_ims_role($USER, $instance->cmid, $instance->course, $islti2);
+    $role = casa_get_ims_role($USER, $instance->cmid, $instance->course, $islti2);
 
     $intro = '';
     if (!empty($instance->cmid)) {
-        $intro = format_module_intro('lti', $instance, $instance->cmid);
+        $intro = format_module_intro('casa', $instance, $instance->cmid);
         $intro = html_to_text($intro, 0, false);
 
         // This may look weird, but this is required for new lines
@@ -369,41 +369,41 @@ function lti_build_request($instance, $typeconfig, $course, $typeid = null, $isl
     $placementsecret = $instance->servicesalt;
 
     if ( isset($placementsecret) ) {
-        $sourcedid = json_encode(lti_build_sourcedid($instance->id, $USER->id, $placementsecret, $typeid));
+        $sourcedid = json_encode(casa_build_sourcedid($instance->id, $USER->id, $placementsecret, $typeid));
         $requestparams['lis_result_sourcedid'] = $sourcedid;
     }
 
     if ( isset($placementsecret) && ($islti2 ||
-         $typeconfig['acceptgrades'] == LTI_SETTING_ALWAYS ||
-         ($typeconfig['acceptgrades'] == LTI_SETTING_DELEGATE && $instance->instructorchoiceacceptgrades == LTI_SETTING_ALWAYS))) {
+         $typeconfig['acceptgrades'] == CASA_SETTING_ALWAYS ||
+         ($typeconfig['acceptgrades'] == CASA_SETTING_DELEGATE && $instance->instructorchoiceacceptgrades == CASA_SETTING_ALWAYS))) {
 
         // Add outcome service URL.
-        $serviceurl = new \moodle_url('/mod/lti/service.php');
+        $serviceurl = new \moodle_url('/mod/casa/service.php');
         $serviceurl = $serviceurl->out();
 
         $forcessl = false;
-        if (!empty($CFG->mod_lti_forcessl)) {
+        if (!empty($CFG->mod_casa_forcessl)) {
             $forcessl = true;
         }
 
         if ((isset($typeconfig['forcessl']) && ($typeconfig['forcessl'] == '1')) or $forcessl) {
-            $serviceurl = lti_ensure_url_is_https($serviceurl);
+            $serviceurl = casa_ensure_url_is_https($serviceurl);
         }
 
         $requestparams['lis_outcome_service_url'] = $serviceurl;
     }
 
     // Send user's name and email data if appropriate.
-    if ($islti2 || $typeconfig['sendname'] == LTI_SETTING_ALWAYS ||
-         ( $typeconfig['sendname'] == LTI_SETTING_DELEGATE && $instance->instructorchoicesendname == LTI_SETTING_ALWAYS ) ) {
+    if ($islti2 || $typeconfig['sendname'] == CASA_SETTING_ALWAYS ||
+         ( $typeconfig['sendname'] == CASA_SETTING_DELEGATE && $instance->instructorchoicesendname == CASA_SETTING_ALWAYS ) ) {
         $requestparams['lis_person_name_given'] = $USER->firstname;
         $requestparams['lis_person_name_family'] = $USER->lastname;
         $requestparams['lis_person_name_full'] = $USER->firstname . ' ' . $USER->lastname;
         $requestparams['ext_user_username'] = $USER->username;
     }
 
-    if ($islti2 || $typeconfig['sendemailaddr'] == LTI_SETTING_ALWAYS ||
-         ($typeconfig['sendemailaddr'] == LTI_SETTING_DELEGATE && $instance->instructorchoicesendemailaddr == LTI_SETTING_ALWAYS)) {
+    if ($islti2 || $typeconfig['sendemailaddr'] == CASA_SETTING_ALWAYS ||
+         ($typeconfig['sendemailaddr'] == CASA_SETTING_DELEGATE && $instance->instructorchoicesendemailaddr == CASA_SETTING_ALWAYS)) {
         $requestparams['lis_person_contact_email_primary'] = $USER->email;
     }
 
@@ -418,11 +418,11 @@ function lti_build_request($instance, $typeconfig, $course, $typeid = null, $isl
  *
  * @return array                    Request details
  */
-function lti_build_request_lti2($tool, $params) {
+function casa_build_request_lti2($tool, $params) {
 
     $requestparams = array();
 
-    $capabilities = lti_get_capabilities();
+    $capabilities = casa_get_capabilities();
     $enabledcapabilities = explode("\n", $tool->enabledcapability);
     foreach ($enabledcapabilities as $capability) {
         if (array_key_exists($capability, $capabilities)) {
@@ -448,7 +448,7 @@ function lti_build_request_lti2($tool, $params) {
  *
  * @return array                    Request details
  */
-function lti_build_standard_request($instance, $orgid, $islti2) {
+function casa_build_standard_request($instance, $orgid, $islti2) {
     global $CFG;
 
     $requestparams = array();
@@ -473,13 +473,13 @@ function lti_build_standard_request($instance, $orgid, $islti2) {
     } else {
         $requestparams['lti_version'] = 'LTI-2p0';
     }
-    $requestparams['lti_message_type'] = 'basic-lti-launch-request';
+    $requestparams['lti_message_type'] = 'basic-casa-launch-request';
 
     if ($orgid) {
         $requestparams["tool_consumer_instance_guid"] = $orgid;
     }
-    if (!empty($CFG->mod_lti_institution_name)) {
-        $requestparams['tool_consumer_instance_name'] = $CFG->mod_lti_institution_name;
+    if (!empty($CFG->mod_casa_institution_name)) {
+        $requestparams['tool_consumer_instance_name'] = $CFG->mod_casa_institution_name;
     } else {
         $requestparams['tool_consumer_instance_name'] = get_site()->fullname;
     }
@@ -500,41 +500,41 @@ function lti_build_standard_request($instance, $orgid, $islti2) {
  *
  * @return array                    Custom parameters
  */
-function lti_build_custom_parameters($toolproxy, $tool, $instance, $params, $customstr, $instructorcustomstr, $islti2) {
+function casa_build_custom_parameters($toolproxy, $tool, $instance, $params, $customstr, $instructorcustomstr, $islti2) {
 
     // Concatenate the custom parameters from the administrator and the instructor
     // Instructor parameters are only taken into consideration if the administrator
     // has given permission.
     $custom = array();
     if ($customstr) {
-        $custom = lti_split_custom_parameters($toolproxy, $tool, $params, $customstr, $islti2);
+        $custom = casa_split_custom_parameters($toolproxy, $tool, $params, $customstr, $islti2);
     }
-    if (!isset($typeconfig['allowinstructorcustom']) || $typeconfig['allowinstructorcustom'] != LTI_SETTING_NEVER) {
+    if (!isset($typeconfig['allowinstructorcustom']) || $typeconfig['allowinstructorcustom'] != CASA_SETTING_NEVER) {
         if ($instructorcustomstr) {
-            $custom = array_merge(lti_split_custom_parameters($toolproxy, $tool, $params, $instructorcustomstr, $islti2), $custom);
+            $custom = array_merge(casa_split_custom_parameters($toolproxy, $tool, $params, $instructorcustomstr, $islti2), $custom);
         }
     }
     if ($islti2) {
-        $custom = array_merge(lti_split_custom_parameters($toolproxy, $tool, $params, $tool->parameter, true), $custom);
-        $settings = lti_get_tool_settings($tool->toolproxyid);
-        $custom = array_merge($custom, lti_get_custom_parameters($toolproxy, $tool, $params, $settings));
-        $settings = lti_get_tool_settings($tool->toolproxyid, $instance->course);
-        $custom = array_merge($custom, lti_get_custom_parameters($toolproxy, $tool, $params, $settings));
-        $settings = lti_get_tool_settings($tool->toolproxyid, $instance->course, $instance->id);
-        $custom = array_merge($custom, lti_get_custom_parameters($toolproxy, $tool, $params, $settings));
+        $custom = array_merge(casa_split_custom_parameters($toolproxy, $tool, $params, $tool->parameter, true), $custom);
+        $settings = casa_get_tool_settings($tool->toolproxyid);
+        $custom = array_merge($custom, casa_get_custom_parameters($toolproxy, $tool, $params, $settings));
+        $settings = casa_get_tool_settings($tool->toolproxyid, $instance->course);
+        $custom = array_merge($custom, casa_get_custom_parameters($toolproxy, $tool, $params, $settings));
+        $settings = casa_get_tool_settings($tool->toolproxyid, $instance->course, $instance->id);
+        $custom = array_merge($custom, casa_get_custom_parameters($toolproxy, $tool, $params, $settings));
     }
 
     return $custom;
 }
 
-function lti_get_tool_table($tools, $id) {
+function casa_get_tool_table($tools, $id) {
     global $CFG, $OUTPUT, $USER;
     $html = '';
 
-    $typename = get_string('typename', 'lti');
-    $baseurl = get_string('baseurl', 'lti');
-    $action = get_string('action', 'lti');
-    $createdon = get_string('createdon', 'lti');
+    $typename = get_string('typename', 'casa');
+    $baseurl = get_string('baseurl', 'casa');
+    $action = get_string('action', 'casa');
+    $createdon = get_string('createdon', 'casa');
 
     if (!empty($tools)) {
         $html .= "
@@ -552,12 +552,12 @@ function lti_get_tool_table($tools, $id) {
 
         foreach ($tools as $type) {
             $date = userdate($type->timecreated, get_string('strftimedatefullshort', 'core_langconfig'));
-            $accept = get_string('accept', 'lti');
-            $update = get_string('update', 'lti');
-            $delete = get_string('delete', 'lti');
+            $accept = get_string('accept', 'casa');
+            $update = get_string('update', 'casa');
+            $delete = get_string('delete', 'casa');
 
             if (empty($type->toolproxyid)) {
-                $baseurl = new \moodle_url('/mod/lti/typessettings.php', array(
+                $baseurl = new \moodle_url('/mod/casa/typessettings.php', array(
                         'action' => 'accept',
                         'id' => $type->id,
                         'sesskey' => sesskey(),
@@ -565,7 +565,7 @@ function lti_get_tool_table($tools, $id) {
                     ));
                 $ref = $type->baseurl;
             } else {
-                $baseurl = new \moodle_url('/mod/lti/toolssettings.php', array(
+                $baseurl = new \moodle_url('/mod/casa/toolssettings.php', array(
                         'action' => 'accept',
                         'id' => $type->id,
                         'sesskey' => sesskey(),
@@ -580,13 +580,13 @@ function lti_get_tool_table($tools, $id) {
 
             $deleteaction = 'delete';
 
-            if ($type->state == LTI_TOOL_STATE_CONFIGURED) {
+            if ($type->state == CASA_TOOL_STATE_CONFIGURED) {
                 $accepthtml = '';
             }
 
-            if ($type->state != LTI_TOOL_STATE_REJECTED) {
+            if ($type->state != CASA_TOOL_STATE_REJECTED) {
                 $deleteaction = 'reject';
-                $delete = get_string('reject', 'lti');
+                $delete = get_string('reject', 'casa');
             }
 
             $updateurl = clone($baseurl);
@@ -595,7 +595,7 @@ function lti_get_tool_table($tools, $id) {
                     new \pix_icon('t/edit', $update, '', array('class' => 'iconsmall')), null,
                     array('title' => $update, 'class' => 'editing_update'));
 
-            if (($type->state != LTI_TOOL_STATE_REJECTED) || empty($type->toolproxyid)) {
+            if (($type->state != CASA_TOOL_STATE_REJECTED) || empty($type->toolproxyid)) {
                 $deleteurl = clone($baseurl);
                 $deleteurl->param('action', $deleteaction);
                 $deletehtml = $OUTPUT->action_icon($deleteurl,
@@ -623,7 +623,7 @@ function lti_get_tool_table($tools, $id) {
         }
         $html .= '</table></div>';
     } else {
-        $html .= get_string('no_' . $id, 'lti');
+        $html .= get_string('no_' . $id, 'casa');
     }
 
     return $html;
@@ -637,14 +637,14 @@ function lti_get_tool_table($tools, $id) {
  *
  * @return string                   HTML for tab
  */
-function lti_get_tool_proxy_table($toolproxies, $id) {
+function casa_get_tool_proxy_table($toolproxies, $id) {
     global $OUTPUT;
 
     if (!empty($toolproxies)) {
-        $typename = get_string('typename', 'lti');
-        $url = get_string('registrationurl', 'lti');
-        $action = get_string('action', 'lti');
-        $createdon = get_string('createdon', 'lti');
+        $typename = get_string('typename', 'casa');
+        $url = get_string('registrationurl', 'casa');
+        $action = get_string('action', 'casa');
+        $createdon = get_string('createdon', 'casa');
 
         $html = <<< EOD
         <div id="{$id}_tool_proxies_container" style="margin-top: 0.5em; margin-bottom: 0.5em">
@@ -660,18 +660,18 @@ function lti_get_tool_proxy_table($toolproxies, $id) {
 EOD;
         foreach ($toolproxies as $toolproxy) {
             $date = userdate($toolproxy->timecreated, get_string('strftimedatefullshort', 'core_langconfig'));
-            $accept = get_string('register', 'lti');
-            $update = get_string('update', 'lti');
-            $delete = get_string('delete', 'lti');
+            $accept = get_string('register', 'casa');
+            $update = get_string('update', 'casa');
+            $delete = get_string('delete', 'casa');
 
-            $baseurl = new \moodle_url('/mod/lti/registersettings.php', array(
+            $baseurl = new \moodle_url('/mod/casa/registersettings.php', array(
                     'action' => 'accept',
                     'id' => $toolproxy->id,
                     'sesskey' => sesskey(),
                     'tab' => $id
                 ));
 
-            $registerurl = new \moodle_url('/mod/lti/register.php', array(
+            $registerurl = new \moodle_url('/mod/casa/register.php', array(
                     'id' => $toolproxy->id,
                     'sesskey' => sesskey(),
                     'tab' => 'tool_proxy'
@@ -683,12 +683,12 @@ EOD;
 
             $deleteaction = 'delete';
 
-            if ($toolproxy->state != LTI_TOOL_PROXY_STATE_CONFIGURED) {
+            if ($toolproxy->state != CASA_TOOL_PROXY_STATE_CONFIGURED) {
                 $accepthtml = '';
             }
 
-            if (($toolproxy->state == LTI_TOOL_PROXY_STATE_CONFIGURED) || ($toolproxy->state == LTI_TOOL_PROXY_STATE_PENDING)) {
-                $delete = get_string('cancel', 'lti');
+            if (($toolproxy->state == CASA_TOOL_PROXY_STATE_CONFIGURED) || ($toolproxy->state == CASA_TOOL_PROXY_STATE_PENDING)) {
+                $delete = get_string('cancel', 'casa');
             }
 
             $updateurl = clone($baseurl);
@@ -721,7 +721,7 @@ EOD;
         }
         $html .= '</table></div>';
     } else {
-        $html = get_string('no_' . $id, 'lti');
+        $html = get_string('no_' . $id, 'casa');
     }
 
     return $html;
@@ -738,7 +738,7 @@ EOD;
  *
  * @return Array of custom parameters
  */
-function lti_split_custom_parameters($toolproxy, $tool, $params, $customstr, $islti2 = false) {
+function casa_split_custom_parameters($toolproxy, $tool, $params, $customstr, $islti2 = false) {
     $customstr = str_replace("\r\n", "\n", $customstr);
     $customstr = str_replace("\n\r", "\n", $customstr);
     $customstr = str_replace("\r", "\n", $customstr);
@@ -751,8 +751,8 @@ function lti_split_custom_parameters($toolproxy, $tool, $params, $customstr, $is
         }
         $key = trim(core_text::substr($line, 0, $pos));
         $val = trim(core_text::substr($line, $pos + 1, strlen($line)));
-        $val = lti_parse_custom_parameter($toolproxy, $tool, $params, $val, $islti2);
-        $key2 = lti_map_keyname($key);
+        $val = casa_parse_custom_parameter($toolproxy, $tool, $params, $val, $islti2);
+        $key2 = casa_map_keyname($key);
         $retval['custom_'.$key2] = $val;
         if ($islti2 && ($key != $key2)) {
             $retval['custom_'.$key] = $val;
@@ -771,11 +771,11 @@ function lti_split_custom_parameters($toolproxy, $tool, $params, $customstr, $is
  *
  * @return array    Array of custom parameters
  */
-function lti_get_custom_parameters($toolproxy, $tool, $params, $parameters) {
+function casa_get_custom_parameters($toolproxy, $tool, $params, $parameters) {
     $retval = array();
     foreach ($parameters as $key => $val) {
-        $key2 = lti_map_keyname($key);
-        $val = lti_parse_custom_parameter($toolproxy, $tool, $params, $val, true);
+        $key2 = casa_map_keyname($key);
+        $val = casa_parse_custom_parameter($toolproxy, $tool, $params, $val, true);
         $retval['custom_'.$key2] = $val;
         if ($key != $key2) {
             $retval['custom_'.$key] = $val;
@@ -795,7 +795,7 @@ function lti_get_custom_parameters($toolproxy, $tool, $params, $parameters) {
  *
  * @return Parsed value of custom parameter
  */
-function lti_parse_custom_parameter($toolproxy, $tool, $params, $value, $islti2) {
+function casa_parse_custom_parameter($toolproxy, $tool, $params, $value, $islti2) {
     global $USER, $COURSE;
 
     if ($value) {
@@ -805,7 +805,7 @@ function lti_parse_custom_parameter($toolproxy, $tool, $params, $value, $islti2)
             $value1 = substr($value, 1);
             $enabledcapabilities = explode("\n", $tool->enabledcapability);
             if (!$islti2 || in_array($value1, $enabledcapabilities)) {
-                $capabilities = lti_get_capabilities();
+                $capabilities = casa_get_capabilities();
                 if (array_key_exists($value1, $capabilities)) {
                     $val = $capabilities[$value1];
                     if ($val) {
@@ -821,7 +821,7 @@ function lti_parse_custom_parameter($toolproxy, $tool, $params, $value, $islti2)
                     }
                 } else if ($islti2) {
                     $val = $value;
-                    $services = lti_get_services();
+                    $services = casa_get_services();
                     foreach ($services as $service) {
                         $service->set_tool_proxy($toolproxy);
                         $value = $service->parse_value($val);
@@ -843,7 +843,7 @@ function lti_parse_custom_parameter($toolproxy, $tool, $params, $value, $islti2)
  *
  * @return string       Processed name
  */
-function lti_map_keyname($key) {
+function casa_map_keyname($key) {
     $newkey = "";
     $key = core_text::strtolower(trim($key));
     foreach (str_split($key) as $ch) {
@@ -866,7 +866,7 @@ function lti_map_keyname($key) {
  *
  * @return string A role string suitable for passing with an LTI launch
  */
-function lti_get_ims_role($user, $cmid, $courseid, $islti2) {
+function casa_get_ims_role($user, $cmid, $courseid, $islti2) {
     $roles = array();
 
     if (empty($cmid)) {
@@ -883,7 +883,7 @@ function lti_get_ims_role($user, $cmid, $courseid, $islti2) {
     } else {
         $context = context_module::instance($cmid);
 
-        if (has_capability('mod/lti:manage', $context)) {
+        if (has_capability('mod/casa:manage', $context)) {
             array_push($roles, 'Instructor');
         } else {
             array_push($roles, 'Learner');
@@ -908,15 +908,15 @@ function lti_get_ims_role($user, $cmid, $courseid, $islti2) {
  *
  * @return array        Tool Configuration
  */
-function lti_get_type_config($typeid) {
+function casa_get_type_config($typeid) {
     global $DB;
 
     $query = "SELECT name, value
-                FROM {lti_types_config}
+                FROM {casa_types_config}
                WHERE typeid = :typeid1
            UNION ALL
               SELECT 'toolurl' AS name, " . $DB->sql_compare_text('baseurl', 1333) . " AS value
-                FROM {lti_types}
+                FROM {casa_types}
                WHERE id = :typeid2";
 
     $typeconfig = array();
@@ -931,13 +931,13 @@ function lti_get_type_config($typeid) {
     return $typeconfig;
 }
 
-function lti_get_tools_by_url($url, $state, $courseid = null) {
-    $domain = lti_get_domain_from_url($url);
+function casa_get_tools_by_url($url, $state, $courseid = null) {
+    $domain = casa_get_domain_from_url($url);
 
-    return lti_get_tools_by_domain($domain, $state, $courseid);
+    return casa_get_tools_by_domain($domain, $state, $courseid);
 }
 
-function lti_get_tools_by_domain($domain, $state = null, $courseid = null) {
+function casa_get_tools_by_domain($domain, $state = null, $courseid = null) {
     global $DB, $SITE;
 
     $filters = array('tooldomain' => $domain);
@@ -954,7 +954,7 @@ function lti_get_tools_by_domain($domain, $state = null, $courseid = null) {
     }
 
     $query = "SELECT *
-                FROM {lti_types}
+                FROM {casa_types}
                WHERE tooldomain = :tooldomain
                  AND (course = :siteid $coursefilter)
                  $statefilter";
@@ -971,7 +971,7 @@ function lti_get_tools_by_domain($domain, $state = null, $courseid = null) {
  * Returns all basicLTI tools configured by the administrator
  *
  */
-function lti_filter_get_types($course) {
+function casa_filter_get_types($course) {
     global $DB;
 
     if (!empty($course)) {
@@ -982,7 +982,7 @@ function lti_filter_get_types($course) {
         $params = array();
     }
     $query = "SELECT t.id, t.name, t.baseurl, t.state, t.toolproxyid, t.timecreated, tp.name tpname
-                FROM {lti_types} t LEFT OUTER JOIN {lti_tool_proxies} tp ON t.toolproxyid = tp.id
+                FROM {casa_types} t LEFT OUTER JOIN {casa_tool_proxies} tp ON t.toolproxyid = tp.id
                 {$where}";
     return $DB->get_records_sql($query, $params);
 }
@@ -990,11 +990,11 @@ function lti_filter_get_types($course) {
 /**
  * Given an array of tools, filter them based on their state
  *
- * @param array $tools An array of lti_types records
- * @param int $state One of the LTI_TOOL_STATE_* constants
+ * @param array $tools An array of casa_types records
+ * @param int $state One of the CASA_TOOL_STATE_* constants
  * @return array
  */
-function lti_filter_tool_types(array $tools, $state) {
+function casa_filter_tool_types(array $tools, $state) {
     $return = array();
     foreach ($tools as $key => $tool) {
         if ($tool->state == $state) {
@@ -1004,20 +1004,20 @@ function lti_filter_tool_types(array $tools, $state) {
     return $return;
 }
 
-function lti_get_types_for_add_instance() {
+function casa_get_types_for_add_instance() {
     global $DB, $SITE, $COURSE;
 
     $query = "SELECT *
-                FROM {lti_types}
+                FROM {casa_types}
                WHERE coursevisible = 1
                  AND (course = :siteid OR course = :courseid)
                  AND state = :active";
 
     $admintypes = $DB->get_records_sql($query,
-        array('siteid' => $SITE->id, 'courseid' => $COURSE->id, 'active' => LTI_TOOL_STATE_CONFIGURED));
+        array('siteid' => $SITE->id, 'courseid' => $COURSE->id, 'active' => CASA_TOOL_STATE_CONFIGURED));
 
     $types = array();
-    $types[0] = (object)array('name' => get_string('automatic', 'lti'), 'course' => 0, 'toolproxyid' => null);
+    $types[0] = (object)array('name' => get_string('automatic', 'casa'), 'course' => 0, 'toolproxyid' => null);
 
     foreach ($admintypes as $type) {
         $types[$type->id] = $type;
@@ -1026,21 +1026,21 @@ function lti_get_types_for_add_instance() {
     return $types;
 }
 
-function lti_get_domain_from_url($url) {
+function casa_get_domain_from_url($url) {
     $matches = array();
 
-    if (preg_match(LTI_URL_DOMAIN_REGEX, $url, $matches)) {
+    if (preg_match(CASA_URL_DOMAIN_REGEX, $url, $matches)) {
         return $matches[1];
     }
 }
 
-function lti_get_tool_by_url_match($url, $courseid = null, $state = LTI_TOOL_STATE_CONFIGURED) {
-    $possibletools = lti_get_tools_by_url($url, $state, $courseid);
+function casa_get_tool_by_url_match($url, $courseid = null, $state = CASA_TOOL_STATE_CONFIGURED) {
+    $possibletools = casa_get_tools_by_url($url, $state, $courseid);
 
-    return lti_get_best_tool_by_url($url, $possibletools, $courseid);
+    return casa_get_best_tool_by_url($url, $possibletools, $courseid);
 }
 
-function lti_get_url_thumbprint($url) {
+function casa_get_url_thumbprint($url) {
     // Parse URL requires a schema otherwise everything goes into 'path'.  Fixed 5.4.7 or later.
     if (preg_match('/https?:\/\//', $url) !== 1) {
         $url = 'http://'.$url;
@@ -1061,17 +1061,17 @@ function lti_get_url_thumbprint($url) {
     return $urllower = $urlparts['host'] . '/' . $urlparts['path'];
 }
 
-function lti_get_best_tool_by_url($url, $tools, $courseid = null) {
+function casa_get_best_tool_by_url($url, $tools, $courseid = null) {
     if (count($tools) === 0) {
         return null;
     }
 
-    $urllower = lti_get_url_thumbprint($url);
+    $urllower = casa_get_url_thumbprint($url);
 
     foreach ($tools as $tool) {
         $tool->_matchscore = 0;
 
-        $toolbaseurllower = lti_get_url_thumbprint($tool->baseurl);
+        $toolbaseurllower = casa_get_url_thumbprint($tool->baseurl);
 
         if ($urllower === $toolbaseurllower) {
             // 100 points for exact thumbprint match.
@@ -1107,32 +1107,32 @@ function lti_get_best_tool_by_url($url, $tools, $courseid = null) {
     return $bestmatch;
 }
 
-function lti_get_shared_secrets_by_key($key) {
+function casa_get_shared_secrets_by_key($key) {
     global $DB;
 
     // Look up the shared secret for the specified key in both the types_config table (for configured tools)
-    // And in the lti resource table for ad-hoc tools.
+    // And in the casa resource table for ad-hoc tools.
     $query = "SELECT t2.value
-                FROM {lti_types_config} t1
-                JOIN {lti_types_config} t2 ON t1.typeid = t2.typeid
-                JOIN {lti_types} type ON t2.typeid = type.id
+                FROM {casa_types_config} t1
+                JOIN {casa_types_config} t2 ON t1.typeid = t2.typeid
+                JOIN {casa_types} type ON t2.typeid = type.id
               WHERE t1.name = 'resourcekey'
                 AND t1.value = :key1
                 AND t2.name = 'password'
                 AND type.state = :configured1
                UNION
               SELECT tp.secret AS value
-                FROM {lti_tool_proxies} tp
-                JOIN {lti_types} t ON tp.id = t.toolproxyid
+                FROM {casa_tool_proxies} tp
+                JOIN {casa_types} t ON tp.id = t.toolproxyid
               WHERE tp.guid = :key2
                 AND t.state = :configured2
               UNION
              SELECT password AS value
-               FROM {lti}
+               FROM {casa}
               WHERE resourcekey = :key3";
 
-    $sharedsecrets = $DB->get_records_sql($query, array('configured1' => LTI_TOOL_STATE_CONFIGURED,
-        'configured2' => LTI_TOOL_STATE_CONFIGURED, 'key1' => $key, 'key2' => $key, 'key3' => $key));
+    $sharedsecrets = $DB->get_records_sql($query, array('configured1' => CASA_TOOL_STATE_CONFIGURED,
+        'configured2' => CASA_TOOL_STATE_CONFIGURED, 'key1' => $key, 'key2' => $key, 'key3' => $key));
 
     $values = array_map(function($item) {
         return $item->value;
@@ -1148,38 +1148,38 @@ function lti_get_shared_secrets_by_key($key) {
  *
  * @param int $id   Configuration id
  */
-function lti_delete_type($id) {
+function casa_delete_type($id) {
     global $DB;
 
     // We should probably just copy the launch URL to the tool instances in this case... using a single query.
     /*
-    $instances = $DB->get_records('lti', array('typeid' => $id));
+    $instances = $DB->get_records('casa', array('typeid' => $id));
     foreach ($instances as $instance) {
         $instance->typeid = 0;
-        $DB->update_record('lti', $instance);
+        $DB->update_record('casa', $instance);
     }*/
 
-    $DB->delete_records('lti_types', array('id' => $id));
-    $DB->delete_records('lti_types_config', array('typeid' => $id));
+    $DB->delete_records('casa_types', array('id' => $id));
+    $DB->delete_records('casa_types_config', array('typeid' => $id));
 }
 
-function lti_set_state_for_type($id, $state) {
+function casa_set_state_for_type($id, $state) {
     global $DB;
 
-    $DB->update_record('lti_types', array('id' => $id, 'state' => $state));
+    $DB->update_record('casa_types', array('id' => $id, 'state' => $state));
 }
 
 /**
  * Transforms a basic LTI object to an array
  *
- * @param object $ltiobject    Basic LTI object
+ * @param object $casaobject    Basic LTI object
  *
  * @return array Basic LTI configuration details
  */
-function lti_get_config($ltiobject) {
+function casa_get_config($casaobject) {
     $typeconfig = array();
-    $typeconfig = (array)$ltiobject;
-    $additionalconfig = lti_get_type_config($ltiobject->typeid);
+    $typeconfig = (array)$casaobject;
+    $additionalconfig = casa_get_type_config($casaobject->typeid);
     $typeconfig = array_merge($typeconfig, $additionalconfig);
     return $typeconfig;
 }
@@ -1193,32 +1193,32 @@ function lti_get_config($ltiobject) {
  * @return Instance configuration
  *
  */
-function lti_get_type_config_from_instance($id) {
+function casa_get_type_config_from_instance($id) {
     global $DB;
 
-    $instance = $DB->get_record('lti', array('id' => $id));
-    $config = lti_get_config($instance);
+    $instance = $DB->get_record('casa', array('id' => $id));
+    $config = casa_get_config($instance);
 
     $type = new \stdClass();
-    $type->lti_fix = $id;
+    $type->casa_fix = $id;
     if (isset($config['toolurl'])) {
-        $type->lti_toolurl = $config['toolurl'];
+        $type->casa_toolurl = $config['toolurl'];
     }
     if (isset($config['instructorchoicesendname'])) {
-        $type->lti_sendname = $config['instructorchoicesendname'];
+        $type->casa_sendname = $config['instructorchoicesendname'];
     }
     if (isset($config['instructorchoicesendemailaddr'])) {
-        $type->lti_sendemailaddr = $config['instructorchoicesendemailaddr'];
+        $type->casa_sendemailaddr = $config['instructorchoicesendemailaddr'];
     }
     if (isset($config['instructorchoiceacceptgrades'])) {
-        $type->lti_acceptgrades = $config['instructorchoiceacceptgrades'];
+        $type->casa_acceptgrades = $config['instructorchoiceacceptgrades'];
     }
     if (isset($config['instructorchoiceallowroster'])) {
-        $type->lti_allowroster = $config['instructorchoiceallowroster'];
+        $type->casa_allowroster = $config['instructorchoiceallowroster'];
     }
 
     if (isset($config['instructorcustomparameters'])) {
-        $type->lti_allowsetting = $config['instructorcustomparameters'];
+        $type->casa_allowsetting = $config['instructorcustomparameters'];
     }
     return $type;
 }
@@ -1230,146 +1230,146 @@ function lti_get_type_config_from_instance($id) {
  *
  * @return Configuration details
  */
-function lti_get_type_type_config($id) {
+function casa_get_type_type_config($id) {
     global $DB;
 
-    $basicltitype = $DB->get_record('lti_types', array('id' => $id));
-    $config = lti_get_type_config($id);
+    $basiccasatype = $DB->get_record('casa_types', array('id' => $id));
+    $config = casa_get_type_config($id);
 
     $type = new \stdClass();
 
-    $type->lti_typename = $basicltitype->name;
+    $type->casa_typename = $basiccasatype->name;
 
-    $type->typeid = $basicltitype->id;
+    $type->typeid = $basiccasatype->id;
 
-    $type->toolproxyid = $basicltitype->toolproxyid;
+    $type->toolproxyid = $basiccasatype->toolproxyid;
 
-    $type->lti_toolurl = $basicltitype->baseurl;
+    $type->casa_toolurl = $basiccasatype->baseurl;
 
-    $type->lti_parameters = $basicltitype->parameter;
+    $type->casa_parameters = $basiccasatype->parameter;
 
     if (isset($config['resourcekey'])) {
-        $type->lti_resourcekey = $config['resourcekey'];
+        $type->casa_resourcekey = $config['resourcekey'];
     }
     if (isset($config['password'])) {
-        $type->lti_password = $config['password'];
+        $type->casa_password = $config['password'];
     }
 
     if (isset($config['sendname'])) {
-        $type->lti_sendname = $config['sendname'];
+        $type->casa_sendname = $config['sendname'];
     }
     if (isset($config['instructorchoicesendname'])) {
-        $type->lti_instructorchoicesendname = $config['instructorchoicesendname'];
+        $type->casa_instructorchoicesendname = $config['instructorchoicesendname'];
     }
     if (isset($config['sendemailaddr'])) {
-        $type->lti_sendemailaddr = $config['sendemailaddr'];
+        $type->casa_sendemailaddr = $config['sendemailaddr'];
     }
     if (isset($config['instructorchoicesendemailaddr'])) {
-        $type->lti_instructorchoicesendemailaddr = $config['instructorchoicesendemailaddr'];
+        $type->casa_instructorchoicesendemailaddr = $config['instructorchoicesendemailaddr'];
     }
     if (isset($config['acceptgrades'])) {
-        $type->lti_acceptgrades = $config['acceptgrades'];
+        $type->casa_acceptgrades = $config['acceptgrades'];
     }
     if (isset($config['instructorchoiceacceptgrades'])) {
-        $type->lti_instructorchoiceacceptgrades = $config['instructorchoiceacceptgrades'];
+        $type->casa_instructorchoiceacceptgrades = $config['instructorchoiceacceptgrades'];
     }
     if (isset($config['allowroster'])) {
-        $type->lti_allowroster = $config['allowroster'];
+        $type->casa_allowroster = $config['allowroster'];
     }
     if (isset($config['instructorchoiceallowroster'])) {
-        $type->lti_instructorchoiceallowroster = $config['instructorchoiceallowroster'];
+        $type->casa_instructorchoiceallowroster = $config['instructorchoiceallowroster'];
     }
 
     if (isset($config['customparameters'])) {
-        $type->lti_customparameters = $config['customparameters'];
+        $type->casa_customparameters = $config['customparameters'];
     }
 
     if (isset($config['forcessl'])) {
-        $type->lti_forcessl = $config['forcessl'];
+        $type->casa_forcessl = $config['forcessl'];
     }
 
     if (isset($config['organizationid'])) {
-        $type->lti_organizationid = $config['organizationid'];
+        $type->casa_organizationid = $config['organizationid'];
     }
     if (isset($config['organizationurl'])) {
-        $type->lti_organizationurl = $config['organizationurl'];
+        $type->casa_organizationurl = $config['organizationurl'];
     }
     if (isset($config['organizationdescr'])) {
-        $type->lti_organizationdescr = $config['organizationdescr'];
+        $type->casa_organizationdescr = $config['organizationdescr'];
     }
     if (isset($config['launchcontainer'])) {
-        $type->lti_launchcontainer = $config['launchcontainer'];
+        $type->casa_launchcontainer = $config['launchcontainer'];
     }
 
     if (isset($config['coursevisible'])) {
-        $type->lti_coursevisible = $config['coursevisible'];
+        $type->casa_coursevisible = $config['coursevisible'];
     }
 
     if (isset($config['contentitem'])) {
-        $type->lti_contentitem = $config['contentitem'];
+        $type->casa_contentitem = $config['contentitem'];
     }
 
     if (isset($config['debuglaunch'])) {
-        $type->lti_debuglaunch = $config['debuglaunch'];
+        $type->casa_debuglaunch = $config['debuglaunch'];
     }
 
     if (isset($config['module_class_type'])) {
-        $type->lti_module_class_type = $config['module_class_type'];
+        $type->casa_module_class_type = $config['module_class_type'];
     }
 
     return $type;
 }
 
-function lti_prepare_type_for_save($type, $config) {
-    if (isset($config->lti_toolurl)) {
-        $type->baseurl = $config->lti_toolurl;
-        $type->tooldomain = lti_get_domain_from_url($config->lti_toolurl);
+function casa_prepare_type_for_save($type, $config) {
+    if (isset($config->casa_toolurl)) {
+        $type->baseurl = $config->casa_toolurl;
+        $type->tooldomain = casa_get_domain_from_url($config->casa_toolurl);
     }
-    if (isset($config->lti_typename)) {
-        $type->name = $config->lti_typename;
+    if (isset($config->casa_typename)) {
+        $type->name = $config->casa_typename;
     }
-    $type->coursevisible = !empty($config->lti_coursevisible) ? $config->lti_coursevisible : 0;
-    $config->lti_coursevisible = $type->coursevisible;
+    $type->coursevisible = !empty($config->casa_coursevisible) ? $config->casa_coursevisible : 0;
+    $config->casa_coursevisible = $type->coursevisible;
 
-    $type->contentitem = !empty($config->lti_contentitem) ? $config->lti_coursevisible : 0;
-    $config->lti_contentitem = $type->contentitem;
+    $type->contentitem = !empty($config->casa_contentitem) ? $config->casa_coursevisible : 0;
+    $config->casa_contentitem = $type->contentitem;
 
-    if (isset($config->lti_forcessl)) {
-        $type->forcessl = !empty($config->lti_forcessl) ? $config->lti_forcessl : 0;
-        $config->lti_forcessl = $type->forcessl;
+    if (isset($config->casa_forcessl)) {
+        $type->forcessl = !empty($config->casa_forcessl) ? $config->casa_forcessl : 0;
+        $config->casa_forcessl = $type->forcessl;
     }
 
     $type->timemodified = time();
 
-    unset ($config->lti_typename);
-    unset ($config->lti_toolurl);
+    unset ($config->casa_typename);
+    unset ($config->casa_toolurl);
 }
 
-function lti_update_type($type, $config) {
+function casa_update_type($type, $config) {
     global $DB;
 
-    lti_prepare_type_for_save($type, $config);
+    casa_prepare_type_for_save($type, $config);
 
-    if ($DB->update_record('lti_types', $type)) {
+    if ($DB->update_record('casa_types', $type)) {
         foreach ($config as $key => $value) {
-            if (substr($key, 0, 4) == 'lti_' && !is_null($value)) {
+            if (substr($key, 0, 5) == 'casa_' && !is_null($value)) {
                 $record = new \StdClass();
                 $record->typeid = $type->id;
-                $record->name = substr($key, 4);
+                $record->name = substr($key, 5);
                 $record->value = $value;
-                lti_update_config($record);
+                casa_update_config($record);
             }
         }
     }
 }
 
-function lti_add_type($type, $config) {
+function casa_add_type($type, $config) {
     global $USER, $SITE, $DB;
 
-    lti_prepare_type_for_save($type, $config);
+    casa_prepare_type_for_save($type, $config);
 
     if (!isset($type->state)) {
-        $type->state = LTI_TOOL_STATE_PENDING;
+        $type->state = CASA_TOOL_STATE_PENDING;
     }
 
     if (!isset($type->timecreated)) {
@@ -1387,19 +1387,19 @@ function lti_add_type($type, $config) {
     // Create a salt value to be used for signing passed data to extension services
     // The outcome service uses the service salt on the instance. This can be used
     // for communication with services not related to a specific LTI instance.
-    $config->lti_servicesalt = uniqid('', true);
+    $config->casa_servicesalt = uniqid('', true);
 
-    $id = $DB->insert_record('lti_types', $type);
+    $id = $DB->insert_record('casa_types', $type);
 
     if ($id) {
         foreach ($config as $key => $value) {
-            if (substr($key, 0, 4) == 'lti_' && !is_null($value)) {
+            if (substr($key, 0, 5) == 'casa_' && !is_null($value)) {
                 $record = new \StdClass();
                 $record->typeid = $id;
-                $record->name = substr($key, 4);
+                $record->name = substr($key, 5);
                 $record->value = $value;
 
-                lti_add_config($record);
+                casa_add_config($record);
             }
         }
     }
@@ -1410,12 +1410,12 @@ function lti_add_type($type, $config) {
 /**
  * Given an array of tool proxies, filter them based on their state
  *
- * @param array $toolproxies An array of lti_tool_proxies records
- * @param int $state One of the LTI_TOOL_PROXY_STATE_* constants
+ * @param array $toolproxies An array of casa_tool_proxies records
+ * @param int $state One of the CASA_TOOL_PROXY_STATE_* constants
  *
  * @return array
  */
-function lti_filter_tool_proxy_types(array $toolproxies, $state) {
+function casa_filter_tool_proxy_types(array $toolproxies, $state) {
     $return = array();
     foreach ($toolproxies as $key => $toolproxy) {
         if ($toolproxy->state == $state) {
@@ -1432,10 +1432,10 @@ function lti_filter_tool_proxy_types(array $toolproxies, $state) {
  *
  * @return object
  */
-function lti_get_tool_proxy_from_guid($toolproxyguid) {
+function casa_get_tool_proxy_from_guid($toolproxyguid) {
     global $DB;
 
-    $toolproxy = $DB->get_record('lti_tool_proxies', array('guid' => $toolproxyguid));
+    $toolproxy = $DB->get_record('casa_tool_proxies', array('guid' => $toolproxyguid));
 
     return $toolproxy;
 }
@@ -1447,10 +1447,10 @@ function lti_get_tool_proxy_from_guid($toolproxyguid) {
  *
  * @return Tool Proxy details
  */
-function lti_get_tool_proxy($id) {
+function casa_get_tool_proxy($id) {
     global $DB;
 
-    $toolproxy = $DB->get_record('lti_tool_proxies', array('id' => $id));
+    $toolproxy = $DB->get_record('casa_tool_proxies', array('id' => $id));
     return $toolproxy;
 }
 
@@ -1461,16 +1461,16 @@ function lti_get_tool_proxy($id) {
  *
  * @return Tool Proxy details
  */
-function lti_get_tool_proxy_config($id) {
-    $toolproxy = lti_get_tool_proxy($id);
+function casa_get_tool_proxy_config($id) {
+    $toolproxy = casa_get_tool_proxy($id);
 
     $tp = new \stdClass();
-    $tp->lti_registrationname = $toolproxy->name;
+    $tp->casa_registrationname = $toolproxy->name;
     $tp->toolproxyid = $toolproxy->id;
     $tp->state = $toolproxy->state;
-    $tp->lti_registrationurl = $toolproxy->regurl;
-    $tp->lti_capabilities = explode("\n", $toolproxy->capabilityoffered);
-    $tp->lti_services = explode("\n", $toolproxy->serviceoffered);
+    $tp->casa_registrationurl = $toolproxy->regurl;
+    $tp->casa_capabilities = explode("\n", $toolproxy->capabilityoffered);
+    $tp->casa_services = explode("\n", $toolproxy->serviceoffered);
 
     return $tp;
 }
@@ -1482,32 +1482,32 @@ function lti_get_tool_proxy_config($id) {
  *
  * @return int  Record id number
  */
-function lti_add_tool_proxy($config) {
+function casa_add_tool_proxy($config) {
     global $USER, $DB;
 
     $toolproxy = new \stdClass();
-    if (isset($config->lti_registrationname)) {
-        $toolproxy->name = trim($config->lti_registrationname);
+    if (isset($config->casa_registrationname)) {
+        $toolproxy->name = trim($config->casa_registrationname);
     }
-    if (isset($config->lti_registrationurl)) {
-        $toolproxy->regurl = trim($config->lti_registrationurl);
+    if (isset($config->casa_registrationurl)) {
+        $toolproxy->regurl = trim($config->casa_registrationurl);
     }
-    if (isset($config->lti_capabilities)) {
-        $toolproxy->capabilityoffered = implode("\n", $config->lti_capabilities);
+    if (isset($config->casa_capabilities)) {
+        $toolproxy->capabilityoffered = implode("\n", $config->casa_capabilities);
     }
-    if (isset($config->lti_services)) {
-        $toolproxy->serviceoffered = implode("\n", $config->lti_services);
+    if (isset($config->casa_services)) {
+        $toolproxy->serviceoffered = implode("\n", $config->casa_services);
     }
     if (isset($config->toolproxyid) && !empty($config->toolproxyid)) {
         $toolproxy->id = $config->toolproxyid;
-        if (!isset($toolproxy->state) || ($toolproxy->state != LTI_TOOL_PROXY_STATE_ACCEPTED)) {
-            $toolproxy->state = LTI_TOOL_PROXY_STATE_CONFIGURED;
+        if (!isset($toolproxy->state) || ($toolproxy->state != CASA_TOOL_PROXY_STATE_ACCEPTED)) {
+            $toolproxy->state = CASA_TOOL_PROXY_STATE_CONFIGURED;
             $toolproxy->guid = random_string();
             $toolproxy->secret = random_string();
         }
-        $id = lti_update_tool_proxy($toolproxy);
+        $id = casa_update_tool_proxy($toolproxy);
     } else {
-        $toolproxy->state = LTI_TOOL_PROXY_STATE_CONFIGURED;
+        $toolproxy->state = CASA_TOOL_PROXY_STATE_CONFIGURED;
         $toolproxy->timemodified = time();
         $toolproxy->timecreated = $toolproxy->timemodified;
         if (!isset($toolproxy->createdby)) {
@@ -1515,7 +1515,7 @@ function lti_add_tool_proxy($config) {
         }
         $toolproxy->guid = random_string();
         $toolproxy->secret = random_string();
-        $id = $DB->insert_record('lti_tool_proxies', $toolproxy);
+        $id = $DB->insert_record('casa_tool_proxies', $toolproxy);
     }
 
     return $id;
@@ -1528,11 +1528,11 @@ function lti_add_tool_proxy($config) {
  *
  * @return int    Record id number
  */
-function lti_update_tool_proxy($toolproxy) {
+function casa_update_tool_proxy($toolproxy) {
     global $DB;
 
     $toolproxy->timemodified = time();
-    $id = $DB->update_record('lti_tool_proxies', $toolproxy);
+    $id = $DB->update_record('casa_tool_proxies', $toolproxy);
 
     return $id;
 }
@@ -1542,14 +1542,14 @@ function lti_update_tool_proxy($toolproxy) {
  *
  * @param int $id   Tool Proxy id
  */
-function lti_delete_tool_proxy($id) {
+function casa_delete_tool_proxy($id) {
     global $DB;
-    $DB->delete_records('lti_tool_settings', array('toolproxyid' => $id));
-    $tools = $DB->get_records('lti_types', array('toolproxyid' => $id));
+    $DB->delete_records('casa_tool_settings', array('toolproxyid' => $id));
+    $tools = $DB->get_records('casa_types', array('toolproxyid' => $id));
     foreach ($tools as $tool) {
-        lti_delete_type($tool->id);
+        casa_delete_type($tool->id);
     }
-    $DB->delete_records('lti_tool_proxies', array('id' => $id));
+    $DB->delete_records('casa_tool_proxies', array('id' => $id));
 }
 
 /**
@@ -1559,10 +1559,10 @@ function lti_delete_tool_proxy($id) {
  *
  * @return int Record id number
  */
-function lti_add_config($config) {
+function casa_add_config($config) {
     global $DB;
 
-    return $DB->insert_record('lti_types_config', $config);
+    return $DB->insert_record('casa_types_config', $config);
 }
 
 /**
@@ -1572,17 +1572,17 @@ function lti_add_config($config) {
  *
  * @return Record id number
  */
-function lti_update_config($config) {
+function casa_update_config($config) {
     global $DB;
 
     $return = true;
-    $old = $DB->get_record('lti_types_config', array('typeid' => $config->typeid, 'name' => $config->name));
+    $old = $DB->get_record('casa_types_config', array('typeid' => $config->typeid, 'name' => $config->name));
 
     if ($old) {
         $config->id = $old->id;
-        $return = $DB->update_record('lti_types_config', $config);
+        $return = $DB->update_record('casa_types_config', $config);
     } else {
-        $return = $DB->insert_record('lti_types_config', $config);
+        $return = $DB->insert_record('casa_types_config', $config);
     }
     return $return;
 }
@@ -1596,11 +1596,11 @@ function lti_update_config($config) {
  *
  * @return array  Array settings
  */
-function lti_get_tool_settings($toolproxyid, $courseid = null, $instanceid = null) {
+function casa_get_tool_settings($toolproxyid, $courseid = null, $instanceid = null) {
     global $DB;
 
     $settings = array();
-    $settingsstr = $DB->get_field('lti_tool_settings', 'settings', array('toolproxyid' => $toolproxyid,
+    $settingsstr = $DB->get_field('casa_tool_settings', 'settings', array('toolproxyid' => $toolproxyid,
         'course' => $courseid, 'coursemoduleid' => $instanceid));
     if ($settingsstr !== false) {
         $settings = json_decode($settingsstr, true);
@@ -1616,14 +1616,14 @@ function lti_get_tool_settings($toolproxyid, $courseid = null, $instanceid = nul
  * @param int    $courseid      Id of course (null if system settings)
  * @param int    $instanceid    Id of course module (null if system or context settings)
  */
-function lti_set_tool_settings($settings, $toolproxyid, $courseid = null, $instanceid = null) {
+function casa_set_tool_settings($settings, $toolproxyid, $courseid = null, $instanceid = null) {
     global $DB;
 
     $json = json_encode($settings);
-    $record = $DB->get_record('lti_tool_settings', array('toolproxyid' => $toolproxyid,
+    $record = $DB->get_record('casa_tool_settings', array('toolproxyid' => $toolproxyid,
         'course' => $courseid, 'coursemoduleid' => $instanceid));
     if ($record !== false) {
-        $DB->update_record('lti_tool_settings', array('id' => $record->id, 'settings' => $json, 'timemodified' => time()));
+        $DB->update_record('casa_tool_settings', array('id' => $record->id, 'settings' => $json, 'timemodified' => time()));
     } else {
         $record = new \stdClass();
         $record->toolproxyid = $toolproxyid;
@@ -1632,7 +1632,7 @@ function lti_set_tool_settings($settings, $toolproxyid, $courseid = null, $insta
         $record->settings = $json;
         $record->timecreated = time();
         $record->timemodified = $record->timecreated;
-        $DB->insert_record('lti_tool_settings', $record);
+        $DB->insert_record('casa_tool_settings', $record);
     }
 }
 
@@ -1645,16 +1645,16 @@ function lti_set_tool_settings($settings, $toolproxyid, $courseid = null, $insta
  * @param $oauth_consumoer_key          Key
  * @param $oauth_consumoer_secret       Secret
  */
-function lti_sign_parameters($oldparms, $endpoint, $method, $oauthconsumerkey, $oauthconsumersecret) {
+function casa_sign_parameters($oldparms, $endpoint, $method, $oauthconsumerkey, $oauthconsumersecret) {
 
     $parms = $oldparms;
 
     $testtoken = '';
 
     // TODO: Switch to core oauthlib once implemented - MDL-30149.
-    $hmacmethod = new lti\OAuthSignatureMethod_HMAC_SHA1();
-    $testconsumer = new lti\OAuthConsumer($oauthconsumerkey, $oauthconsumersecret, null);
-    $accreq = lti\OAuthRequest::from_consumer_and_token($testconsumer, $testtoken, $method, $endpoint, $parms);
+    $hmacmethod = new casa\OAuthSignatureMethod_HMAC_SHA1();
+    $testconsumer = new casa\OAuthConsumer($oauthconsumerkey, $oauthconsumersecret, null);
+    $accreq = casa\OAuthRequest::from_consumer_and_token($testconsumer, $testtoken, $method, $endpoint, $parms);
     $accreq->sign_request($hmacmethod, $testconsumer, $testtoken);
 
     $newparms = $accreq->get_parameters();
@@ -1669,9 +1669,9 @@ function lti_sign_parameters($oldparms, $endpoint, $method, $oauthconsumerkey, $
  * @param $endpoint     URL of the external tool
  * @param $debug        Debug (true/false)
  */
-function lti_post_launch_html($newparms, $endpoint, $debug=false) {
+function casa_post_launch_html($newparms, $endpoint, $debug=false) {
     $r = "<form action=\"" . $endpoint .
-        "\" name=\"ltiLaunchForm\" id=\"ltiLaunchForm\" method=\"post\" encType=\"application/x-www-form-urlencoded\">\n";
+        "\" name=\"casaLaunchForm\" id=\"casaLaunchForm\" method=\"post\" encType=\"application/x-www-form-urlencoded\">\n";
 
     // Contruct html for the launch parameters.
     foreach ($newparms as $key => $value) {
@@ -1690,8 +1690,8 @@ function lti_post_launch_html($newparms, $endpoint, $debug=false) {
     if ( $debug ) {
         $r .= "<script language=\"javascript\"> \n";
         $r .= "  //<![CDATA[ \n";
-        $r .= "function basicltiDebugToggle() {\n";
-        $r .= "    var ele = document.getElementById(\"basicltiDebug\");\n";
+        $r .= "function basiccasaDebugToggle() {\n";
+        $r .= "    var ele = document.getElementById(\"basiccasaDebug\");\n";
         $r .= "    if (ele.style.display == \"block\") {\n";
         $r .= "        ele.style.display = \"none\";\n";
         $r .= "    }\n";
@@ -1701,12 +1701,12 @@ function lti_post_launch_html($newparms, $endpoint, $debug=false) {
         $r .= "} \n";
         $r .= "  //]]> \n";
         $r .= "</script>\n";
-        $r .= "<a id=\"displayText\" href=\"javascript:basicltiDebugToggle();\">";
-        $r .= get_string("toggle_debug_data", "lti")."</a>\n";
-        $r .= "<div id=\"basicltiDebug\" style=\"display:none\">\n";
-        $r .= "<b>".get_string("basiclti_endpoint", "lti")."</b><br/>\n";
+        $r .= "<a id=\"displayText\" href=\"javascript:basiccasaDebugToggle();\">";
+        $r .= get_string("toggle_debug_data", "casa")."</a>\n";
+        $r .= "<div id=\"basiccasaDebug\" style=\"display:none\">\n";
+        $r .= "<b>".get_string("basiccasa_endpoint", "casa")."</b><br/>\n";
         $r .= $endpoint . "<br/>\n&nbsp;<br/>\n";
-        $r .= "<b>".get_string("basiclti_parameters", "lti")."</b><br/>\n";
+        $r .= "<b>".get_string("basiccasa_parameters", "casa")."</b><br/>\n";
         foreach ($newparms as $key => $value) {
             $key = htmlspecialchars($key);
             $value = htmlspecialchars($value);
@@ -1720,34 +1720,34 @@ function lti_post_launch_html($newparms, $endpoint, $debug=false) {
     if ( ! $debug ) {
         $r .= " <script type=\"text/javascript\"> \n" .
             "  //<![CDATA[ \n" .
-            "    document.ltiLaunchForm.submit(); \n" .
+            "    document.casaLaunchForm.submit(); \n" .
             "  //]]> \n" .
             " </script> \n";
     }
     return $r;
 }
 
-function lti_get_type($typeid) {
+function casa_get_type($typeid) {
     global $DB;
 
-    return $DB->get_record('lti_types', array('id' => $typeid));
+    return $DB->get_record('casa_types', array('id' => $typeid));
 }
 
-function lti_get_launch_container($lti, $toolconfig) {
-    if (empty($lti->launchcontainer)) {
-        $lti->launchcontainer = LTI_LAUNCH_CONTAINER_DEFAULT;
+function casa_get_launch_container($casa, $toolconfig) {
+    if (empty($casa->launchcontainer)) {
+        $casa->launchcontainer = CASA_LAUNCH_CONTAINER_DEFAULT;
     }
 
-    if ($lti->launchcontainer == LTI_LAUNCH_CONTAINER_DEFAULT) {
+    if ($casa->launchcontainer == CASA_LAUNCH_CONTAINER_DEFAULT) {
         if (isset($toolconfig['launchcontainer'])) {
             $launchcontainer = $toolconfig['launchcontainer'];
         }
     } else {
-        $launchcontainer = $lti->launchcontainer;
+        $launchcontainer = $casa->launchcontainer;
     }
 
-    if (empty($launchcontainer) || $launchcontainer == LTI_LAUNCH_CONTAINER_DEFAULT) {
-        $launchcontainer = LTI_LAUNCH_CONTAINER_EMBED_NO_BLOCKS;
+    if (empty($launchcontainer) || $launchcontainer == CASA_LAUNCH_CONTAINER_DEFAULT) {
+        $launchcontainer = CASA_LAUNCH_CONTAINER_EMBED_NO_BLOCKS;
     }
 
     $devicetype = core_useragent::get_device_type();
@@ -1756,18 +1756,18 @@ function lti_get_launch_container($lti, $toolconfig) {
     // Opening the popup window also had some issues in testing
     // For mobile devices, always take up the entire screen to ensure the best experience.
     if ($devicetype === core_useragent::DEVICETYPE_MOBILE || $devicetype === core_useragent::DEVICETYPE_TABLET ) {
-        $launchcontainer = LTI_LAUNCH_CONTAINER_REPLACE_MOODLE_WINDOW;
+        $launchcontainer = CASA_LAUNCH_CONTAINER_REPLACE_MOODLE_WINDOW;
     }
 
     return $launchcontainer;
 }
 
-function lti_request_is_using_ssl() {
+function casa_request_is_using_ssl() {
     global $CFG;
     return (stripos($CFG->httpswwwroot, 'https://') === 0);
 }
 
-function lti_ensure_url_is_https($url) {
+function casa_ensure_url_is_https($url) {
     if (!strstr($url, '://')) {
         $url = 'https://' . $url;
     } else {
@@ -1786,14 +1786,14 @@ function lti_ensure_url_is_https($url) {
  * @param string $rawbody
  * @return bool
  */
-function lti_should_log_request($rawbody) {
+function casa_should_log_request($rawbody) {
     global $CFG;
 
-    if (empty($CFG->mod_lti_log_users)) {
+    if (empty($CFG->mod_casa_log_users)) {
         return false;
     }
 
-    $logusers = explode(',', $CFG->mod_lti_log_users);
+    $logusers = explode(',', $CFG->mod_casa_log_users);
     if (empty($logusers)) {
         return false;
     }
@@ -1828,9 +1828,9 @@ function lti_should_log_request($rawbody) {
  *
  * @param string $rawbody
  */
-function lti_log_request($rawbody) {
-    if ($tempdir = make_temp_directory('mod_lti', false)) {
-        if ($tempfile = tempnam($tempdir, 'mod_lti_request'.date('YmdHis'))) {
+function casa_log_request($rawbody) {
+    if ($tempdir = make_temp_directory('mod_casa', false)) {
+        if ($tempfile = tempnam($tempdir, 'mod_casa_request'.date('YmdHis'))) {
             file_put_contents($tempfile, $rawbody);
             chmod($tempfile, 0644);
         }
@@ -1843,10 +1843,10 @@ function lti_log_request($rawbody) {
  * @param stdClass $instance
  * @return array Can be empty if no type is found
  */
-function lti_get_type_config_by_instance($instance) {
+function casa_get_type_config_by_instance($instance) {
     $typeid = null;
     if (empty($instance->typeid)) {
-        $tool = lti_get_tool_by_url_match($instance->toolurl, $instance->course);
+        $tool = casa_get_tool_by_url_match($instance->toolurl, $instance->course);
         if ($tool) {
             $typeid = $tool->id;
         }
@@ -1854,7 +1854,7 @@ function lti_get_type_config_by_instance($instance) {
         $typeid = $instance->typeid;
     }
     if (!empty($typeid)) {
-        return lti_get_type_config($typeid);
+        return casa_get_type_config($typeid);
     }
     return array();
 }
@@ -1865,7 +1865,7 @@ function lti_get_type_config_by_instance($instance) {
  * @param stdClass $instance
  * @param array $typeconfig
  */
-function lti_force_type_config_settings($instance, array $typeconfig) {
+function casa_force_type_config_settings($instance, array $typeconfig) {
     $forced = array(
         'instructorchoicesendname'      => 'sendname',
         'instructorchoicesendemailaddr' => 'sendemailaddr',
@@ -1873,7 +1873,7 @@ function lti_force_type_config_settings($instance, array $typeconfig) {
     );
 
     foreach ($forced as $instanceparam => $typeconfigparam) {
-        if (array_key_exists($typeconfigparam, $typeconfig) && $typeconfig[$typeconfigparam] != LTI_SETTING_DELEGATE) {
+        if (array_key_exists($typeconfigparam, $typeconfig) && $typeconfig[$typeconfigparam] != CASA_SETTING_DELEGATE) {
             $instance->$instanceparam = $typeconfig[$typeconfigparam];
         }
     }
@@ -1884,7 +1884,7 @@ function lti_force_type_config_settings($instance, array $typeconfig) {
  *
  * @return array List of capability names (without a dollar sign prefix)
  */
-function lti_get_capabilities() {
+function casa_get_capabilities() {
 
     $capabilities = array(
        'basic-lti-launch-request' => '',
@@ -1925,12 +1925,12 @@ function lti_get_capabilities() {
  *
  * @return array List of services
  */
-function lti_get_services() {
+function casa_get_services() {
 
     $services = array();
-    $definedservices = core_component::get_plugin_list('ltiservice');
+    $definedservices = core_component::get_plugin_list('casaservice');
     foreach ($definedservices as $name => $location) {
-        $classname = "\\ltiservice_{$name}\\local\\service\\{$name}";
+        $classname = "\\casaservice_{$name}\\local\\service\\{$name}";
         $services[] = new $classname();
     }
 
@@ -1943,12 +1943,12 @@ function lti_get_services() {
  *
  * @param string $servicename Name of service
  *
- * @return mod_lti\local\ltiservice\service_base Service
+ * @return mod_casa\local\casaservice\service_base Service
  */
-function lti_get_service_by_name($servicename) {
+function casa_get_service_by_name($servicename) {
 
     $service = false;
-    $classname = "\\ltiservice_{$servicename}\\local\\service\\{$servicename}";
+    $classname = "\\casaservice_{$servicename}\\local\\service\\{$servicename}";
     if (class_exists($classname)) {
         $service = new $classname();
     }
@@ -1963,9 +1963,9 @@ function lti_get_service_by_name($servicename) {
  * @param array  $services    Array of services
  * @param string $resourceid  ID of resource
  *
- * @return mod_lti\local\ltiservice\service_base Service
+ * @return mod_casa\local\casaservice\service_base Service
  */
-function lti_get_service_by_resource_id($services, $resourceid) {
+function casa_get_service_by_resource_id($services, $resourceid) {
 
     $service = false;
     foreach ($services as $aservice) {
@@ -1988,7 +1988,7 @@ function lti_get_service_by_resource_id($services, $resourceid) {
  *
  * @return array Contexts
  */
-function lti_get_contexts($json) {
+function casa_get_contexts($json) {
 
     $contexts = array();
     if (isset($json->{'@context'})) {
@@ -2011,7 +2011,7 @@ function lti_get_contexts($json) {
  *
  * @return string Fully-qualified ID
  */
-function lti_get_fqid($contexts, $id) {
+function casa_get_fqid($contexts, $id) {
 
     $parts = explode(':', $id, 2);
     if (count($parts) > 1) {

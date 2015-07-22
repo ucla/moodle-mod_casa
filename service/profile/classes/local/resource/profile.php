@@ -17,33 +17,33 @@
 /**
  * This file contains a class definition for the Tool Consumer Profile resource
  *
- * @package    ltiservice_profile
+ * @package    casaservice_profile
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
-namespace ltiservice_profile\local\resource;
+namespace casaservice_profile\local\resource;
 
-use \mod_lti\local\ltiservice\service_base;
+use \mod_casa\local\casaservice\service_base;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
  * A resource implementing the Tool Consumer Profile.
  *
- * @package    ltiservice_profile
+ * @package    casaservice_profile
  * @since      Moodle 2.8
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class profile extends \mod_lti\local\ltiservice\resource_base {
+class profile extends \mod_casa\local\casaservice\resource_base {
 
     /**
      * Class constructor.
      *
-     * @param ltiservice_profile\local\resource\profile $service Service instance
+     * @param casaservice_profile\local\resource\profile $service Service instance
      */
     public function __construct($service) {
 
@@ -51,7 +51,7 @@ class profile extends \mod_lti\local\ltiservice\resource_base {
         $this->id = 'ToolConsumerProfile';
         $this->template = '/profile/{tool_proxy_id}';
         $this->variables[] = 'ToolConsumerProfile.url';
-        $this->formats[] = 'application/vnd.ims.lti.v2.toolconsumerprofile+json';
+        $this->formats[] = 'application/vnd.ims.casa.v2.toolconsumerprofile+json';
         $this->methods[] = 'GET';
 
     }
@@ -76,18 +76,18 @@ class profile extends \mod_lti\local\ltiservice\resource_base {
     /**
      * Execute the request for this resource.
      *
-     * @param mod_lti\local\ltiservice\response $response  Response object for this request.
+     * @param mod_casa\local\casaservice\response $response  Response object for this request.
      */
     public function execute($response) {
 
         global $CFG;
 
-        $version = service_base::LTI_VERSION2P0;
+        $version = service_base::CASA_VERSION2P0;
         $params = $this->parse_template();
         $ok = $this->get_service()->check_tool_proxy($params['tool_proxy_id']);
         if (!$ok) {
             $response->set_code(404);
-        } else if (optional_param('lti_version', '', PARAM_ALPHANUMEXT) != $version) {
+        } else if (optional_param('casa_version', '', PARAM_ALPHANUMEXT) != $version) {
             $response->set_code(400);
         } else {
             $toolproxy = $this->get_service()->get_tool_proxy();
@@ -100,10 +100,10 @@ class profile extends \mod_lti\local\ltiservice\resource_base {
             $serviceofferedarr = explode("\n", $toolproxy->serviceoffered);
             $serviceoffered = '';
             $sep = '';
-            $services = \core_component::get_plugin_list('ltiservice');
+            $services = \core_component::get_plugin_list('casaservice');
             foreach ($services as $name => $location) {
                 if (in_array($name, $serviceofferedarr)) {
-                    $classname = "\\ltiservice_{$name}\\local\\service\\{$name}";
+                    $classname = "\\casaservice_{$name}\\local\\service\\{$name}";
                     $service = new $classname();
                     $service->set_tool_proxy($toolproxy);
                     $resources = $service->get_resources();
@@ -137,8 +137,8 @@ EOD;
             $vendorname = 'Moodle.org';
             $vendorcode = 'mdl';
             $prodversion = strval($CFG->version);
-            if (!empty($CFG->mod_lti_institution_name)) {
-                $consumername = $CFG->mod_lti_institution_name;
+            if (!empty($CFG->mod_casa_institution_name)) {
+                $consumername = $CFG->mod_casa_institution_name;
                 $consumerdesc = '';
             } else {
                 $consumername = get_site()->fullname;
@@ -147,14 +147,14 @@ EOD;
             $profile = <<< EOD
 {
   "@context":[
-    "http://purl.imsglobal.org/ctx/lti/v2/ToolConsumerProfile",
+    "http://purl.imsglobal.org/ctx/casa/v2/ToolConsumerProfile",
     {
       "tcp":"{$id}#"
     }
   ],
   "@type":"ToolConsumerProfile",
   "@id":"{$id}",
-  "lti_version":"{$version}",
+  "casa_version":"{$version}",
   "guid":"{$toolproxy->guid}",
   "product_instance":{
     "guid":"{$orgid}",
@@ -206,7 +206,7 @@ EOD;
      */
     public function get_endpoint() {
 
-        return parent::get_endpoint() . '?lti_version=' . service_base::LTI_VERSION2P0;
+        return parent::get_endpoint() . '?casa_version=' . service_base::CASA_VERSION2P0;
 
     }
 

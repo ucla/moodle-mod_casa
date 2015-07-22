@@ -17,28 +17,28 @@
 /**
  * This file contains an abstract definition of an LTI service
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @author     Stephen Vickers
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
-namespace mod_lti\local\ltiservice;
+namespace mod_casa\local\casaservice;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/lti/locallib.php');
-require_once($CFG->dirroot . '/mod/lti/OAuthBody.php');
+require_once($CFG->dirroot . '/mod/casa/locallib.php');
+require_once($CFG->dirroot . '/mod/casa/OAuthBody.php');
 
 // TODO: Switch to core oauthlib once implemented - MDL-30149.
-use moodle\mod\lti as lti;
+use moodle\mod\casa as casa;
 
 
 /**
- * The mod_lti\local\ltiservice\service_base class.
+ * The mod_casa\local\casaservice\service_base class.
  *
- * @package    mod_lti
+ * @package    mod_casa
  * @since      Moodle 2.8
  * @copyright  2014 Vital Source Technologies http://vitalsource.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -46,7 +46,7 @@ use moodle\mod\lti as lti;
 abstract class service_base {
 
     /** Label representing an LTI 2 message type */
-    const LTI_VERSION2P0 = 'LTI-2p0';
+    const CASA_VERSION2P0 = 'LTI-2p0';
 
     /** @var string ID for the service. */
     protected $id;
@@ -144,7 +144,7 @@ abstract class service_base {
      */
     public static function get_service_path() {
 
-        $url = new \moodle_url('/mod/lti/services.php');
+        $url = new \moodle_url('/mod/casa/services.php');
 
         return $url->out(false);
 
@@ -184,13 +184,13 @@ abstract class service_base {
 
         $ok = false;
         $toolproxy = null;
-        $consumerkey = lti\get_oauth_key_from_headers();
+        $consumerkey = casa\get_oauth_key_from_headers();
         if (empty($toolproxyguid)) {
             $toolproxyguid = $consumerkey;
         }
 
         if (!empty($toolproxyguid)) {
-            $toolproxy = lti_get_tool_proxy_from_guid($toolproxyguid);
+            $toolproxy = casa_get_tool_proxy_from_guid($toolproxyguid);
             if ($toolproxy !== false) {
                 if (!$this->is_unsigned() && ($toolproxy->guid == $consumerkey)) {
                     $ok = $this->check_signature($toolproxy->guid, $toolproxy->secret, $body);
@@ -221,7 +221,7 @@ abstract class service_base {
         $ok = true;
         try {
             // TODO: Switch to core oauthlib once implemented - MDL-30149.
-            lti\handle_oauth_body_post($consumerkey, $secret, $body);
+            casa\handle_oauth_body_post($consumerkey, $secret, $body);
         } catch (\Exception $e) {
             debugging($e->getMessage() . "\n");
             $ok = false;
