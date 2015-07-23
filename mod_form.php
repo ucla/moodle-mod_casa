@@ -114,6 +114,18 @@ class mod_casa_mod_form extends moodleform_mod {
             }
             $tooltypes->addOption($type->name, $id, $attributes);
         }
+
+        // If there is only one resource configured for contentitem, then directly go there.
+        $contentitems = array();
+        foreach ($tooltypes->_options as $option) {
+            if (isset($option['attr']['contentitem']) && !empty($option['attr']['contentitem'])) {
+                $contentitems[] = $option['attr'];
+            }
+        }
+        if (count($contentitems) === 1) {
+            $contentitem = array_pop($contentitems);
+            redirect($contentitem['contentitemurl']);
+        }
         
         // Adding the standard "name" field.
         $mform->addElement('text', 'name', get_string('basiccasaname', 'casa'), array('size' => '64'));
