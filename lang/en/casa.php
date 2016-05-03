@@ -266,8 +266,8 @@ $string['miscellaneous'] = 'Miscellaneous';
 $string['misconfiguredtools'] = 'Misconfigured tool instances were detected';
 $string['missingparameterserror'] = 'The page is misconfigured: "{$a}"';
 $string['module_class_type'] = 'Moodle module type';
-$string['modulename'] = 'CASA';
-$string['modulename_help'] = 'Community App Store Architecture (CASA) provides an easy way to search and add external learning tools and resources';
+$string['modulename'] = 'Apps';
+$string['modulename_help'] = 'Apps Store provides an easy way to search and add external learning tools and resources';
 $string['modulename_link'] = 'mod/casa/view';
 $string['modulenameplural'] = 'External tools';
 $string['modulenamepluralformatted'] = 'LTI Instances';
@@ -321,8 +321,8 @@ along with the consumer key from the tool provider.
 Tools which do not require secure communication from Moodle and do not provide additional services (such as grade reporting)
 may not require a shared secret.';
 $string['pending'] = 'Pending';
-$string['pluginadministration'] = 'CASA administration';
-$string['pluginname'] = 'CASA';
+$string['pluginadministration'] = 'Apps administration';
+$string['pluginname'] = 'Apps';
 $string['preferheight'] = 'Preferred height';
 $string['preferwidget'] = 'Prefer widget launch';
 $string['preferwidth'] = 'Preferred width';
