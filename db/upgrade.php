@@ -63,6 +63,16 @@ function xmldb_casa_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
+    if ($oldversion < 2016050400) {
+        // Flag to indicate if we need to prompt a FERPA/privacy waiver or not.
+        $table = new xmldb_table('casa');
+        $field = new xmldb_field('official', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'secureicon');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2016050400, 'casa');
+    }
+
     return true;
 }
 

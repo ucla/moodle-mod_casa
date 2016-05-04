@@ -148,6 +148,20 @@ if (count($items->{'@graph'}) > 0) {
             $moduleinfo->instructorcustomparameters = '';
             $first = true;
             foreach ($item->custom as $key => $value) {
+                // Handle official flag.
+                if ($key == 'official') {
+                    $moduleinfo->official = $value;
+                    continue;
+                }
+                // Handle passing of key/secret.
+                if ($key == 'oauth_key') {
+                    $moduleinfo->resourcekey = $value;
+                    continue;
+                }
+                if ($key == 'oauth_secret') {
+                    $moduleinfo->password = $value;
+                    continue;
+                }
                 if (!$first) {
                     $moduleinfo->instructorcustomparameters .= "\n";
                 }
