@@ -328,6 +328,21 @@ $string['preferwidget'] = 'Prefer widget launch';
 $string['preferwidth'] = 'Preferred width';
 $string['press_to_submit'] = 'Press to launch this activity';
 $string['privacy'] = 'Privacy';
+$string['privacywaiveragree'] = 'I agree';
+$string['privacywaiverdesc'] = 'Before you may continue you must agree to the following statements.
+<ul>
+<li>I understand that by providing personal and academic information on this web site I am providing this information to third parties not affiliated with this institution.</li>
+<li>By providing personal or academic information I understand that I am publicly acknowledging my status as a student and my association with this institution.</li>
+<li>By providing personal or academic information on this web site I understand that I am waiving my rights to privacy.</li>
+</ol>';
+$string['privacywaiverdisagree'] = 'I disagree';
+$string['privacywaivererror'] = 'Privacy waiver already signed.';
+$string['privacywaiverfail'] = '<p>Please talk to your instructor about what options are available to you.</p>';
+$string['privacywaiverheader'] = 'Privacy Waiver for {$a}';
+$string['privacywaivermismatch'] = 'Given course and context do not match.';
+$string['privacywaivermoreinfo'] = '(For more information go to {$a})';
+$string['privacywaiverrequired'] = 'Privacy waiver needs to be signed for this course activity/resource.';
+$string['privacywaivertitle'] = 'Privacy Waiver';
 $string['quickgrade'] = 'Allow quick grading';
 $string['quickgrade_help'] = 'If enabled, multiple tools can be graded on one page. Add grades and comments then click the "Save all my feedback" button to save all changes for that page.';
 $string['redirect'] = 'You will be redirected in few seconds. If you are not, press the button.';

@@ -50,7 +50,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2016050400;    // The current module version (Date: YYYYMMDDXX).
+$plugin->version   = 2016051100;    // The current module version (Date: YYYYMMDDXX).
 $plugin->requires  = 2014050800;    // Requires this Moodle version.
 $plugin->component = 'mod_casa';     // Full name of the plugin (used for diagnostics).
 $plugin->cron      = 0;

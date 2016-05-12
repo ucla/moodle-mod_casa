@@ -73,6 +73,38 @@ function xmldb_casa_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2016050400, 'casa');
     }
 
+    if ($oldversion < 2016051100) {
+        $table = new xmldb_table('lti_privacy_waiver');
+
+        // Adding fields to table lti_privacy_waiver.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL,
+                XMLDB_SEQUENCE, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null,
+                XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('contextid', XMLDB_TYPE_INTEGER, '10', null,
+                XMLDB_NOTNULL, null, null, 'courseid');
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null,
+                XMLDB_NOTNULL, null, null, 'courseid');
+        $table->add_field('timestamp', XMLDB_TYPE_INTEGER, '10', null,
+                XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table lti_privacy_waiver.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table lti_privacy_waiver.
+        $table->add_index('entry_idx', XMLDB_INDEX_UNIQUE,
+                array('courseid', 'contextid', 'userid'));
+        $table->add_index('userwaiver_idx', XMLDB_INDEX_UNIQUE,
+                array('contextid', 'userid'));
+        $table->add_index('user_idx', XMLDB_INDEX_NOTUNIQUE, array('userid'));
+
+        // Conditionally launch create table for lti_privacy_waiver.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        upgrade_mod_savepoint(true, 2016051100, 'casa');
+    }
+
     return true;
 }
 

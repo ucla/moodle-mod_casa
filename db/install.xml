@@ -140,5 +140,22 @@
         <INDEX NAME="casaid" UNIQUE="false" FIELDS="casaid"/>
       </INDEXES>
     </TABLE>
+    <TABLE NAME="lti_privacy_waiver" COMMENT="Holds the signed waivers for course blocks/modules that send data to 3rd party services.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="entry_idx" UNIQUE="true" FIELDS="courseid, contextid, userid"/>
+        <INDEX NAME="userwaiver_idx" UNIQUE="true" FIELDS="contextid, userid"/>
+        <INDEX NAME="user_idx" UNIQUE="false" FIELDS="userid"/>
+      </INDEXES>
+    </TABLE>
   </TABLES>
 </XMLDB>

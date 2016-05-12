@@ -81,6 +81,13 @@ require_login($course, true, $cm);
 require_capability('mod/casa:view', $context);
 
 $url = new moodle_url('/mod/casa/view.php', array('id' => $cm->id));
+
+// If true, then user needs to sign waiver.
+if (mod_casa_privacy_waiver::check($context, $url, $USER->id)) {
+    $redirecturl = mod_casa_privacy_waiver::get_link($context, $url);
+    redirect($redirecturl, get_string('privacywaiverrequired', 'mod_casa'), 0);
+}
+
 $PAGE->set_url($url);
 
 $launchcontainer = casa_get_launch_container($casa, $toolconfig);
