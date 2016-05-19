@@ -273,6 +273,12 @@ class mod_casa_mod_form extends moodleform_mod {
         );
 
         $PAGE->requires->js_init_call('M.mod_casa.editor.init', array(json_encode($jsinfo)), true, $module);
+
+        // Don't let user change most LTI settings.
+        $mform->hardFreeze(array('toolurl', 'securetoolurl', 'resourcekey', 
+            'password', 'instructorcustomparameters', 'icon', 'secureicon',
+            'instructorchoicesendname', 'instructorchoicesendemailaddr',
+            'instructorchoiceacceptgrades'));
     }
 
 }
