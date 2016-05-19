@@ -133,11 +133,11 @@ if (count($items->{'@graph'}) > 0) {
         }
         $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_DEFAULT;
         if (isset($item->placementAdvice->presentationDocumentTarget)) {
-            if ($item->presentationDocumentTarget === 'window') {
+            if ($item->placementAdvice->presentationDocumentTarget === 'window') {
                 $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_WINDOW;
-            } else if ($item->presentationDocumentTarget === 'frame') {
+            } else if ($item->placementAdvice->presentationDocumentTarget === 'frame') {
                 $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_EMBED_NO_BLOCKS;
-            } else if ($item->presentationDocumentTarget === 'iframe') {
+            } else if ($item->placementAdvice->presentationDocumentTarget === 'iframe') {
                 $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_EMBED;
             }
         }

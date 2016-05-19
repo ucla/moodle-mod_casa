@@ -335,7 +335,7 @@ $string['privacywaiverdesc'] = 'Before you may continue you must agree to the fo
 <li>By providing personal or academic information I understand that I am publicly acknowledging my status as a student and my association with this institution.</li>
 <li>By providing personal or academic information on this web site I understand that I am waiving my rights to privacy.</li>
 </ol>';
-$string['privacywaiverdisagree'] = 'I disagree';
+$string['privacywaiverdisagree'] = 'I disagree (Please contact your instructor)';
 $string['privacywaivererror'] = 'Privacy waiver already signed.';
 $string['privacywaiverfail'] = '<p>Please talk to your instructor about what options are available to you.</p>';
 $string['privacywaiverheader'] = 'Privacy Waiver for {$a}';
