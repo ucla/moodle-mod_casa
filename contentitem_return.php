@@ -91,7 +91,7 @@ if (count($items->{'@graph'}) > 0) {
     foreach ($items->{'@graph'} as $item) {
         $moduleinfo = new stdClass();
         
-        // adds support for text/html media type & bypasses regular add routine
+        // Adds support for text/html media type & bypasses regular add routine.
         if (isset($item->mediaType) && $item->mediaType == 'text/html') {
             $moduleinfo->modulename = 'url';
             $moduleinfo->name = '';
@@ -131,6 +131,7 @@ if (count($items->{'@graph'}) > 0) {
         } else {
             $moduleinfo->typeid = $id;
         }
+        // Handle container default.
         $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_DEFAULT;
         if (isset($item->placementAdvice->presentationDocumentTarget)) {
             if ($item->placementAdvice->presentationDocumentTarget === 'window') {
@@ -141,9 +142,14 @@ if (count($items->{'@graph'}) > 0) {
                 $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_EMBED;
             }
         }
+        // Handle icon.
         if (isset($item->icon) && isset($item->icon->{'@id'})) {
             $moduleinfo->icon = $item->icon->{'@id'};
         }
+        // Handle privacy settings. For now, default to sending name and email.
+        $moduleinfo->instructorchoicesendname = 1;
+        $moduleinfo->instructorchoicesendemailaddr = 1;
+        // Handle custom variables.
         if (isset($item->custom)) {
             $moduleinfo->instructorcustomparameters = '';
             $first = true;
