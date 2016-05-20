@@ -131,17 +131,18 @@ if (count($items->{'@graph'}) > 0) {
         } else {
             $moduleinfo->typeid = $id;
         }
-        // Handle container default.
-        $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_DEFAULT;
-        if (isset($item->placementAdvice->presentationDocumentTarget)) {
-            if ($item->placementAdvice->presentationDocumentTarget === 'window') {
-                $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_WINDOW;
-            } else if ($item->placementAdvice->presentationDocumentTarget === 'frame') {
-                $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_EMBED_NO_BLOCKS;
-            } else if ($item->placementAdvice->presentationDocumentTarget === 'iframe') {
-                $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_EMBED;
-            }
-        }
+        // For now, ignore launchcontainer. See CCLE-5829.
+//        $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_DEFAULT;
+//        if (isset($item->placementAdvice->presentationDocumentTarget)) {
+//            if ($item->presentationDocumentTarget === 'window') {
+//                $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_WINDOW;
+//            } else if ($item->presentationDocumentTarget === 'frame') {
+//                $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_EMBED_NO_BLOCKS;
+//            } else if ($item->presentationDocumentTarget === 'iframe') {
+//                $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_EMBED;
+//            }
+//        }
+        $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_EMBED_NO_BLOCKS;
         // Handle icon.
         if (isset($item->icon) && isset($item->icon->{'@id'})) {
             $moduleinfo->icon = $item->icon->{'@id'};
