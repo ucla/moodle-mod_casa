@@ -61,6 +61,13 @@ $context = context_module::instance($cm->id);
 require_login($course, true, $cm);
 require_capability('mod/casa:view', $context);
 
+// If true, then user needs to sign waiver.
+$url = new moodle_url('/mod/casa/launch.php', array('id' => $cm->id));
+if (mod_casa_privacy_waiver::check($context, $USER->id)) {
+    $redirecturl = mod_casa_privacy_waiver::get_link($context, $url);
+    redirect($redirecturl, get_string('privacywaiverrequired', 'mod_casa'), 0);
+}
+
 $casa->cmid = $cm->id;
 casa_view($casa);
 

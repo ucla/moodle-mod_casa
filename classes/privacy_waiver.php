@@ -35,16 +35,11 @@ class mod_casa_privacy_waiver {
     /**
      * Checks if user needs to sign privacy waiver.
      *
-     * We need this to be very fast with as few database calls as possible,
-     * because this method is called for every page load. We will try to do all
-     * the checks before we query for waiver information with existing data.
-     *
      * @param context $context
-     * @param moodle_url $url
      * @param int $userid
      * @return boolean  If true, then user needs to sign waiver.
      */
-    static public function check(context $context, moodle_url $url, $userid) {
+    static public function check(context $context, $userid) {
         global $DB;
         $checkwaiver = false;
 
