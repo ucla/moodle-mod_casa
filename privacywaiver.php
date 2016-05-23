@@ -85,11 +85,11 @@ $disagreebutton = new single_button($cancelurl, get_string('privacywaiverdisagre
 
 // Display title of module or block in header.
 echo $OUTPUT->header();
-$headingname = $context->get_context_name(false);
-echo $OUTPUT->heading(get_string('privacywaiverheader', 'mod_casa', $headingname));
+echo $OUTPUT->heading(get_string('privacywaiverheader', 'mod_casa'));
 
 // Output waiver text.
-echo $OUTPUT->confirm(get_string('privacywaiverdesc', 'mod_casa'),
+$toolname = $context->get_context_name(false);
+echo $OUTPUT->confirm(get_string('privacywaiverdesc', 'mod_casa', $toolname),
         $agreebutton, $disagreebutton);
 
 $infolink = 'http://www2.ed.gov/policy/gen/guid/fpco/ferpa/index.html';

@@ -329,16 +329,18 @@ $string['preferwidth'] = 'Preferred width';
 $string['press_to_submit'] = 'Press to launch this activity';
 $string['privacy'] = 'Privacy';
 $string['privacywaiveragree'] = 'I agree';
-$string['privacywaiverdesc'] = 'Before you may continue you must agree to the following statements.
+$string['privacywaiverdesc'] = 'By continuing to {$a}, you will be sharing your
+academic and personal information with a third party not bound by UCLA privacy
+restrictions. Consequently, before you can proceed you must agree to the
+following statements:
 <ul>
-<li>I understand that by providing personal and academic information on this web site I am providing this information to third parties not affiliated with this institution.</li>
-<li>By providing personal or academic information I understand that I am publicly acknowledging my status as a student and my association with this institution.</li>
-<li>By providing personal or academic information on this web site I understand that I am waiving my rights to privacy.</li>
+<li>I understand that I am acknowledging my status as a UCLA student to {$a}</li>
+<li>I am waiving my FERPA rights to privacy when using {$a}</li>
 </ol>';
-$string['privacywaiverdisagree'] = 'I disagree (Please contact your instructor)';
+$string['privacywaiverdisagree'] = 'I do not agree';
 $string['privacywaivererror'] = 'Privacy waiver already signed.';
-$string['privacywaiverfail'] = '<p>Please talk to your instructor about what options are available to you.</p>';
-$string['privacywaiverheader'] = 'Privacy Waiver for {$a}';
+$string['privacywaiverfail'] = 'Please talk to your instructor about what options are available to you.';
+$string['privacywaiverheader'] = 'Privacy Waiver';
 $string['privacywaivermismatch'] = 'Given course and context do not match.';
 $string['privacywaivermoreinfo'] = '(For more information go to {$a})';
 $string['privacywaiverrequired'] = 'Privacy waiver needs to be signed for this course activity/resource.';
