@@ -153,7 +153,7 @@ class toolproxy extends \mod_casa\local\casaservice\resource_base {
                 $found = false;
                 $tool = new \stdClass();
                 foreach ($resource->message as $message) {
-                    if ($message->message_type == 'basic-casa-launch-request') {
+                    if ($message->message_type == 'basic-lti-launch-request') {
                         $found = true;
                         $tool->path = $message->path;
                         $tool->enabled_capability = $message->enabled_capability;

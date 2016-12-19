@@ -473,7 +473,7 @@ function casa_build_standard_request($instance, $orgid, $islti2) {
     } else {
         $requestparams['lti_version'] = 'LTI-2p0';
     }
-    $requestparams['lti_message_type'] = 'basic-casa-launch-request';
+    $requestparams['lti_message_type'] = 'basic-lti-launch-request';
 
     if ($orgid) {
         $requestparams["tool_consumer_instance_guid"] = $orgid;

@@ -86,7 +86,7 @@ class mod_casa_locallib_testcase extends advanced_testcase {
      */
     public function disabled_test_sign_parameters() {
         $correct = array ( 'context_id' => '12345', 'context_label' => 'SI124', 'context_title' => 'Social Computing',
-            'ext_submit' => 'Click Me', 'casa_message_type' => 'basic-casa-launch-request', 'casa_version' => 'LTI-1p0',
+            'ext_submit' => 'Click Me', 'casa_message_type' => 'basic-lti-launch-request', 'casa_version' => 'LTI-1p0',
             'oauth_consumer_key' => 'lmsng.school.edu', 'oauth_nonce' => '47458148e33a8f9dafb888c3684cf476',
             'oauth_signature' => 'qWgaBIezihCbeHgcwUy14tZcyDQ=', 'oauth_signature_method' => 'HMAC-SHA1',
             'oauth_timestamp' => '1307141660', 'oauth_version' => '1.0', 'resource_link_id' => '123',
