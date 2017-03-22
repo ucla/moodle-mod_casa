@@ -47,6 +47,7 @@ $PAGE->set_context($context);
 $pageurl = mod_casa_privacy_waiver::get_link($context, $returnurl);
 $PAGE->set_url($pageurl);
 $PAGE->set_title(get_string('privacywaivertitle', 'mod_casa'));
+$PAGE->set_pagelayout('embedded');
 
 // Get course module, if context is a module.
 $cm = null;
@@ -86,6 +87,8 @@ $disagreebutton = new single_button($cancelurl, get_string('privacywaiverdisagre
 // Display title of module or block in header.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('privacywaiverheader', 'mod_casa'));
+
+echo 'layout is embedded';
 
 // Output waiver text.
 $toolname = $context->get_context_name(false);
