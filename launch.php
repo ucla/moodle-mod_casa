@@ -65,7 +65,7 @@ require_capability('mod/casa:view', $context);
 $url = new moodle_url('/mod/casa/launch.php', array('id' => $cm->id));
 if (mod_casa_privacy_waiver::check($context, $USER->id)) {
     $redirecturl = mod_casa_privacy_waiver::get_link($context, $url);
-    redirect($redirecturl, get_string('privacywaiverrequired', 'mod_casa'), 0);
+    redirect($redirecturl);
 }
 
 $casa->cmid = $cm->id;
