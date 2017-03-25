@@ -88,8 +88,6 @@ $disagreebutton = new single_button($cancelurl, get_string('privacywaiverdisagre
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('privacywaiverheader', 'mod_casa'));
 
-echo 'layout is embedded';
-
 // Output waiver text.
 $toolname = $context->get_context_name(false);
 echo $OUTPUT->confirm(get_string('privacywaiverdesc', 'mod_casa', $toolname),
