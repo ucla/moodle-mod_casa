@@ -62,10 +62,6 @@ class mod_casa_mod_form extends moodleform_mod {
             component_callback("casasource_$type", 'add_instance_hook');
         }
         $sectionreturn = optional_param('sr', 0, PARAM_INT);
-        $stradd = get_string('add', 'casa');
-        $stredit = get_string('edit', 'casa');
-        $strdelete = get_string('delete', 'casa');
-        $strvalid = get_string('valid', 'casa');
 
         $this->typeid = 0;
 
@@ -137,7 +133,7 @@ class mod_casa_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         // Adding the optional "intro" and "introformat" pair of fields.
-        $this->add_intro_editor(false, get_string('basiccasaintro', 'casa'));
+        $this->standard_intro_elements(get_string('basiccasaintro', 'casa'));
         $mform->setAdvanced('introeditor');
 
         // Display the label to the right of the checkbox so it looks better & matches rest of the form.
@@ -245,11 +241,11 @@ class mod_casa_mod_form extends moodleform_mod {
         $ajaxurl = new moodle_url('/mod/casa/ajax.php');
 
         $jsinfo = (object)array(
-                        'edit_icon_url' => (string)$OUTPUT->pix_icon('t/edit', $stredit),
-                        'add_icon_url' => (string)$OUTPUT->pix_icon('t/add', $stradd),
-                        'delete_icon_url' => (string)$OUTPUT->pix_icon('t/delete', $strdelete),
-                        'green_check_icon_url' => (string)$OUTPUT->pix_icon('i/valid', $strvalid),
-                        'warning_icon_url' => (string)$OUTPUT->pix_icon('warning', 'casa'),
+                        'edit_icon_url' => (string)$OUTPUT->image_url('t/edit'),
+                        'add_icon_url' => (string)$OUTPUT->image_url('t/add'),
+                        'delete_icon_url' => (string)$OUTPUT->image_url('t/delete'),
+                        'green_check_icon_url' => (string)$OUTPUT->image_url('i/valid'),
+                        'warning_icon_url' => (string)$OUTPUT->image_url('warning', 'casa'),
                         'instructor_tool_type_edit_url' => $editurl->out(false),
                         'ajax_url' => $ajaxurl->out(true),
                         'courseId' => $COURSE->id
