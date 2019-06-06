@@ -144,8 +144,14 @@ if (count($items->{'@graph'}) > 0) {
 //        }
         $moduleinfo->launchcontainer = CASA_LAUNCH_CONTAINER_DEFAULT;
         // Handle icon.
-        if (isset($item->icon) && isset($item->icon->{'@id'})) {
-            $moduleinfo->icon = $item->icon->{'@id'};
+        if (isset($item->icon_url) && validateUrlSyntax($item->icon_url->{'@id'})) {
+            // Prefer image url.
+            $moduleinfo->icon = $item->icon_url->{'@id'};
+        } else {
+            // Else use base64 image.
+            if (isset($item->icon) && isset($item->icon->{'@id'})) {
+                $moduleinfo->icon = $item->icon->{'@id'};
+            }
         }
         // Handle privacy settings. For now, default to sending name and email.
         $moduleinfo->instructorchoicesendname = 1;
