@@ -315,29 +315,6 @@ function casa_grades($basiccasaid) {
 }
 
 /**
- * This function returns if a scale is being used by one basiccasa
- * it it has support for grading and scales. Commented code should be
- * modified if necessary. See forum, glossary or journal modules
- * as reference.
- *
- * @param int $basiccasaid ID of an instance of this module
- * @return mixed
- *
- * @TODO: implement this moodle function (if needed)
- **/
-function casa_scale_used ($basiccasaid, $scaleid) {
-    $return = false;
-
-    // $rec = get_record("basiccasa","id","$basiccasaid","scale","-$scaleid");
-    //
-    // if (!empty($rec)  && !empty($scaleid)) {
-    //     $return = true;
-    // }
-
-    return $return;
-}
-
-/**
  * Checks if scale is being used by any instance of basiccasa.
  * This function was added in 1.9
  *
