@@ -1,0 +1,6 @@
+{
+    "plugintypes": {
+        "casasource": "mod\/casa\/source",
+        "casaservice": "mod\/casa\/service"
+    }
+}
