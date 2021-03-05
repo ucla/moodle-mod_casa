@@ -188,8 +188,11 @@ function casa_delete_instance($id) {
     casa_grade_item_delete($basiccasa);
 
     $casatype = $DB->get_record('casa_types', array('id' => $basiccasa->typeid));
-    $DB->delete_records('casa_tool_settings',
-        array('toolproxyid' => $casatype->toolproxyid, 'course' => $basiccasa->course, 'coursemoduleid' => $id));
+    if (!empty($casatype)) {
+        $DB->delete_records('casa_tool_settings',
+            array('toolproxyid' => $casatype->toolproxyid,
+                  'course' => $basiccasa->course, 'coursemoduleid' => $id));
+    }
 
     return $DB->delete_records("casa", array("id" => $basiccasa->id));
 }
